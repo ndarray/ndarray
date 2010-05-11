@@ -1,0 +1,38 @@
+import os
+import scons_tools
+import sys
+Import("base_env")
+
+cc_tests = [("ndarray", []),
+            ("ndarray-eigen", ["eigen2"]),
+            ("ndarray-fft", ["fftw3"]),
+            ("ndarray-levmar", ["levmar"]),
+            ]
+runs = []
+
+test_env = scons_tools.configure(base_env.Clone(), packages=["boost.test"])
+
+for name, dependencies in cc_tests:
+    env = scons_tools.configure(test_env.Clone(), packages=dependencies, fatal=False)
+    if env["FAILED_PACKAGES"]:
+        sys.stderr.write("Skipping test '%s' due to missing dependencies.\n" % name)
+        continue
+    bin = env.Program(name, "%s.cc" % name)
+    runs.append(env.Command(".%s" % name, bin, "cd tests; ./%s" % name))
+    
+py_tests = [("ndarray-python", "ndarray_python_test", ["numpy"]),
+            ("ndarray-boost-python", "ndarray_boost_python_test", ["boost.python"]),
+            ]
+
+for name, mod_name, dependencies in py_tests:
+    env = scons_tools.configure(base_env.Clone(), packages=dependencies)
+    if env["FAILED_PACKAGES"]:
+        sys.stderr.write("Skipping test '%s' due to missing dependencies.\n" % name)
+        continue
+    mod = env.SharedLibrary(mod_name, "%s-mod.cc" % name, SHLIBPREFIX="") 
+    runs.append(env.Command(".%s" % name, [mod, "%s.py" % name],
+                            "cd tests; python %s.py" % name))
+
+test = Alias("test", runs)
+
+Return("test")

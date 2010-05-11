@@ -1,0 +1,6 @@
+ - unify result_of namespace and Array::ResultOf
+ - transpose for Expressions
+ - M4-generated headers are not installed if they aren't present when
+   scons is run (verify)
+ - automate release tarball generation
+ - broadcasting support in non-assignment operators

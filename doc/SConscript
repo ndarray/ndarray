@@ -1,0 +1,7 @@
+import os
+Import("base_env")
+
+doc = base_env.Doxygen("doxygen.conf")
+base_env.AlwaysBuild(doc)
+doc_tag = base_env.Alias("doc",doc)
+Return("doc_tag")
