@@ -1,8 +1,10 @@
-#include "ndarray.hpp"
+#include "lsst/ndarray.hpp"
 
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE ndarray
 #include <boost/test/unit_test.hpp>
+
+namespace ndarray = lsst::ndarray;
 
 BOOST_AUTO_TEST_CASE(vectors) {
     ndarray::Vector<int,3> a = ndarray::makeVector(5,6,7);

@@ -1,10 +1,12 @@
-#include <ndarray/fft.hpp>
+#include "lsst/ndarray/fft.hpp"
 
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE ndarray-fft
 #include <boost/test/unit_test.hpp>
 
 #include <sstream>
+
+namespace ndarray = lsst::ndarray;
 
 template <typename Derived1, typename Derived2>
 static boost::test_tools::predicate_result

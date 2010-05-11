@@ -1,10 +1,12 @@
-#include <ndarray/eigen.hpp>
+#include "lsst/ndarray/eigen.hpp"
 
 #include <Eigen/Array>
 
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE ndarray-eigen
 #include <boost/test/unit_test.hpp>
+
+namespace ndarray = lsst::ndarray;
 
 BOOST_AUTO_TEST_CASE(MatrixXd) {
     Eigen::MatrixXd m1 = Eigen::MatrixXd::Random(5,6);

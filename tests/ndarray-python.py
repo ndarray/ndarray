@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import numpy
 import ndarray_python_test
 import unittest

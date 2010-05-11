@@ -1,7 +1,9 @@
 import os
-Import("base_env")
+Import("env")
 
-doc = base_env.Doxygen("doxygen.conf")
-base_env.AlwaysBuild(doc)
-doc_tag = base_env.Alias("doc",doc)
-Return("doc_tag")
+doxy = env.Doxygen("doxygen.conf")
+env.Depends(doxy, "#include/lsst/ndarray.hpp")
+env.Depends(doxy, "#include/lsst/ndarray_fwd.hpp")
+env.Depends(doxy, Glob("#include/lsst/ndarray/*.hpp"))
+env.Depends(doxy, Glob("#include/lsst/ndarray/*/*.hpp"))
+env.Depends(doxy, Glob("#m4/*.m4"))

@@ -1,6 +1,8 @@
 #include "Python.h"
 #include "numpy/arrayobject.h"
-#include "ndarray/python.hpp"
+#include "lsst/ndarray/python.hpp"
+
+namespace ndarray = lsst::ndarray;
 
 template <typename T, int N>
 static PyObject * passVector(PyObject * self, PyObject * args) {

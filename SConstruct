@@ -1,31 +1,73 @@
 import os
-import distutils.sysconfig
 import sys
-import scons_tools
+import lsst.SConsUtils as scons
+import eups
 
-base_env = scons_tools.makeEnvironment(local_include="include")
-base_env = scons_tools.configure(base_env,packages=("boost",),)
+dependencies = ["boost", "python", "eigen", "fftw"]  # utils also needed, but only for scons
 
-Export("base_env")
+env = scons.makeEnv("ndarray",
+                    r"$HeadURL: svn+ssh://svn.lsstcorp.org/DMS/ndarray/trunk/SConstruct $",
+                    [["boost", "boost/shared_ptr.hpp"],
+                     ["boost", "boost/test/unit_test.hpp", "boost_unit_test_framework:C++"],
+                     ["python", "Python.h"],
+                     ["eigen", "Eigen/Core"],
+                     ["fftw", "fftw3.h", "fftw3"]
+                     ])
 
-doc = SConscript(os.path.join("doc","SConscript"))
+env.Help("""
+Multidimensional array and NumPy support package for C++
+""")
 
-paths = scons_tools.getInstallPaths()
+###############################################################################
+# Boilerplate below here
 
-base_env.Append(M4FLAGS="-I%s" % os.path.join(os.path.abspath('.'),'m4'))
-generated = ["include/ndarray/ArrayRef.hpp",
-             "include/ndarray/operators.hpp",
-             "include/ndarray/Vector.hpp",
-             "include/ndarray/fft/FFTWTraits.hpp",
+pkg = env["eups_product"]
+env.libs[pkg] = env.getlibs(" ".join(dependencies))
+env.Append(M4FLAGS="-I%s" % os.path.join(os.path.abspath(eups.productDir(pkg)), 'm4'))
+
+#
+# Build/install things
+#
+generated = ["#include/lsst/ndarray/ArrayRef.hpp",
+             "#include/lsst/ndarray/operators.hpp",
+             "#include/lsst/ndarray/Vector.hpp",
+             "#include/lsst/ndarray/fft/FFTWTraits.hpp",
              ]
-headers = [base_env.M4(filename,"%s.m4" % filename) for filename in generated]
-base_env.Depends(headers,Glob("#m4/*.m4"))
+headers = [env.M4(filename, "%s.m4" % filename) for filename in generated]
+env.Depends(headers, Glob("#m4/*.m4"))
 
-install_headers = base_env.InstallSource(paths['include'], "include", patterns=("*.hpp","*.cc"))
-AlwaysBuild(install_headers)
-install = Alias("install", install_headers)
+for d in (
+    ".",
+    "doc",
+    "tests",
+):
+    if d != ".":
+        try:
+            SConscript(os.path.join(d, "SConscript"))
+        except Exception, e:
+            print >> sys.stderr, "In processing file %s:" % (os.path.join(d, "SConscript"))
+            print >> sys.stderr, e
+    Clean(d, Glob(os.path.join(d, "*~")))
+    Clean(d, Glob(os.path.join(d, "*.pyc")))
 
-Default(headers)
+env['IgnoreFiles'] = r"(~$|\.pyc$|^\.svn$|\.o$)"
 
-if "test" in COMMAND_LINE_TARGETS:
-    tests = SConscript(os.path.join("tests","SConscript"))
+Alias("install", [
+    env.Install(env['prefix'], "doc"),
+#    env.Install(env['prefix'], "examples"),
+    env.Install(env['prefix'], "m4"),
+    env.Install(env['prefix'], "include"),
+    env.Install(env['prefix'], "tests"),
+    env.InstallEups(os.path.join(env['prefix'], "ups")),
+])
+
+scons.CleanTree(r"*~ core *.so *.os *.o")
+
+#
+# Build TAGS files
+#
+files = scons.filesToTag()
+if files:
+    env.Command("TAGS", files, "etags -o $TARGET $SOURCES")
+
+env.Declare()

@@ -4,7 +4,7 @@ define(`GENERAL_ASSIGN',
     template <typename Other>
     ArrayRef const &
     operator $1(ExpressionBase<Other> const & expr) const {
-        NDARRAY_ASSERT(expr.getShape() 
+        LSST_NDARRAY_ASSERT(expr.getShape() 
                          == this->getShape().template first<ExpressionBase<Other>::ND::value>());
         indir(`$3',$1)
         return *this;

@@ -1,0 +1,5 @@
+setupRequired(boost >= 1.37.0)
+setupRequired(python >= 2.5.2)
+setupOptional(eigen >= 2.0.0)
+setupOptional(fftw >= 3.1.2+1)
+setupOptional(doxygen)
