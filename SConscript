@@ -1,4 +1,4 @@
-Import("base_env", "build_dir")
+Import("base_env")
 import scons_tools
 
 targets = {}
@@ -19,8 +19,7 @@ if scons_tools.database["eigen"].check():
             regex = "(.*\.hpp)"
             )
         )
-    targets["test"] = SConscript("libs/python/eigen/test/SConscript",
-                                 variant_dir="%s/python/eigen/test" % build_dir)
+    targets["test"] = SConscript("libs/python/eigen/test/SConscript")
 else:
     print "Eigen library not found, skipping 'boost.python.eigen' targets."
 
