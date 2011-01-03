@@ -1,4 +1,4 @@
-Import("base_env", "build_dir")
+Import("base_env")
 import scons_tools
 
 targets = {}
@@ -19,8 +19,7 @@ if scons_tools.database["ndarray"].check():
             regex = "(.*\.hpp)"
             )
         )
-    targets["test"] = SConscript("libs/python/ndarray/test/SConscript",
-                                 variant_dir="%s/python/ndarray/test" % build_dir)
+    targets["test"] = SConscript("libs/python/ndarray/test/SConscript")
 else:
     print "ndarray library not found, skipping 'boost.python.ndarray' targets."
 
