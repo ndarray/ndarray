@@ -1,0 +1,6 @@
+Import("bp_ndarray_env")
+
+test_mod = bp_ndarray_env.SharedLibrary("ndarray_mod", "ndarray_mod.cpp", SHLIBPREFIX="")
+test = bp_ndarray_env.PythonUnitTest("ndarray.py", test_mod)
+
+Return("test")
