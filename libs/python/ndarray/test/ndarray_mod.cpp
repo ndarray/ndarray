@@ -37,22 +37,24 @@ ndarray::Array<T,N,C> returnArray() {
 template <typename T, int N, int C>
 bool acceptArray(ndarray::Array<T,N,C> const & p) {
     ndarray::Array<typename boost::remove_const<T>::type,N,N> a = ndarray::allocate(p.getShape());
+    a.deep() = p;
     ndarray::Array<typename boost::remove_const<T>::type,1,1> flat = ndarray::flatten<1>(a);
     for (int n=0; n < flat.template getSize<0>(); ++n) {
-        flat[n] = n;
+        if (flat[n] != n) return false;
     }
-    return ndarray::all(equal(a, p));
+    return true;
 }
 
 template <typename T, int N, int C>
 bool extractArray(boost::python::object const & obj) {
     ndarray::Array<T,N,C> p = boost::python::extract< ndarray::Array<T,N,C> >(obj);
     ndarray::Array<typename boost::remove_const<T>::type,N,N> a = ndarray::allocate(p.getShape());
+    a.deep() = p;
     ndarray::Array<typename boost::remove_const<T>::type,1,1> flat = ndarray::flatten<1>(a);
     for (int n=0; n < flat.template getSize<0>(); ++n) {
-        flat[n] = n;
+        if (flat[n] != n) return false;
     }
-    return ndarray::all(equal(a, p));
+    return true;
 }
 
 template <typename T, int N>
