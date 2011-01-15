@@ -1,4 +1,4 @@
-Import("base_env")
+Import("bp_numpy_env")
 import scons_tools
 
 targets = {}
@@ -9,7 +9,7 @@ scons_tools.LocalConfiguration(
     )
 
 if scons_tools.database["ndarray"].check():
-    bp_ndarray_env = base_env.Clone()
+    bp_ndarray_env = bp_numpy_env.Clone()
     bp_ndarray_env.SetupPackages(scons_tools.database["boost.python.ndarray"].dependencies)
     Export("bp_ndarray_env")
     targets["install"] = ( 
@@ -19,7 +19,8 @@ if scons_tools.database["ndarray"].check():
             regex = "(.*\.hpp)"
             )
         )
-    targets["test"] = SConscript("libs/python/ndarray/test/SConscript")
+    targets["test"] = SConscript("libs/python/ndarray/test/SConscript", 
+                                 variant_dir="%s/python/test" % scons_tools.GetBuildDir())
 else:
     print "ndarray library not found, skipping 'boost.python.ndarray' targets."
 
