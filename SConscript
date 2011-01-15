@@ -1,4 +1,4 @@
-Import("base_env")
+Import("bp_numpy_env")
 import scons_tools
 
 targets = {}
@@ -9,7 +9,7 @@ scons_tools.LocalConfiguration(
     )
 
 if scons_tools.database["eigen"].check():
-    bp_eigen_env = base_env.Clone()
+    bp_eigen_env = bp_numpy_env.Clone()
     bp_eigen_env.SetupPackages(scons_tools.database["boost.python.eigen"].dependencies)
     Export("bp_eigen_env")
     targets["install"] = (
