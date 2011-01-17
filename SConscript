@@ -19,8 +19,7 @@ if scons_tools.database["ndarray"].check():
             regex = "(.*\.hpp)"
             )
         )
-    targets["test"] = SConscript("libs/python/ndarray/test/SConscript", 
-                                 variant_dir="%s/python/test" % scons_tools.GetBuildDir())
+    targets["test"] = SConscript("libs/python/ndarray/test/SConscript")
 else:
     print "ndarray library not found, skipping 'boost.python.ndarray' targets."
 
