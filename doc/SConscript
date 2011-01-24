@@ -1,9 +1,8 @@
 import os
 Import("env")
 
-doxy = env.Doxygen("doxygen.conf")
+doxy = env.Doxygen("htmlDir", "doxygen")
 env.Depends(doxy, "#include/lsst/ndarray.hpp")
 env.Depends(doxy, "#include/lsst/ndarray_fwd.hpp")
 env.Depends(doxy, Glob("#include/lsst/ndarray/*.hpp"))
 env.Depends(doxy, Glob("#include/lsst/ndarray/*/*.hpp"))
-env.Depends(doxy, Glob("#m4/*.m4"))
