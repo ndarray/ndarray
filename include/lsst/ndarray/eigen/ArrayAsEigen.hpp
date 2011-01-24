@@ -1,3 +1,25 @@
+/* 
+ * LSST Data Management System
+ * Copyright 2008, 2009, 2010 LSST Corporation.
+ * 
+ * This product includes software developed by the
+ * LSST Project (http://www.lsst.org/).
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the LSST License Statement and 
+ * the GNU General Public License along with this program.  If not, 
+ * see <http://www.lsstcorp.org/LegalNotices/>.
+ */
+
 #ifndef LSST_NDARRAY_EIGEN_ArrayAsEigen_hpp_INCLUDED
 #define LSST_NDARRAY_EIGEN_ArrayAsEigen_hpp_INCLUDED
 
@@ -98,7 +120,7 @@ public:
 
     EIGEN_INHERIT_ASSIGNMENT_OPERATORS(EigenView);
 
-    T * data() { return _array.getData(); }
+    Scalar * data() { return const_cast<Scalar*>(_array.getData()); }
     Scalar const * data() const { return _array.getData(); }
 
     inline int rows() const { return _array.template getSize<0>(); }
@@ -106,10 +128,10 @@ public:
 
     inline int stride() const { return _array.template getStride<0>(); }
 
-    inline T & coeffRef(int row, int col) { return _array[makeVector(row,col)]; }
+    inline Scalar & coeffRef(int row, int col) { return const_cast<Scalar&>(_array[makeVector(row,col)]); }
     inline Scalar const coeff(int row, int col) const { return _array[makeVector(row,col)]; }
 
-    inline T & coeffRef(int index) { return _array[makeVector(index,0)]; }
+    inline Scalar & coeffRef(int index) { return const_cast<Scalar&>(_array[makeVector(index,0)]); }
     inline Scalar const coeff(int index) const { return _array[makeVector(index,0)]; }
 
     template<int LoadMode>
@@ -134,6 +156,8 @@ public:
 
     Array<T,2,C> const & getArray() const { return _array; }
 
+    void setArray(Array<T,2,C> const & array) { _array = array; }
+
 private:
     Array<T,2,C> _array;
 };
@@ -155,7 +179,7 @@ public:
 
     EIGEN_INHERIT_ASSIGNMENT_OPERATORS(EigenView);
 
-    T * data() { return _array.getData(); }
+    Scalar * data() { return const_cast<Scalar*>(_array.getData()); }
     Scalar const * data() const { return _array.getData(); }
 
     inline int rows() const { return _array.template getSize<0>(); }
@@ -165,10 +189,10 @@ public:
         return (C==1) ? _array.template getStride<1>() : _array.template getStride<0>();
     }
 
-    inline T & coeffRef(int row, int) { return _array[row]; }
+    inline Scalar & coeffRef(int row, int) { return const_cast<Scalar&>(_array[row]); }
     inline Scalar const coeff(int row, int) const { return _array[row]; }
 
-    inline T & coeffRef(int index) { return _array[index]; }
+    inline Scalar & coeffRef(int index) { return const_cast<Scalar&>(_array[index]); }
     inline Scalar const coeff(int index) const { return _array[index]; }
 
     template<int LoadMode>
@@ -193,6 +217,8 @@ public:
 
     Array<T,1,C> const & getArray() const { return _array; }
 
+    void setArray(Array<T,1,C> const & array) { _array = array; }
+
 private:
     Array<T,1,C> _array;
 };
@@ -213,7 +239,7 @@ public:
 
     EIGEN_INHERIT_ASSIGNMENT_OPERATORS(TransposedEigenView);
 
-    T * data() { return _array.getData(); }
+    Scalar * data() { return const_cast<Scalar*>(_array.getData()); }
     Scalar const * data() const { return _array.getData(); }
 
     inline int rows() const { return _array.template getSize<1>(); }
@@ -221,10 +247,10 @@ public:
 
     inline int stride() const { return _array.template getStride<0>(); }
 
-    inline T & coeffRef(int row, int col) { return _array[makeVector(col,row)]; }
+    inline Scalar & coeffRef(int row, int col) { return const_cast<Scalar&>(_array[makeVector(col,row)]); }
     inline Scalar const coeff(int row, int col) const { return _array[makeVector(col,row)]; }
 
-    inline T & coeffRef(int index) { return _array[makeVector(0,index)]; }
+    inline Scalar & coeffRef(int index) { return const_cast<Scalar&>(_array[makeVector(0,index)]); }
     inline Scalar const coeff(int index) const { return _array[makeVector(0,index)]; }
 
     template<int LoadMode>
@@ -249,6 +275,8 @@ public:
 
     Array<T,2,C> const & getArray() const { return _array; }
 
+    void setArray(Array<T,2,C> const & array) { _array = array; }
+
 private:
     Array<T,2,C> _array;
 };
@@ -269,7 +297,7 @@ public:
 
     EIGEN_INHERIT_ASSIGNMENT_OPERATORS(TransposedEigenView);
 
-    T * data() { return _array.getData(); }
+    Scalar * data() { return const_cast<Scalar&>(_array.getData()); }
     Scalar const * data() const { return _array.getData(); }
 
     inline int rows() const { return 1; }
@@ -279,10 +307,10 @@ public:
         return (C==1) ? _array.template getStride<1>() : _array.template getStride<0>();
     }
 
-    inline T & coeffRef(int, int col) { return _array[col]; }
+    inline Scalar & coeffRef(int, int col) { return const_cast<Scalar&>(_array[col]); }
     inline Scalar const coeff(int, int col) const { return _array[col]; }
 
-    inline T & coeffRef(int index) { return _array[index]; }
+    inline Scalar & coeffRef(int index) { return const_cast<Scalar&>(_array[index]); }
     inline Scalar const coeff(int index) const { return _array[index]; }
 
     template<int LoadMode>
@@ -307,6 +335,8 @@ public:
 
     Array<T,1,C> const & getArray() const { return _array; }
 
+    void setArray(Array<T,1,C> const & array) { _array = array; }
+
 private:
     Array<T,1,C> _array;
 };
@@ -323,11 +353,31 @@ viewAsEigen(Array<T,N,C> const & array) {
 
 /**
  *  @ingroup EigenGroup
+ *  @brief Return a non-transposed Eigen view of the given 1D or 2D Array.
+ */
+template <typename T, int N, int C>
+inline EigenView<T,N,C>
+viewAsEigen(ArrayRef<T,N,C> const & array) {
+    return EigenView<T,N,C>(array);
+}
+
+/**
+ *  @ingroup EigenGroup
  *  @brief Return a transposed Eigen view of the given 1D or 2D Array.
  */
 template <typename T, int N, int C>
 inline TransposedEigenView<T,N,C>
 viewAsTransposedEigen(Array<T,N,C> const & array) {
+    return TransposedEigenView<T,N,C>(array);
+}
+
+/**
+ *  @ingroup EigenGroup
+ *  @brief Return a transposed Eigen view of the given 1D or 2D Array.
+ */
+template <typename T, int N, int C>
+inline TransposedEigenView<T,N,C>
+viewAsTransposedEigen(ArrayRef<T,N,C> const & array) {
     return TransposedEigenView<T,N,C>(array);
 }
 

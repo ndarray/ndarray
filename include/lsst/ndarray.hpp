@@ -9,10 +9,12 @@
 #include "lsst/ndarray/Array.hpp"
 #include "lsst/ndarray/ArrayRef.hpp"
 #include "lsst/ndarray/initialization.hpp"
+#ifndef GCC_45
 #include "lsst/ndarray/operators.hpp"
+#include "lsst/ndarray/arange.hpp"
+#endif
 #include "lsst/ndarray/casts.hpp"
 #include "lsst/ndarray/formatting.hpp"
-#include "lsst/ndarray/arange.hpp"
 
 namespace lsst { namespace ndarray {
 

@@ -1,9 +1,70 @@
-include(`Vector.macros.m4')dnl
-changecom(`###')dnl
-#ifndef LSST_NDARRAY_Vector_hpp_INCLUDED
-#define LSST_NDARRAY_Vector_hpp_INCLUDED
+/* 
+ * LSST Data Management System
+ * Copyright 2008, 2009, 2010 LSST Corporation.
+ * 
+ * This product includes software developed by the
+ * LSST Project (http://www.lsst.org/).
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the LSST License Statement and 
+ * the GNU General Public License along with this program.  If not, 
+ * see <http://www.lsstcorp.org/LegalNotices/>.
+ */
 
-/// @file lsst/ndarray/Vector.hpp Definition for Vector.
+changecom(`###')dnl
+define(`VECTOR_ASSIGN',
+`
+    /// \brief Augmented $1 assignment from another vector.
+    template <typename U>
+    typename boost::enable_if<boost::is_convertible<U,T>,Vector&>::type
+    operator $1 (Vector<U,N> const & other) {
+        typename Vector<U,N>::ConstIterator j = other.begin();
+        for (Iterator i = begin(); i != end(); ++i, ++j) (*i) $1 (*j);
+        return *this;
+    }
+    /// \brief Augmented $1 assignment from a scalar.
+    template <typename U>
+    typename boost::enable_if<boost::is_convertible<U,T>,Vector&>::type
+    operator $1 (U scalar) {
+        for (Iterator i = begin(); i != end(); ++i) (*i) $1 scalar;
+        return *this;
+    }')dnl
+define(`VECTOR_BINARY_OP',
+`
+    /// \brief Operator overload for Vector $1 Vector.
+    template <typename T, typename U, int N>
+    Vector<typename Promote<T,U>::Type,N>
+    operator $1(Vector<T,N> const & a, Vector<U,N> const & b) {
+        Vector<typename Promote<T,U>::Type,N> r(a);
+        return r $1= b;
+    }
+    /** \brief Operator overload for Vector $1 Scalar. */
+    template <typename T, typename U, int N>
+    Vector<typename Promote<T,U>::Type,N>
+    operator $1(Vector<T,N> const & a, U b) {
+        Vector<typename Promote<T,U>::Type,N> r(a);
+        return r $1= b;
+    }
+    /** \brief Operator overload for Scalar $1 Vector. */
+    template <typename T, typename U, int N>
+    Vector<typename Promote<T,U>::Type,N>
+    operator $1(U a, Vector<T,N> const & b) {
+        Vector<typename Promote<T,U>::Type,N> r(a);
+        return r $1= b;
+    }')dnl
+#ifndef NDARRAY_Vector_hpp_INCLUDED
+#define NDARRAY_Vector_hpp_INCLUDED
+
+/// @file ndarray/Vector.hpp Definition for Vector.
 
 #include <boost/iterator/reverse_iterator.hpp>
 #include <boost/mpl/int.hpp>

@@ -20,6 +20,12 @@
 #include <boost/type_traits/remove_const.hpp>
 #include <cassert>
 
+#ifdef __GNUC__
+#if __GNUC__ == 4 && __GNUC_MINOR__ == 5
+#define GCC_45
+#endif
+#endif
+
 #define LSST_NDARRAY_ASSERT(ARG) assert(ARG)
 
 /** @namespace ndarray @brief Main public namespace */
@@ -59,6 +65,8 @@ template <typename T, int N, int C> class NestedIterator;
 
 template <typename T> class StridedIterator;
 
+#ifndef GCC_45
+
 template <
     typename Operand, 
     typename UnaryFunction
@@ -71,6 +79,8 @@ template <
     typename BinaryFunction
     >
 class BinaryOpIterator;
+
+#endif
 
 } // namespace lsst::ndarray::detail
 

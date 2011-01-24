@@ -10,9 +10,12 @@ env = scons.makeEnv("ndarray",
                     [["boost", "boost/shared_ptr.hpp"],
                      ["boost", "boost/test/unit_test.hpp", "boost_unit_test_framework:C++"],
                      ["python", "Python.h"],
-                     ["eigen", "Eigen/Core"],
+                     ["eigen", "Eigen/Core.h"],
                      ["fftw", "fftw3.h", "fftw3"]
                      ])
+
+import numpy
+env.Append(CPPPATH=[numpy.get_include()])
 
 env.Help("""
 Multidimensional array and NumPy support package for C++
@@ -34,7 +37,6 @@ generated = ["#include/lsst/ndarray/ArrayRef.hpp",
              "#include/lsst/ndarray/fft/FFTWTraits.hpp",
              ]
 headers = [env.M4(filename, "%s.m4" % filename) for filename in generated]
-env.Depends(headers, Glob("#m4/*.m4"))
 
 for d in (
     ".",
@@ -54,8 +56,6 @@ env['IgnoreFiles'] = r"(~$|\.pyc$|^\.svn$|\.o$)"
 
 Alias("install", [
     env.Install(env['prefix'], "doc"),
-#    env.Install(env['prefix'], "examples"),
-    env.Install(env['prefix'], "m4"),
     env.Install(env['prefix'], "include"),
     env.Install(env['prefix'], "tests"),
     env.InstallEups(os.path.join(env['prefix'], "ups")),

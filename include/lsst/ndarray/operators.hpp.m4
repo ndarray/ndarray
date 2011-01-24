@@ -1,16 +1,105 @@
-include(`operators.macros.m4')dnl
+/* 
+ * LSST Data Management System
+ * Copyright 2008, 2009, 2010 LSST Corporation.
+ * 
+ * This product includes software developed by the
+ * LSST Project (http://www.lsst.org/).
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the LSST License Statement and 
+ * the GNU General Public License along with this program.  If not, 
+ * see <http://www.lsstcorp.org/LegalNotices/>.
+ */
+
 changecom(`###')dnl
-#ifndef LSST_NDARRAY_operators_hpp_INCLUDED
-#define LSST_NDARRAY_operators_hpp_INCLUDED
+define(`FUNCTION_TAG',
+`
+    struct $1 : public AdaptableFunctionTag<$1> {
+        template <typename A, typename B>
+        struct ScalarFunction : public $2<A,B> {
+            typename $2<A,B>::result_type operator()(
+                typename $2<A,B>::ParamA a,
+                typename $2<A,B>::ParamB b
+            ) const {
+                return a $3 b;
+            }
+        };
+    };')dnl
+define(`BINARY_OP',
+`
+    template <typename Operand, typename Scalar>
+#ifndef DOXYGEN
+    typename boost::enable_if<
+        typename ExpressionTraits<Scalar>::IsScalar,
+        detail::UnaryOpExpression< Operand, typename $1::template ExprScalar<Operand,Scalar>::Bound >
+    >::type
+#else
+    <unspecified-expression-type>
+#endif
+    $2(ExpressionBase<Operand> const & operand, Scalar const & scalar) {
+        return vectorize($1::template ExprScalar<Operand,Scalar>::bind(scalar),operand);
+    }
+
+    template <typename Operand, typename Scalar>
+#ifndef DOXYGEN
+    typename boost::enable_if<
+        typename ExpressionTraits<Scalar>::IsScalar,
+        detail::UnaryOpExpression< Operand, typename $1::template ScalarExpr<Operand,Scalar>::Bound >
+    >::type
+#else
+    <unspecified-expression-type>
+#endif
+    $2(Scalar const & scalar, ExpressionBase<Operand> const & operand) {
+        return vectorize($1::template ScalarExpr<Operand,Scalar>::bind(scalar),operand);
+    }
+
+    template <typename Operand1, typename Operand2>
+#ifndef DOXYGEN
+    detail::BinaryOpExpression< 
+         Operand1, Operand2,
+         typename $1::template ExprExpr<Operand1,Operand2>::BinaryFunction
+    >
+#else
+    <unspecified-expression-type>
+#endif
+    $2(ExpressionBase<Operand1> const & operand1, ExpressionBase<Operand2> const & operand2) {
+        return vectorize(
+            typename $1::template ExprExpr<Operand1,Operand2>::BinaryFunction(),
+            operand1,
+            operand2
+        );
+    }')dnl
+define(`UNARY_OP',
+`
+    template <typename Operand>
+#ifndef DOXYGEN
+    detail::UnaryOpExpression< Operand, $1<typename ExpressionTraits<Operand>::Element> >
+#else
+    <unspecified-expression-type>
+#endif
+    $2(ExpressionBase<Operand> const & operand) {
+        return vectorize($1<typename ExpressionTraits<Operand>::Element>(),operand);
+    }')dnl
+#ifndef NDARRAY_operators_hpp_INCLUDED
+#define NDARRAY_operators_hpp_INCLUDED
 
 /** 
  *  \file ndarray/operators.hpp \brief Arithmetic and logical operators for Array.
  */
 
+#include "lsst/ndarray/Array.hpp"
 #include <boost/call_traits.hpp>
 #include <boost/functional.hpp>
 
-#include "lsst/ndarray/Array.hpp"
 #include "lsst/ndarray/detail/UnaryOp.hpp"
 #include "lsst/ndarray/detail/BinaryOp.hpp"
 #include "lsst/ndarray/types.hpp"
