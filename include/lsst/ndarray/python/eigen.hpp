@@ -167,7 +167,7 @@ public:
 
 };
 
-}} // namespace lsst::ndarray::detail
+} // namespace detail
 
 /**
  *  @ingroup PythonGroup
@@ -224,6 +224,6 @@ template <typename T, int N, int C>
 struct PyConverter< TransposedEigenView<T,N,C> > : 
     public detail::EigenPyConverter< TransposedEigenView<T,N,C> > {};
 
-} // namespace ndarray
+}} // namespace lsst::ndarray
 
 #endif // !LSST_NDARRAY_PYTHON_eigen_hpp_INCLUDED

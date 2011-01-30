@@ -7,6 +7,11 @@ python_mod = env.LoadableModuleIncomplete("ndarray_python_test", ["ndarray-pytho
                                           LIBS=env.libs[env["eups_product"]])
 for src in cc_tests:
     env.Program(src, LIBS=env.libs[env["eups_product"]])
+
+env.CheckSwig("python", ilang="c++", includedProducts="ndarray")
+
+swig_mod = env.LoadableModuleIncomplete("_swig_test_mod", ["swig_test_mod.i"])
+
 #
 # Tests
 #
@@ -14,4 +19,4 @@ import lsst.tests
 tests = lsst.tests.Control(env, verbose = True, ignoreList=["ndarray-python-mod.cc"])
 tests.run("*.cc")
 for test in tests.run("*.py"):
-    env.Depends(test, python_mod)
+    env.Depends(test, python_mod + swig_mod)
