@@ -13,6 +13,8 @@
 
 %declareNumPyConverters(Eigen::MatrixXd);
 %declareNumPyConverters(Eigen::Matrix2d);
+%declareNumPyConverters(Eigen::Matrix3d);
+%declareNumPyConverters(Eigen::Matrix<double,2,2,Eigen::DontAlign>);
 %declareNumPyConverters(lsst::ndarray::Array<double,1,1>);
 %declareNumPyConverters(lsst::ndarray::Array<double const,1,1>);
 %declareNumPyConverters(lsst::ndarray::Array<double,3>);
@@ -80,5 +82,31 @@ bool acceptArray3(lsst::ndarray::Array<double,3> const & a1) {
     lsst::ndarray::Array<double,3> a2 = returnArray3();
     return lsst::ndarray::all(lsst::ndarray::equal(a1, a2));
 }
+
+int acceptOverload(int n) {
+    return 0;
+}
+
+int acceptOverload(Eigen::Matrix3d const & m) {
+    return 3;
+}
+
+int acceptOverload(Eigen::Matrix2d const & m) {
+    return 2;
+}
+
+struct MatrixOwner {
+
+    typedef Eigen::Matrix<double,2,2,Eigen::DontAlign> MemberMatrix;
+
+    MemberMatrix member;
+
+    MemberMatrix const & getMember() const { return member; }
+    MemberMatrix & getMember() { return member; }
+
+    explicit MatrixOwner() : member(MemberMatrix::Zero()) {}
+
+};
+
 
 %}

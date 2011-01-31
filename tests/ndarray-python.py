@@ -64,5 +64,20 @@ class TestNumpySwig(unittest.TestCase):
         self.assert_((a1 == a3).all())
         self.assert_(a3.flags["WRITEABLE"] == False)
 
+    def testClass(self):
+        a = swig_test_mod.MatrixOwner()
+        m1 = a.member
+        m2 = a.getMember()
+        self.assert_((m1 == 0).all())
+        self.assert_((m2 == 0).all())
+        self.assertEqual(m1.shape, (2,2))
+        self.assertEqual(m2.shape, (2,2))
+
+    def testOverloads(self):
+        self.assertEqual(swig_test_mod.acceptOverload(1), 0)
+        self.assertEqual(swig_test_mod.acceptOverload(numpy.zeros((2,2), dtype=float)), 2)
+        self.assertEqual(swig_test_mod.acceptOverload(numpy.zeros((3,3), dtype=float)), 3)
+        
+
 if __name__ == "__main__":
     unittest.main()

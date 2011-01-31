@@ -18,5 +18,5 @@ swig_mod = env.LoadableModuleIncomplete("_swig_test_mod", ["swig_test_mod.i"])
 import lsst.tests
 tests = lsst.tests.Control(env, verbose = True, ignoreList=["ndarray-python-mod.cc"])
 tests.run("*.cc")
-for test in tests.run("*.py"):
+for test in tests.run("ndarray-python.py"):
     env.Depends(test, python_mod + swig_mod)

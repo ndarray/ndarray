@@ -27,14 +27,19 @@
 #include <boost/scoped_ptr.hpp>
 %}
 
+#pragma SWIG nowarn=467
+
 %define %declareNumPyConverters(TYPE...)
 %typemap(out) TYPE {
     $result = lsst::ndarray::PyConverter< TYPE >::toPython($1);
 }
+%typemap(out) TYPE const &, TYPE &, TYPE const *, TYPE * {
+    $result = lsst::ndarray::PyConverter< TYPE >::toPython(*$1);
+}
 %typemap(typecheck) TYPE, TYPE const *, TYPE const & {
     lsst::ndarray::PyPtr tmp($input,true);
     $1 = lsst::ndarray::PyConverter< TYPE >::fromPythonStage1(tmp);
-    return NULL;
+    if (!($1)) PyErr_Clear();
 }
 %typemap(in) TYPE const & (TYPE val) {
     lsst::ndarray::PyPtr tmp($input,true);

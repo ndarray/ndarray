@@ -58,6 +58,7 @@ Alias("install", [
     env.Install(env['prefix'], "doc"),
     env.Install(env['prefix'], "include"),
     env.Install(env['prefix'], "tests"),
+    env.Install(env['prefix'], "python"),
     env.InstallEups(os.path.join(env['prefix'], "ups")),
 ])
 
