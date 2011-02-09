@@ -5,22 +5,24 @@
 #include <ndarray.hpp>
 #include <ndarray/eigen.hpp>
 
-
 namespace boost { namespace python {
 
 template <typename T>
 void destroy_cobject(void * p) {
-    boost::shared_ptr<T> * b = reinterpret_cast<boost::shared_ptr<T>*>(p);
+    typedef typename ndarray::Manager<T>::Ptr ManagerPtr;
+    ManagerPtr * b = reinterpret_cast<ManagerPtr*>(p);
     delete b;
 }
 
 template <typename T>
-object cobject_from_shared_ptr(shared_ptr<T> const & x) {
-    converter::shared_ptr_deleter * d = get_deleter<converter::shared_ptr_deleter>(x);
-    if (d) { 
-        return object(d->owner);
+object object_from_ndarray_manager(boost::intrusive_ptr< ndarray::Manager<T> > const & x) {
+    typedef typename ndarray::Manager<T>::Ptr ManagerPtr;
+    typename ndarray::ExternalManager<T,object>::Ptr y
+        = boost::dynamic_pointer_cast< ndarray::ExternalManager<T,object> >(x);
+    if (y) {
+        return y->getOwner();
     }
-    handle<> h(PyCObject_FromVoidPtr(new shared_ptr<T>(x), &destroy_cobject<T>));
+    handle<> h(PyCObject_FromVoidPtr(new ManagerPtr(x), &destroy_cobject<T>));
     return object(h);
 }
 
@@ -28,7 +30,7 @@ template <typename T, int N, int C>
 struct to_python_value< ndarray::Array<T,N,C> const & > : public detail::builtin_to_python {
     inline PyObject * operator()(ndarray::Array<T,N,C> const & x) const {
         numpy::dtype dtype = numpy::dtype::get_builtin<typename boost::remove_const<T>::type>();
-        object owner = cobject_from_shared_ptr(x.getOwner());
+        object owner = object_from_ndarray_manager(x.getManager());
         int itemsize = dtype.get_itemsize();
         ndarray::Vector<int,N> shape_T = x.getShape();
         ndarray::Vector<int,N> strides_T = x.getStrides();
@@ -112,18 +114,15 @@ struct arg_rvalue_from_python< ndarray::Array<T,N,C> const & > {
         if (obj_owner == object()) {
             obj_owner = array;
         }
-        handle<> h_owner(borrowed(obj_owner.ptr()));
-        shared_ptr<T> sp_owner(
-            reinterpret_cast<T*>(array.get_data()),
-            shared_ptr_deleter(h_owner)
-        );
         ndarray::Vector<int,N> shape;
         ndarray::Vector<int,N> strides;
         for (int i=0; i<N; ++i) {
             shape[i] = array.shape(i);
             strides[i] = array.strides(i) / itemsize;
         }
-        ndarray::Array<T,N,C> r = ndarray::external(sp_owner, shape, strides);
+        ndarray::Array<T,N,C> r = ndarray::external(
+            reinterpret_cast<T*>(array.get_data()), shape, strides, obj_owner
+        );
         return r;
     }
 
