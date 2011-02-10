@@ -5,32 +5,19 @@
 #include <ndarray.hpp>
 #include <ndarray/eigen.hpp>
 
+namespace ndarray {
+
+boost::python::object makePyObject(Manager::Ptr const & x);
+
+} // namespace ndarray
+
 namespace boost { namespace python {
-
-template <typename T>
-void destroy_cobject(void * p) {
-    typedef typename ndarray::Manager<T>::Ptr ManagerPtr;
-    ManagerPtr * b = reinterpret_cast<ManagerPtr*>(p);
-    delete b;
-}
-
-template <typename T>
-object object_from_ndarray_manager(boost::intrusive_ptr< ndarray::Manager<T> > const & x) {
-    typedef typename ndarray::Manager<T>::Ptr ManagerPtr;
-    typename ndarray::ExternalManager<T,object>::Ptr y
-        = boost::dynamic_pointer_cast< ndarray::ExternalManager<T,object> >(x);
-    if (y) {
-        return y->getOwner();
-    }
-    handle<> h(PyCObject_FromVoidPtr(new ManagerPtr(x), &destroy_cobject<T>));
-    return object(h);
-}
 
 template <typename T, int N, int C>
 struct to_python_value< ndarray::Array<T,N,C> const & > : public detail::builtin_to_python {
     inline PyObject * operator()(ndarray::Array<T,N,C> const & x) const {
         numpy::dtype dtype = numpy::dtype::get_builtin<typename boost::remove_const<T>::type>();
-        object owner = object_from_ndarray_manager(x.getManager());
+        object owner = makePyObject(x.getManager());
         int itemsize = dtype.get_itemsize();
         ndarray::Vector<int,N> shape_T = x.getShape();
         ndarray::Vector<int,N> strides_T = x.getStrides();
