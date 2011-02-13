@@ -3,7 +3,6 @@
 
 #include <boost/python/numpy/numpy.hpp>
 #include <ndarray.hpp>
-#include <ndarray/eigen.hpp>
 
 namespace ndarray {
 
