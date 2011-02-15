@@ -1,6 +1,12 @@
 Import("bp_ndarray_env")
 
-test_mod = bp_ndarray_env.SharedLibrary("ndarray_mod", "ndarray_mod.cpp", SHLIBPREFIX="")
-test = bp_ndarray_env.PythonUnitTest("ndarray.py", test_mod)
+tests = []
 
-Return("test")
+for name in ("ndarray", "ndarray_tables"):
+    test_mod = bp_ndarray_env.SharedLibrary(
+        "%s_mod" % name, "%s_mod.cpp" % name, SHLIBPREFIX="", LIBS=["boost_python_ndarray"]
+        )
+    test = bp_ndarray_env.PythonUnitTest("%s.py" % name, test_mod)
+    tests.append(test)
+
+Return("tests")

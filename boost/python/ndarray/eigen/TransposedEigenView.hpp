@@ -2,6 +2,7 @@
 #define BOOST_PYTHON_NDARRAY_TRANSPOSEDEIGENVIEW_HPP_INCLUDED
 
 #include <boost/python/ndarray/Array.hpp>
+#include <ndarray/eigen.hpp>
 
 namespace boost { namespace python {
 
