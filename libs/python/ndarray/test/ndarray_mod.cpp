@@ -1,4 +1,5 @@
-#include <boost/python/ndarray/ndarray.hpp>
+#include <boost/python/ndarray.hpp>
+#include <boost/python/ndarray/eigen.hpp>
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/random/uniform_int.hpp>
 

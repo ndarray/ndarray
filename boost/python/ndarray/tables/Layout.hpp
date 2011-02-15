@@ -2,7 +2,7 @@
 #define BOOST_PYTHON_NDARRAY_TABLES_LAYOUT_HPP_INCLUDED
 
 #include <boost/python/numpy/numpy.hpp>
-#include <boost/python/ndarray/ndarray.hpp>
+#include <boost/python/ndarray.hpp>
 #include <ndarray/tables.hpp>
 
 namespace ndarray { namespace tables {
@@ -34,8 +34,8 @@ struct LayoutToNumpyType {
 struct NumpyTypeToLayout {
 
     template <typename T>
-    void operator()(Field<T,0> const & field) const {
-        field.name = pyNames[n];
+    void operator()(Field<T,0> & field) const {
+        field.name = boost::python::extract<std::string>(pyNames[n]);
         boost::python::tuple s = boost::python::extract<boost::python::tuple>(pyFields[field.name]);
         field.offset = boost::python::extract<int>(s[1]);
         boost::python::numpy::dtype pyElement 
@@ -48,8 +48,8 @@ struct NumpyTypeToLayout {
     }
 
     template <typename T, int N>
-    void operator()(Field<T,N> const & field) const {
-        field.name = pyNames[n];
+    void operator()(Field<T,N> & field) const {
+        field.name = boost::python::extract<std::string>(pyNames[n]);
         boost::python::tuple s1 = boost::python::extract<boost::python::tuple>(pyFields[field.name]);
         boost::python::tuple s2 = boost::python::extract<boost::python::tuple>(s1[0].attr("subdtype"));
         field.offset = boost::python::extract<int>(s1[1]);

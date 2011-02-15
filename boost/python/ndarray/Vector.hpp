@@ -38,7 +38,7 @@ namespace converter {
 template <typename T, int N>
 struct arg_to_python< ndarray::Vector<T,N> > : public handle<> {
     inline arg_to_python(ndarray::Vector<T,N> const & v) :
-        handle<>(to_python_value<ndarray::Vector<T,N> const &>()()) {}
+        handle<>(to_python_value<ndarray::Vector<T,N> const &>()(v)) {}
 };
 
 template <typename T, int N>

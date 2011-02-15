@@ -2,7 +2,7 @@
 #define BOOST_PYTHON_NDARRAY_TABLES_TABLE_HPP_INCLUDED
 
 #include <boost/python/numpy/numpy.hpp>
-#include <boost/python/ndarray/ndarray.hpp>
+#include <boost/python/ndarray.hpp>
 #include <boost/python/ndarray/tables/Layout.hpp>
 #include <ndarray/tables.hpp>
 
@@ -13,10 +13,9 @@ struct to_python_value< ndarray::tables::Table<T> const & > : public detail::bui
     inline PyObject * operator()(ndarray::tables::Table<T> const & x) const {
         numpy::dtype dtype = ndarray::tables::makeNumpyType(x.getLayout());
         object owner = makePyObject(x.getManager());
-        int itemsize = dtype.get_itemsize();
         std::vector<Py_intptr_t> shape_char(1, x.getSize());
         std::vector<Py_intptr_t> strides_char(1, x.getStride());
-        numpy::ndarray array = numpy::from_data(x.getData(), dtype, shape_char, strides_char, owner);
+        numpy::ndarray array = numpy::from_data(x.getRaw(), dtype, shape_char, strides_char, owner);
         Py_INCREF(array.ptr());
         return array.ptr();
     }
