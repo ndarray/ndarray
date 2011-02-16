@@ -1,7 +1,7 @@
 #ifndef BOOST_PYTHON_NDARRAY_TABLES_LAYOUT_HPP_INCLUDED
 #define BOOST_PYTHON_NDARRAY_TABLES_LAYOUT_HPP_INCLUDED
 
-#include <boost/python/numpy/numpy.hpp>
+#include <boost/python/numpy.hpp>
 #include <boost/python/ndarray.hpp>
 #include <ndarray/tables.hpp>
 

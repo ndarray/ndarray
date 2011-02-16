@@ -1,7 +1,7 @@
 #ifndef BOOST_PYTHON_NDARRAY_VECTOR_HPP_INCLUDED
 #define BOOST_PYTHON_NDARRAY_VECTOR_HPP_INCLUDED
 
-#include <boost/python/numpy/numpy.hpp>
+#include <boost/python/numpy.hpp>
 #include <ndarray/Vector.hpp>
 
 namespace boost { namespace python {
