@@ -1,6 +1,7 @@
+// -*- lsst-c++ -*-
 /* 
  * LSST Data Management System
- * Copyright 2008, 2009, 2010 LSST Corporation.
+ * Copyright 2008, 2009, 2010, 2011 LSST Corporation.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -19,21 +20,19 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-
-#ifndef LSST_NDARRAY_DETAIL_Core_hpp_INCLUDED
-#define LSST_NDARRAY_DETAIL_Core_hpp_INCLUDED
+#ifndef LSST_NDARRAY_DETAIL_Core_h_INCLUDED
+#define LSST_NDARRAY_DETAIL_Core_h_INCLUDED
 
 /**
- * @file lsst/ndarray/detail/Core.hpp 
+ * @file lsst/ndarray/detail/Core.h 
  *
  * @brief Definitions for Core.
  */
 
 #include <boost/intrusive_ptr.hpp>
-#include <boost/shared_ptr.hpp>
 #include <boost/mpl/int.hpp>
-
 #include "lsst/ndarray/Vector.h"
+#include "lsst/ndarray/Manager.h"
 
 namespace lsst { namespace ndarray {
 namespace detail {
@@ -56,41 +55,41 @@ namespace detail {
  *  template parameter holds a Core with a non-const template
  *  parameter.
  */
-template <typename T, int N>
-class Core : public Core<T,N-1> {
+template <int N>
+class Core : public Core<N-1> {
 public:
-    typedef T Element;  ///< data type
-    typedef boost::mpl::int_<N> ND;  ///< number of dimensions
-    typedef Core<T,N-1> Super;  ///< base class
-    typedef boost::shared_ptr<Element> Owner;  ///< shared_ptr that owns the memory
-    typedef boost::intrusive_ptr<Core> Ptr;            ///< non-const intrusive_ptr to Core
+    typedef boost::mpl::int_<N> ND;                    ///< number of dimensions
+    typedef Core<N-1> Super;                           ///< base class
+    typedef boost::intrusive_ptr<Core> Ptr;            ///< intrusive_ptr to Core
     typedef boost::intrusive_ptr<Core const> ConstPtr; ///< const intrusive_ptr to Core
 
-    /// @brief Create a Core::Ptr with the given shape, strides, and owner.
+    /// @brief Create a Core::Ptr with the given shape, strides, and manager.
     template <int M>
     static Ptr create(
         Vector<int,M> const & shape,
         Vector<int,M> const & strides, 
-        Owner const & owner = Owner()
+        Manager::Ptr const & manager = Manager::Ptr()
     ) {
-        return Ptr(new Core(shape,strides,owner),false);
+        return Ptr(new Core(shape, strides, manager),false);
     }        
 
-    /// @brief Create a Core::Ptr with the given shape and owner with RMC strides.
+    /// @brief Create a Core::Ptr with the given shape and manager with RMC strides.
     template <int M>
     static Ptr create(
         Vector<int,M> const & shape,
-        Owner const & owner = Owner()
+        Manager::Ptr const & manager = Manager::Ptr()
     ) {
-        return Ptr(new Core(shape,owner),false);
+        return Ptr(new Core(shape, manager),false);
     }        
 
-    /// @brief Create a Core::Ptr with the given owner and zero shape and strides.
+    /// @brief Create a Core::Ptr with the given manager and zero shape and strides.
     static Ptr create(
-        Owner const & owner = Owner()
+        Manager::Ptr const & manager = Manager::Ptr()
     ) {
-        return Ptr(new Core(owner),false);
-    }        
+        return Ptr(new Core(manager), false);
+    }
+
+    Ptr copy() const { return Ptr(new Core(*this)); }
 
     /// @brief Return the size of the Nth dimension.
     int getSize() const { return _size; }
@@ -135,18 +134,20 @@ protected:
     Core (
         Vector<int,M> const & shape,
         Vector<int,M> const & strides, 
-        Owner const & owner
-    ) : Super(shape,strides,owner), _size(shape[M-N]), _stride(strides[M-N]) {}
+        Manager::Ptr const & manager
+    ) : Super(shape, strides, manager), _size(shape[M-N]), _stride(strides[M-N]) {}
 
     template <int M>
     Core (
         Vector<int,M> const & shape,
-        Owner const & owner
-    ) : Super(shape,owner), _size(shape[M-N]), _stride(Super::getStride() * Super::getSize()) {}
+        Manager::Ptr const & manager
+    ) : Super(shape, manager), _size(shape[M-N]), _stride(Super::getStride() * Super::getSize()) {}
 
     Core (
-        Owner const & owner
-    ) : Super(owner), _size(0), _stride(0) {}
+        Manager::Ptr const & manager
+    ) : Super(manager), _size(0), _stride(0) {}
+
+    Core(Core const & other) : Super(other), _size(other._size), _stride(other._stride) {}
 
 private:
     int _size;
@@ -160,14 +161,12 @@ private:
  *  @ingroup InternalGroup
  *
  *  The 0-D Core has size and stride == 1 and holds the reference
- *  count and owner; it is the base class for all other Cores.
+ *  count and manager; it is the base class for all other Cores.
  */
-template <typename T>
-class Core<T,0> {
+template <>
+class Core<0> {
 public:
-    typedef T Element;
     typedef boost::mpl::int_<0> ND;
-    typedef boost::shared_ptr<Element> Owner;
     typedef boost::intrusive_ptr<Core> Ptr;
     typedef boost::intrusive_ptr<Core const> ConstPtr;
 
@@ -179,6 +178,8 @@ public:
         if ((--core->_rc)==0) delete core;
     }
 
+    Ptr copy() const { return Ptr(new Core(*this)); }
+
     int getSize() const { return 1; }
     int getStride() const { return 1; }
 
@@ -186,11 +187,11 @@ public:
     template <int M>
     int computeOffset(Vector<int,M> const & index) const { return 0; }
 
-    /// @brief Return the shared_ptr that manages the lifetime of the array data.
-    Owner getOwner() const { return _owner; }
+    /// @brief Return the Manager that determines the lifetime of the array data.
+    Manager::Ptr getManager() const { return _manager; }
 
-    /// @brief Set the shared_ptr that manages the lifetime of the array data.
-    void setOwner(Owner const & owner) { _owner = owner; }
+    /// @brief Set the Manager that determines the lifetime of the array data.
+    void setManager(Manager::Ptr const & manager) { _manager = manager; }
 
     /// @brief Recursively fill a shape vector.
     template <int M>
@@ -211,24 +212,26 @@ protected:
     virtual ~Core() {}
 
     template <int M>
-    Core (
+    Core(
         Vector<int,M> const & shape,
         Vector<int,M> const & strides, 
-        Owner const & owner
-    ) : _owner(owner), _rc(1) {}
+        Manager::Ptr const & manager
+    ) : _manager(manager), _rc(1) {}
 
     template <int M>
-    Core (
+    Core(
         Vector<int,M> const & shape,
-        Owner const & owner
-    ) : _owner(owner), _rc(1) {}
+        Manager::Ptr const & manager
+    ) : _manager(manager), _rc(1) {}
 
-    Core (
-        Owner const & owner
-    ) : _owner(owner), _rc(1) {}
+    Core(
+        Manager::Ptr const & manager
+    ) : _manager(manager), _rc(1) {}
+
+    Core(Core const & other) : _manager(other._manager), _rc(1) {}
 
 private:
-    Owner _owner;
+    Manager::Ptr _manager;
     mutable int _rc;
 };
 
@@ -238,20 +241,20 @@ private:
  *
  *  @ingroup InternalGroup
  */
-template <int P, typename T, int N>
-inline Core<T,N-P> const & 
-getDimension(Core<T,N> const & core) { return core; }
+template <int P, int N>
+inline Core<N-P> const & 
+getDimension(Core<N> const & core) { return core; }
 
 /**
  *  @internal @brief Cast a Core smart pointer to a particular dimension.
  *
  *  @ingroup InternalGroup
  */
-template <int P, typename T, int N>
-inline typename Core<T,N-P>::Ptr 
-getDimension(typename Core<T,N>::Ptr const & core) { return core; }
+template <int P, int N>
+inline typename Core<N-P>::Ptr 
+getDimension(typename Core<N>::Ptr const & core) { return core; }
 
-} // namespace lsst::ndarray::detail
+} // namespace detail
 }} // namespace lsst::ndarray
 
-#endif // !LSST_NDARRAY_DETAIL_Core_hpp_INCLUDED
+#endif // !LSST_NDARRAY_DETAIL_Core_h_INCLUDED

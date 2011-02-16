@@ -1,6 +1,7 @@
+// -*- lsst-c++ -*-
 /* 
  * LSST Data Management System
- * Copyright 2008, 2009, 2010 LSST Corporation.
+ * Copyright 2008, 2009, 2010, 2011 LSST Corporation.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -19,12 +20,11 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-
-#ifndef LSST_NDARRAY_FFT_fft_fwd_hpp_INCLUDED
-#define LSST_NDARRAY_FFT_fft_fwd_hpp_INCLUDED
+#ifndef LSST_NDARRAY_FFT_fft_fwd_h_INCLUDED
+#define LSST_NDARRAY_FFT_fft_fwd_h_INCLUDED
 
 /**
- * @file lsst/ndarray/fft_fwd.hpp 
+ * @file lsst/ndarray/fft_fwd.h 
  *
  * @brief Forward declarations and default template parameters for ndarray/fft.
  *
@@ -47,10 +47,10 @@ namespace detail {
 template <typename T, bool IsConst=boost::is_const<T>::value> struct FourierTraits;
 template <typename T> struct FFTWTraits;
 
-} // namespace lsst::ndarray::detail
+} // namespace detail
 
 template <typename T, int N> class FourierTransform;
 
 }} // namespace lsst::ndarray
 
-#endif // !LSST_NDARRAY_FFT_fft_fwd_hpp_INCLUDED
+#endif // !LSST_NDARRAY_FFT_fft_fwd_h_INCLUDED

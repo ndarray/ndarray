@@ -1,6 +1,7 @@
+// -*- lsst-c++ -*-
 /* 
  * LSST Data Management System
- * Copyright 2008, 2009, 2010 LSST Corporation.
+ * Copyright 2008, 2009, 2010, 2011 LSST Corporation.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -19,12 +20,11 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-
-#ifndef LSST_NDARRAY_views_hpp_INCLUDED
-#define LSST_NDARRAY_views_hpp_INCLUDED
+#ifndef LSST_NDARRAY_views_h_INCLUDED
+#define LSST_NDARRAY_views_h_INCLUDED
 
 /** 
- *  \file ndarray/views.hpp @brief Construction of arbitrary views into arrays.
+ *  \file lsst/ndarray/views.h @brief Construction of arbitrary views into arrays.
  */
 
 #include <boost/fusion/include/push_back.hpp>
@@ -49,13 +49,13 @@ namespace detail {
 template <typename T, int M, int N>
 struct CoreTransformer {
     T * _data;
-    typename Core<T,M>::ConstPtr _input;
-    typename Core<T,N>::Ptr _output;
+    typename Core<M>::ConstPtr _input;
+    typename Core<N>::Ptr _output;
     
     CoreTransformer(
         T * data,
-        typename Core<T,M>::ConstPtr const & input,
-        typename Core<T,N>::Ptr const & output
+        typename Core<M>::ConstPtr const & input,
+        typename Core<N>::Ptr const & output
     ) : _data(data), _input(input), _output(output) {}
     
     template <int M1, int N1>
@@ -72,6 +72,8 @@ struct SliceDim {
     int stop;
     int step;
     SliceDim(int start_, int stop_, int step_) : start(start_), stop(stop_), step(step_) {}
+
+    int computeSize() const { return (step>1) ? (stop-start+1)/step : stop-start; }
 
     /**
      *  @internal @ingroup InternalGroup
@@ -100,7 +102,7 @@ struct SliceDim {
         LSST_NDARRAY_ASSERT(start >= 0);
         LSST_NDARRAY_ASSERT(stop <= t._input->getSize());
         t._data += start * t._input->getStride();
-        t._output->setSize((step>1) ? (stop-start+1)/step : stop-start);
+        t._output->setSize(computeSize());
         t._output->setStride(t._input->getStride() * step);
         return t;
     }
@@ -314,31 +316,30 @@ struct ViewBuilder {
     typedef typename Traits::ND InputND;
     typedef typename Traits::RMC InputRMC;
     typedef typename Traits::Core InputCore;
-    typedef typename boost::remove_const<Element>::type NonConst;
     typedef ViewTraits<InputND::value,InputRMC::value,Seq_> OutputTraits;
     typedef typename OutputTraits::ND OutputND;
     typedef typename OutputTraits::ND OutputRMC;
     typedef ArrayRef<Element,OutputND::value,OutputRMC::value> OutputArray;
-    typedef Core<NonConst,OutputND::value> OutputCore;
+    typedef Core<OutputND::value> OutputCore;
 
     static OutputArray apply(Array_ const & array, Seq_ const & seq) {
-        CoreTransformer<NonConst,InputND::value,OutputND::value> initial(
-            const_cast<NonConst*>(array.getData()), 
+        CoreTransformer<Element,InputND::value,OutputND::value> initial(
+            array.getData(), 
             ArrayAccess< Array_>::getCore(array),
-            OutputCore::create(boost::const_pointer_cast<NonConst>(array.getOwner()))
+            OutputCore::create(array.getManager())
         );
-        std::pair<Element*,typename OutputCore::Ptr> final = process(seq,initial);
+        std::pair<Element*,typename OutputCore::Ptr> final = process(seq, initial);
         return ArrayAccess< OutputArray >::construct(final.first, final.second);
     }
 
     template <int M, int N>
     static std::pair<Element*,typename OutputCore::Ptr>
-    process(Seq_ const & seq, CoreTransformer<NonConst,M,N> t) {
+    process(Seq_ const & seq, CoreTransformer<Element,M,N> t) {
         return process(seq, boost::fusion::at_c<(InputND::value-M)>(seq).transform(t));
     }
 
     static std::pair<Element*,typename OutputCore::Ptr>
-    process(Seq_ const & seq, CoreTransformer<NonConst,0,0> t) {
+    process(Seq_ const & seq, CoreTransformer<Element,0,0> t) {
         return std::make_pair(t._data,boost::static_pointer_cast<OutputCore>(t._output));
     }
     
@@ -360,7 +361,7 @@ buildView(Array_ const & array, SeqIn const & seqIn) {
     return ViewBuilder<Array_,SeqOut>::apply(array,seqOut);
 };
 
-} // namespace lsst::ndarray::detail
+} // namespace detail
 
 /** 
  *  @brief A template meta-sequence that defines an arbitrary view into an unspecified array. 
@@ -456,4 +457,4 @@ inline View< boost::fusion::vector<detail::ScalarDim> > view(int n) {
 
 }} // namespace lsst::ndarray
 
-#endif // !LSST_NDARRAY_views_hpp_INCLUDED
+#endif // !LSST_NDARRAY_views_h_INCLUDED

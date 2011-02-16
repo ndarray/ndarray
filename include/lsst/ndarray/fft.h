@@ -1,6 +1,7 @@
+// -*- lsst-c++ -*-
 /* 
  * LSST Data Management System
- * Copyright 2008, 2009, 2010 LSST Corporation.
+ * Copyright 2008, 2009, 2010, 2011 LSST Corporation.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -19,12 +20,11 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-
-#ifndef LSST_NDARRAY_fft_hpp_INCLUDED
-#define LSST_NDARRAY_fft_hpp_INCLUDED
+#ifndef LSST_NDARRAY_fft_h_INCLUDED
+#define LSST_NDARRAY_fft_h_INCLUDED
 
 /**
- * @file lsst/ndarray/fft.hpp 
+ * @file lsst/ndarray/fft.h 
  *
  * @brief Main public header file for ndarray FFT library.
  *
@@ -34,8 +34,8 @@
 #include "lsst/ndarray.h"
 #include "lsst/ndarray/fft/FourierTransform.h"
 #include "lsst/ndarray/fft/FourierOps.h"
-#ifndef LSST_NDARRAY_FFT_MANUAL_INCLUDE
+#ifndef NDARRAY_FFT_MANUAL_INCLUDE
 #include "lsst/ndarray/fft/FourierTransform.cc"
 #endif
 
-#endif // !LSST_NDARRAY_fft_hpp_INCLUDED
+#endif // !LSST_NDARRAY_fft_h_INCLUDED

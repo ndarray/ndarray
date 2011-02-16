@@ -20,32 +20,47 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-#ifndef LSST_NDARRAY_eigen_fwd_h_INCLUDED
-#define LSST_NDARRAY_eigen_fwd_h_INCLUDED
+#ifndef LSST_NDARRAY_tables_fwd_h_INCLUDED
+#define LSST_NDARRAY_tables_fwd_h_INCLUDED
 
 /**
- *  @file lsst/ndarray/eigen_fwd.h
- *  @brief Forward declarations for ndarray/eigen interface.
+ * @file lsst/ndarray/tables_fwd.h 
+ *
+ * @brief Forward declarations for ndarray Tables library.
  *
  *  \note This file is not included by the main "lsst/ndarray.h" header file.
  */
 
-/** 
- * \defgroup EigenGroup Eigen
- * Interoperability with the Eigen 2 linear algebra library.
- */
-
 #include "lsst/ndarray_fwd.h"
-#include <Eigen/Core>
+#include <boost/type_traits/is_const.hpp>
+#include <boost/type_traits/remove_const.hpp>
 
-namespace lsst { namespace ndarray {
+namespace lsst { namespace ndarray { namespace tables {
 
-template <typename T, int N, int C>
-class EigenView;
+template <int N> struct Index {};
 
-template <typename T, int N, int C>
-class TransposedEigenView;
+template <typename T, int N=0> struct Field;
+template <typename T> class Layout;
 
-}} // namespace lsst::ndarray
+template <typename T> class Row;
+template <typename T> class Table;
 
-#endif // !LSST_NDARRAY_eigen_fwd_h_INCLUDED
+namespace detail {
+
+template <typename T, bool isConst = boost::is_const<T>::value> struct TraitsAccess;
+template <typename Field_> struct FieldInfo;
+template <typename T> class Columns;
+template <typename T> class Iterator;
+
+} // namespace detail
+
+template <typename T>
+struct Traits {
+    typedef typename T::FieldSequence FieldSequence;
+    typedef Row<T> Record;
+    typedef Row<T> ConstRecord;
+};
+
+}} // namespace lsst::ndarray::tables
+
+#endif // !LSST_NDARRAY_tables_fwd_h_INCLUDED

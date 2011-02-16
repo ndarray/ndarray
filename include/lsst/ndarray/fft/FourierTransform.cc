@@ -1,6 +1,7 @@
+// -*- lsst-c++ -*-
 /* 
  * LSST Data Management System
- * Copyright 2008, 2009, 2010 LSST Corporation.
+ * Copyright 2008, 2009, 2010, 2011 LSST Corporation.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -19,7 +20,6 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-
 #include "lsst/ndarray/fft/FFTWTraits.h"
 #include "lsst/ndarray/fft/FourierTransform.h"
 
@@ -30,7 +30,7 @@ template <int M>
 Array<typename FourierTransform<T,N>::ElementX,M,M>
 FourierTransform<T,N>::initializeX(Vector<int,M> const & shape) {
     OwnerX xOwner = detail::FFTWTraits<T>::allocateX(shape.product());
-    return Array<ElementX,M,M>(external(xOwner, shape, ROW_MAJOR));
+    return Array<ElementX,M,M>(external(xOwner.get(), shape, ROW_MAJOR, xOwner));
 }
 
 template <typename T, int N> 
@@ -40,7 +40,7 @@ FourierTransform<T,N>::initializeK(Vector<int,M> const & shape) {
     Vector<int,M> kShape(shape);
     kShape[M-1] = detail::FourierTraits<T>::computeLastDimensionSize(shape[M-1]);
     OwnerK kOwner = detail::FFTWTraits<T>::allocateK(kShape.product());
-    return Array<ElementK,M,M>(external(kOwner,kShape,ROW_MAJOR));
+    return Array<ElementK,M,M>(external(kOwner.get(), kShape, ROW_MAJOR, kOwner));
 }
 
 template <typename T, int N> 
@@ -73,8 +73,8 @@ FourierTransform<T,N>::planForward(
                 k.getData(), NULL, 1, 0,
                 FFTW_MEASURE | FFTW_DESTROY_INPUT
             ),
-            x.getOwner(),
-            k.getOwner()
+            x.getManager(),
+            k.getManager()
         )
     );
 }
@@ -95,8 +95,8 @@ FourierTransform<T,N>::planInverse(
                 x.getData(), NULL, 1, 0,
                 FFTW_MEASURE | FFTW_DESTROY_INPUT
             ),
-            x.getOwner(),
-            k.getOwner()
+            x.getManager(),
+            k.getManager()
         )
     );
 }
@@ -117,8 +117,8 @@ FourierTransform<T,N>::planMultiplexForward(
                 k.getData(), NULL, 1, k.template getStride<0>(),
                 FFTW_MEASURE | FFTW_DESTROY_INPUT
             ),
-            x.getOwner(),
-            k.getOwner()
+            x.getManager(),
+            k.getManager()
         )
     );
 }
@@ -139,8 +139,8 @@ FourierTransform<T,N>::planMultiplexInverse(
                 x.getData(), NULL, 1, x.template getStride<0>(),
                 FFTW_MEASURE | FFTW_DESTROY_INPUT
             ),
-            x.getOwner(),
-            k.getOwner()
+            x.getManager(),
+            k.getManager()
         )
     );
 }

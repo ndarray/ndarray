@@ -14,9 +14,11 @@ class TestNDArray(unittest.TestCase):
     def testArrayConversion(self):
         a = numpy.zeros((5,3,4),dtype=float)
         b = ndarray_python_test.passFloatArray33(a)
+        self.assert_(b.flags["WRITEABLE"])
         self.assertEqual(a.shape,b.shape)
         self.assertEqual(a.strides,b.strides)
         c = a[:,:,:2]
+        self.assert_(c.flags["WRITEABLE"])
         d = ndarray_python_test.passFloatArray33(c)
         self.assertEqual(c.shape,d.shape)
         self.assertNotEqual(c.strides,d.strides)

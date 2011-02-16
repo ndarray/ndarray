@@ -1,6 +1,7 @@
+// -*- lsst-c++ -*-
 /* 
  * LSST Data Management System
- * Copyright 2008, 2009, 2010 LSST Corporation.
+ * Copyright 2008, 2009, 2010, 2011 LSST Corporation.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -19,12 +20,11 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-
-#ifndef LSST_NDARRAY_DETAIL_NestedIterator_hpp_INCLUDED
-#define LSST_NDARRAY_DETAIL_NestedIterator_hpp_INCLUDED
+#ifndef LSST_NDARRAY_DETAIL_NestedIterator_h_INCLUDED
+#define LSST_NDARRAY_DETAIL_NestedIterator_h_INCLUDED
 
 /** 
- *  @file lsst/ndarray/detail/NestedIterator.hpp
+ *  @file lsst/ndarray/detail/NestedIterator.h
  *
  *  @brief Definition of NestedIterator.
  */
@@ -122,7 +122,7 @@ private:
     int _stride;
 };
 
-} // namespace lsst::ndarray::detail
+} // namespace detail
 }} // namespace lsst::ndarray
 
-#endif // !LSST_NDARRAY_DETAIL_NestedIterator_hpp_INCLUDED
+#endif // !LSST_NDARRAY_DETAIL_NestedIterator_h_INCLUDED

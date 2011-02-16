@@ -1,6 +1,7 @@
+// -*- lsst-c++ -*-
 /* 
  * LSST Data Management System
- * Copyright 2008, 2009, 2010 LSST Corporation.
+ * Copyright 2008, 2009, 2010, 2011 LSST Corporation.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -19,12 +20,11 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-
-#ifndef LSST_NDARRAY_ExpressionTraits_hpp_INCLUDED
-#define LSST_NDARRAY_ExpressionTraits_hpp_INCLUDED
+#ifndef LSST_NDARRAY_ExpressionTraits_h_INCLUDED
+#define LSST_NDARRAY_ExpressionTraits_h_INCLUDED
 
 /** 
- *  @file lsst/ndarray/ExpressionTraits.hpp
+ *  @file lsst/ndarray/ExpressionTraits.h
  *
  *  @brief Traits for Expression.
  */
@@ -72,8 +72,8 @@ struct ExpressionTraits< detail::UnaryOpExpression<Operand,UnaryFunction,1> > {
     typedef typename UnaryFunction::result_type Element;
     typedef typename ExpressionTraits<Operand>::ND ND;
     typedef detail::UnaryOpIterator<Operand,UnaryFunction> Iterator;
-    typedef Element Reference;
-    typedef Element Value;
+    typedef typename boost::remove_const<Element>::type Value;
+    typedef Value const Reference;
     typedef boost::mpl::false_ IsScalar;
 };
 
@@ -106,8 +106,8 @@ struct ExpressionTraits< detail::BinaryOpExpression<Operand1,Operand2,BinaryFunc
     typedef typename BinaryFunction::result_type Element;
     typedef typename ExpressionTraits<Operand1>::ND ND;
     typedef detail::BinaryOpIterator<Operand1,Operand2,BinaryFunction> Iterator;
-    typedef Element Value;
-    typedef Element Reference;
+    typedef typename boost::remove_const<Element>::type Value;
+    typedef Value const Reference;
     typedef boost::mpl::false_ IsScalar;
     BOOST_STATIC_ASSERT((ND::value == ExpressionTraits<Operand2>::ND::value));
 };
@@ -116,4 +116,4 @@ struct ExpressionTraits< detail::BinaryOpExpression<Operand1,Operand2,BinaryFunc
 
 }} // namespace lsst::ndarray
 
-#endif // !LSST_NDARRAY_ExpressionTraits_hpp_INCLUDED
+#endif // !LSST_NDARRAY_ExpressionTraits_h_INCLUDED

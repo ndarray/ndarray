@@ -1,6 +1,7 @@
+// -*- lsst-c++ -*-
 /* 
  * LSST Data Management System
- * Copyright 2008, 2009, 2010 LSST Corporation.
+ * Copyright 2008, 2009, 2010, 2011 LSST Corporation.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -19,18 +20,18 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-
-#ifndef LSST_NDARRAY_ArrayTraits_hpp_INCLUDED
-#define LSST_NDARRAY_ArrayTraits_hpp_INCLUDED
+#ifndef LSST_NDARRAY_ArrayTraits_h_INCLUDED
+#define LSST_NDARRAY_ArrayTraits_h_INCLUDED
 
 /** 
- *  @file lsst/ndarray/ArrayTraits.hpp
+ *  @file lsst/ndarray/ArrayTraits.h
  *
  *  @brief Traits for Array.
  */
 
 #include "lsst/ndarray_fwd.h"
 #include "lsst/ndarray/ExpressionTraits.h"
+#include "lsst/ndarray/detail/Core.h"
 #include <boost/mpl/int.hpp>
 #include <boost/mpl/bool.hpp>
 
@@ -49,13 +50,13 @@ struct ArrayTraits {
     typedef detail::NestedIterator<T,N,C> Iterator;
     typedef ArrayRef<T,N-1,(N==C)?(N-1):C> Reference;
     typedef Array<T,N-1,(N==C)?(N-1):C> Value;
-    typedef typename detail::Core<typename boost::remove_const<T>::type,N> Core;
+    typedef detail::Core<N> Core;
     typedef typename Core::ConstPtr CorePtr;
 
-    static Reference makeReference(T * data, CorePtr const & core) {
+    static Reference makeReference(Element * data, CorePtr const & core) {
         return Reference(data, core);
     }
-    static Iterator makeIterator(T * data, CorePtr const & core, int stride) {
+    static Iterator makeIterator(Element * data, CorePtr const & core, int stride) {
         return Iterator(Reference(data, core), stride);
     }
 };
@@ -65,16 +66,16 @@ struct ArrayTraits<T,1,0> {
     typedef T Element;
     typedef boost::mpl::int_<1> ND;
     typedef boost::mpl::int_<0> RMC;
-    typedef detail::StridedIterator<T> Iterator;
-    typedef T & Reference;
-    typedef T Value;
-    typedef typename detail::Core<typename boost::remove_const<T>::type,1> Core;
+    typedef detail::StridedIterator<Element> Iterator;
+    typedef Element & Reference;
+    typedef Element Value;
+    typedef detail::Core<1> Core;
     typedef typename Core::ConstPtr CorePtr;
 
-    static Reference makeReference(T * data, CorePtr const & core) {
+    static Reference makeReference(Element * data, CorePtr const & core) {
         return *data;
     }
-    static Iterator makeIterator(T * data, CorePtr const & core, int stride) {
+    static Iterator makeIterator(Element * data, CorePtr const & core, int stride) {
         return Iterator(data, stride);
     }
 };
@@ -84,16 +85,16 @@ struct ArrayTraits<T,1,1> {
     typedef T Element;
     typedef boost::mpl::int_<1> ND;
     typedef boost::mpl::int_<1> RMC;
-    typedef T * Iterator;
-    typedef T & Reference;
-    typedef T Value;
-    typedef typename detail::Core<typename boost::remove_const<T>::type,1> Core;
+    typedef Element * Iterator;
+    typedef Element & Reference;
+    typedef Element Value;
+    typedef detail::Core<1> Core;
     typedef typename Core::ConstPtr CorePtr;
 
-    static Reference makeReference(T * data, CorePtr const & core) {
+    static Reference makeReference(Element * data, CorePtr const & core) {
         return *data;
     }
-    static Iterator makeIterator(T * data, CorePtr const & core, int stride) {
+    static Iterator makeIterator(Element * data, CorePtr const & core, int stride) {
         return data;
     }
 };
@@ -112,4 +113,4 @@ struct ExpressionTraits< ArrayRef<T,N,C> > : public ArrayTraits<T,N,C> {
 
 }} // namespace lsst::ndarray
 
-#endif // !LSST_NDARRAY_ArrayTraits_hpp_INCLUDED
+#endif // !LSST_NDARRAY_ArrayTraits_h_INCLUDED

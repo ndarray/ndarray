@@ -1,6 +1,7 @@
+// -*- lsst-c++ -*-
 /* 
  * LSST Data Management System
- * Copyright 2008, 2009, 2010 LSST Corporation.
+ * Copyright 2008, 2009, 2010, 2011 LSST Corporation.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -19,7 +20,6 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-
 changecom(`###')dnl
 define(`GENERAL_ASSIGN',
 `
@@ -55,8 +55,8 @@ define(`AUGMENTED_ASSIGN_EXPR',
         for (Iterator i = this->begin(); i != i_end; ++i, ++j) (*i) $1 (*j);')dnl
 define(`BASIC_ASSIGN',`GENERAL_ASSIGN(`=',`BASIC_ASSIGN_SCALAR',`BASIC_ASSIGN_EXPR')')dnl
 define(`AUGMENTED_ASSIGN',`GENERAL_ASSIGN($1,`AUGMENTED_ASSIGN_SCALAR',`AUGMENTED_ASSIGN_EXPR')')dnl
-#ifndef NDARRAY_ArrayRef_hpp_INCLUDED
-#define NDARRAY_ArrayRef_hpp_INCLUDED
+#ifndef LSST_NDARRAY_ArrayRef_h_INCLUDED
+#define LSST_NDARRAY_ArrayRef_h_INCLUDED
 
 /** 
  *  @file lsst/ndarray/ArrayRef.h
@@ -154,4 +154,4 @@ private:
 
 }} // namespace lsst::ndarray
 
-#endif // !LSST_NDARRAYArrayRef_hpp_INCLUDED
+#endif // !LSST_NDARRAY_ArrayRef_h_INCLUDED

@@ -1,6 +1,7 @@
+// -*- lsst-c++ -*-
 /* 
  * LSST Data Management System
- * Copyright 2008, 2009, 2010 LSST Corporation.
+ * Copyright 2008, 2009, 2010, 2011 LSST Corporation.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -19,7 +20,6 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-
 changecom(`###')dnl
 define(`FUNCTION_TAG',
 `
@@ -89,11 +89,11 @@ define(`UNARY_OP',
     $2(ExpressionBase<Operand> const & operand) {
         return vectorize($1<typename ExpressionTraits<Operand>::Element>(),operand);
     }')dnl
-#ifndef NDARRAY_operators_hpp_INCLUDED
-#define NDARRAY_operators_hpp_INCLUDED
+#ifndef LSST_NDARRAY_operators_h_INCLUDED
+#define LSST_NDARRAY_operators_h_INCLUDED
 
 /** 
- *  \file ndarray/operators.h \brief Arithmetic and logical operators for Array.
+ *  \file lsst/ndarray/operators.h \brief Arithmetic and logical operators for Array.
  */
 
 #include "lsst/ndarray/Array.h"
@@ -217,7 +217,7 @@ FUNCTION_TAG(GreaterEqualTag,BinaryPredicate,>=)
 FUNCTION_TAG(LogicalAnd,BinaryPredicate,&&)
 FUNCTION_TAG(LogicalOr,BinaryPredicate,||)
 
-} // namespace lsst::ndarray::detail
+} // namespace detail
 /// \endcond
 
 /// \addtogroup OpGroup
@@ -356,4 +356,4 @@ sum(ExpressionBase<Derived> const & expr) {
 
 }} // namespace lsst::ndarray
 
-#endif // !LSST_NDARRAY_operators_hpp_INCLUDED
+#endif // !LSST_NDARRAY_operators_h_INCLUDED

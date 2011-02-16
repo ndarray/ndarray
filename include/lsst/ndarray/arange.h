@@ -1,6 +1,7 @@
+// -*- lsst-c++ -*-
 /* 
  * LSST Data Management System
- * Copyright 2008, 2009, 2010 LSST Corporation.
+ * Copyright 2008, 2009, 2010, 2011 LSST Corporation.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -19,12 +20,11 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-
-#ifndef LSST_NDARRAY_arange_hpp_INCLUDED
-#define LSST_NDARRAY_arange_hpp_INCLUDED
+#ifndef LSST_NDARRAY_arange_h_INCLUDED
+#define LSST_NDARRAY_arange_h_INCLUDED
 
 /** 
- *  @file lsst/ndarray/arange.hpp
+ *  @file lsst/ndarray/arange.h
  *
  *  @brief Expression classes to generate regularly-spaced ranges of values.
  */
@@ -106,7 +106,7 @@ public:
     T operator()(int n) const { return static_cast<T>(n) * _scale + _offset; }
 };
 
-} // namespace lsst::ndarray::detail
+} // namespace detail
 
 /// @brief Create 1D Expression that contains integer values in the range [0,stop).
 inline detail::CountingExpression arange(int stop) {
@@ -129,4 +129,4 @@ arange(int start, int stop, int step = 1) {
 
 }} // namespace lsst::ndarray
 
-#endif // !LSST_NDARRAY_arange_hpp_INCLUDED
+#endif // !LSST_NDARRAY_arange_h_INCLUDED

@@ -110,9 +110,8 @@ public:
  *  @internal @ingroup PythonInternalGroup
  *  @brief A destructor for a Python CObject that owns a shared_ptr.
  */
-template <typename T>
-static void destroyCObject(void * p) {
-    boost::shared_ptr<T> * b = reinterpret_cast<boost::shared_ptr<T>*>(p);
+inline void destroyCObject(void * p) {
+    lsst::ndarray::Manager::Ptr * b = reinterpret_cast<lsst::ndarray::Manager::Ptr*>(p);
     delete b;
 }
 
@@ -129,7 +128,6 @@ template <typename T, int N, int C>
 struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C> > {
     typedef typename Array<T,N,C>::Element Element;
     typedef typename boost::remove_const<Element>::type NonConst;
-    typedef typename boost::shared_ptr<Element> Owner;
 
     /**
      *  @brief Check if a Python object is convertible to T
@@ -147,7 +145,7 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
     ) {
         int flags = NPY_ALIGNED;
         bool writeable = !boost::is_const<Element>::value;
-        if (writeable) flags |= (NPY_WRITEABLE | NPY_UPDATEIFCOPY);
+        if (writeable) flags |= NPY_WRITEABLE;
         PyPtr array(PyArray_FROMANY(p.get(),detail::NumpyTraits<NonConst>::getCode(),N,N,flags),false);
         if (!array) return false;
         p = array;
@@ -194,7 +192,6 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
             }
             full_size *= PyArray_DIM(array.get(),N-i);
         }
-        Owner owner(reinterpret_cast<Element*>(PyArray_DATA(array.get())),detail::PythonDeleter(array));
         Vector<int,N> shape;
         Vector<int,N> strides;
         std::copy(PyArray_DIMS(array.get()),PyArray_DIMS(array.get())+N,shape.begin());
@@ -202,7 +199,7 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
         for (int i=0; i<N; ++i) strides[i] /= element_size;
         output = external(
             reinterpret_cast<Element*>(PyArray_DATA(array.get())),
-            shape, strides, owner
+            shape, strides, array
         );
         return true;
     }
@@ -211,7 +208,7 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
      *  @brief Create a numpy.ndarray from an ndarray::Array.
      *
      *  The Array will be shallow-copied with reference counting if either
-     *  m.getOwner() is not empty or the optional owner argument is supplied;
+     *  m.getManager() is not empty or the optional owner argument is supplied;
      *  otherwise a deep copy will be made.
      *
      *  \return a new Python object, or NULL on failure (with
@@ -220,7 +217,7 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
     static PyObject* toPython(
         Array<T,N,C> const & m, ///< The input Array object.
         PyObject* owner=NULL    /**< A Python object that owns the memory in the Array.
-                                 *   If NULL, one will be constructed from m.getOwner(). */
+                                 *   If NULL, one will be constructed from m.getManager(). */
     ) {
         int flags = NPY_ALIGNED;
         if (C==N) flags |= NPY_C_CONTIGUOUS;
@@ -237,7 +234,7 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
                                 sizeof(Element),flags,NULL),
                     false);
         if (!array) return NULL;
-        if (!m.getOwner() && owner == NULL) {
+        if (!m.getManager() && owner == NULL) {
             flags = NPY_CARRAY_RO | NPY_ENSURECOPY | NPY_C_CONTIGUOUS;
             if (writeable) flags |= NPY_WRITEABLE;
             PyPtr r = PyArray_FROM_OF(array.get(),flags);
@@ -247,7 +244,7 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
             if (owner != NULL) {
                 Py_INCREF(owner);
             } else {
-                owner = PyCObject_FromVoidPtr(new Owner(m.getOwner()),detail::destroyCObject<Element>);
+                owner = PyCObject_FromVoidPtr(new Manager::Ptr(m.getManager()), detail::destroyCObject);
             }
             reinterpret_cast<PyArrayObject*>(array.get())->base = owner;
         }

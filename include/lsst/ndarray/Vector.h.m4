@@ -1,6 +1,7 @@
+// -*- lsst-c++ -*-
 /* 
  * LSST Data Management System
- * Copyright 2008, 2009, 2010 LSST Corporation.
+ * Copyright 2008, 2009, 2010, 2011 LSST Corporation.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -19,7 +20,6 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-
 changecom(`###')dnl
 define(`VECTOR_ASSIGN',
 `
@@ -61,10 +61,10 @@ define(`VECTOR_BINARY_OP',
         Vector<typename Promote<T,U>::Type,N> r(a);
         return r $1= b;
     }')dnl
-#ifndef NDARRAY_Vector_hpp_INCLUDED
-#define NDARRAY_Vector_hpp_INCLUDED
+#ifndef LSST_NDARRAY_Vector_h_INCLUDED
+#define LSST_NDARRAY_Vector_h_INCLUDED
 
-/// @file ndarray/Vector.h Definition for Vector.
+/// @file lsst/ndarray/Vector.h Definition for Vector.
 
 #include <boost/iterator/reverse_iterator.hpp>
 #include <boost/mpl/int.hpp>
@@ -77,18 +77,18 @@ define(`VECTOR_BINARY_OP',
 #include "lsst/ndarray/types.h"
 
 /// \cond MACROS
-#define LSST_NDARRAY_MAKE_VECTOR_MAX 8
+#define NDARRAY_MAKE_VECTOR_MAX 8
 
-#define LSST_NDARRAY_MAKE_VECTOR_ARG_SPEC(Z,I,DATA) T v ## I
-#define LSST_NDARRAY_MAKE_VECTOR_SET_SPEC(Z,I,DATA) r[I] = v ## I;
+#define NDARRAY_MAKE_VECTOR_ARG_SPEC(Z,I,DATA) T v ## I
+#define NDARRAY_MAKE_VECTOR_SET_SPEC(Z,I,DATA) r[I] = v ## I;
 
-#define LSST_NDARRAY_MAKE_VECTOR_SPEC(Z,N,DATA)                      \
+#define NDARRAY_MAKE_VECTOR_SPEC(Z,N,DATA)                      \
     template <typename T>                                       \
     inline Vector<T,N> makeVector(                              \
-        BOOST_PP_ENUM(N,LSST_NDARRAY_MAKE_VECTOR_ARG_SPEC,unused)    \
+        BOOST_PP_ENUM(N,NDARRAY_MAKE_VECTOR_ARG_SPEC,unused)    \
     ) {                                                         \
         Vector<T,N> r;                                          \
-        BOOST_PP_REPEAT(N,LSST_NDARRAY_MAKE_VECTOR_SET_SPEC,unused)  \
+        BOOST_PP_REPEAT(N,NDARRAY_MAKE_VECTOR_SET_SPEC,unused)  \
         return r;                                               \
     }
 
@@ -292,12 +292,12 @@ inline Vector<T,N+1> concatenate(T const & a, Vector<T,N> const & b) {
 }
 
 #ifndef DOXYGEN
-BOOST_PP_REPEAT_FROM_TO(1, LSST_NDARRAY_MAKE_VECTOR_MAX, LSST_NDARRAY_MAKE_VECTOR_SPEC, unused)
+BOOST_PP_REPEAT_FROM_TO(1, NDARRAY_MAKE_VECTOR_MAX, NDARRAY_MAKE_VECTOR_SPEC, unused)
 #else
 /**
  *  \brief Variadic constructor for Vector. 
  *
- *  Defined for N in [0 - LSST_NDARRAY_MAKE_VECTOR_MAX).
+ *  Defined for N in [0 - NDARRAY_MAKE_VECTOR_MAX).
  */
 template <typename T, int N>
 Vector<T,N> makeVector(T v1, T v2, ..., T vN);
@@ -334,4 +334,4 @@ VECTOR_BINARY_OP(>>)
 
 }} // namespace lsst::ndarray
 
-#endif // !LSST_NDARRAY_Vector_hpp_INCLUDED
+#endif // !LSST_NDARRAY_Vector_h_INCLUDED

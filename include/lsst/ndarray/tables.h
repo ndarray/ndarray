@@ -20,37 +20,21 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-#ifndef LSST_NDARRAY_DETAIL_ArrayAccess_h_INCLUDED
-#define LSST_NDARRAY_DETAIL_ArrayAccess_h_INCLUDED
+#ifndef LSST_NDARRAY_tables_h_INCLUDED
+#define LSST_NDARRAY_tables_h_INCLUDED
 
-/** 
- *  @file lsst/ndarray/detail/ArrayAccess.h
+/**
+ * @file lsst/ndarray/tables.h 
  *
- *  @brief Definitions for ArrayAccess
+ * @brief Main public header file for ndarray Tables library.
+ *
+ *  \note This file is not included by the main "lsst/ndarray.h" header file.
  */
 
-#include "lsst/ndarray/ExpressionTraits.h"
+#include "lsst/ndarray.h"
+#include "lsst/ndarray/tables/Field.h"
+#include "lsst/ndarray/tables/Layout.h"
+#include "lsst/ndarray/tables/Row.h"
+#include "lsst/ndarray/tables/Table.h"
 
-namespace lsst { namespace ndarray {
-namespace detail {
-
-template <typename Array_>
-struct ArrayAccess {
-    typedef typename ExpressionTraits< Array_ >::Element Element;
-    typedef typename ExpressionTraits< Array_ >::Core Core;
-    typedef typename ExpressionTraits< Array_ >::CorePtr CorePtr;
-
-    static CorePtr const & getCore(Array_ const & array) {
-        return array._core;
-    }
-
-    static Array_ construct(Element * data, CorePtr const & core) {
-        return Array_(data, core);
-    }
-
-};
-
-} // namespace detail
-}} // namespace lsst::ndarray
-
-#endif // !LSST_NDARRAY_DETAIL_ArrayAccess_h_INCLUDED
+#endif // !LSST_NDARRAY_tables_h_INCLUDED

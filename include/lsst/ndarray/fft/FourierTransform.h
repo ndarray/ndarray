@@ -1,6 +1,7 @@
+// -*- lsst-c++ -*-
 /* 
  * LSST Data Management System
- * Copyright 2008, 2009, 2010 LSST Corporation.
+ * Copyright 2008, 2009, 2010, 2011 LSST Corporation.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -19,12 +20,11 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-
-#ifndef LSST_NDARRAY_FFT_FourierTransform_hpp_INCLUDED
-#define LSST_NDARRAY_FFT_FourierTransform_hpp_INCLUDED
+#ifndef LSST_NDARRAY_FFT_FourierTransform_h_INCLUDED
+#define LSST_NDARRAY_FFT_FourierTransform_h_INCLUDED
 
 /** 
- *  @file lsst/ndarray/fft/FourierTransform.hpp
+ *  @file lsst/ndarray/fft/FourierTransform.h
  *
  *  @brief Definitions for FourierTransform.
  */
@@ -140,14 +140,14 @@ private:
     typedef boost::shared_ptr<ElementX> OwnerX;
     typedef boost::shared_ptr<ElementK> OwnerK;
 
-    FourierTransform(void * plan, OwnerX const & x, OwnerK const & k)
+    FourierTransform(void * plan, Manager::Ptr const & x, Manager::Ptr const & k)
         : _plan(plan), _x(x), _k(k) {}
 
     void * _plan; // 'void' so we don't have to include fftw3.h in the header file
-    OwnerX _x;
-    OwnerK _k;
+    Manager::Ptr _x;
+    Manager::Ptr _k;
 };
 
 }} // namespace lsst::ndarray
 
-#endif // !LSST_NDARRAY_FFT_FourierTransform_hpp_INCLUDED
+#endif // !LSST_NDARRAY_FFT_FourierTransform_h_INCLUDED

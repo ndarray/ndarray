@@ -1,6 +1,7 @@
+// -*- lsst-c++ -*-
 /* 
  * LSST Data Management System
- * Copyright 2008, 2009, 2010 LSST Corporation.
+ * Copyright 2008, 2009, 2010, 2011 LSST Corporation.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -19,13 +20,12 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-
-#ifndef LSST_NDARRAY_eigen_hpp_INCLUDED
-#define LSST_NDARRAY_eigen_hpp_INCLUDED
+#ifndef LSST_NDARRAY_eigen_h_INCLUDED
+#define LSST_NDARRAY_eigen_h_INCLUDED
 
 /**
- *  @file lsst/ndarray/eigen.hpp
- *  @brief Conversions between ndarray::Array and Eigen objects.
+ *  @file lsst/ndarray/eigen.h
+ *  @brief Conversions between lsst::ndarray::Array and Eigen objects.
  *
  *  \note This file is not included by the main "lsst/ndarray.h" header file.
  */
@@ -34,4 +34,4 @@
 #include "lsst/ndarray/eigen/ArrayAsEigen.h"
 #include "lsst/ndarray/eigen/EigenAsArray.h"
 
-#endif // !LSST_NDARRAY_eigen_hpp_INCLUDED
+#endif // !LSST_NDARRAY_eigen_h_INCLUDED

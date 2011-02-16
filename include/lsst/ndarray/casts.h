@@ -1,6 +1,7 @@
+// -*- lsst-c++ -*-
 /* 
  * LSST Data Management System
- * Copyright 2008, 2009, 2010 LSST Corporation.
+ * Copyright 2008, 2009, 2010, 2011 LSST Corporation.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -19,12 +20,11 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-
-#ifndef LSST_NDARRAY_casts_hpp_INCLUDED
-#define LSST_NDARRAY_casts_hpp_INCLUDED
+#ifndef LSST_NDARRAY_casts_h_INCLUDED
+#define LSST_NDARRAY_casts_h_INCLUDED
 
 /** 
- *  @file lsst/ndarray/casts.hpp
+ *  @file lsst/ndarray/casts.h
  *
  *  @brief Specialized casts for Array.
  */
@@ -37,35 +37,27 @@
 #include <boost/static_assert.hpp>
 
 namespace lsst { namespace ndarray {
-
-template <typename Original, typename Casted>
-class ReinterpretDeleter {
-    boost::shared_ptr<Original> _original;
-public:
-    void operator()(Casted * p) { _original.reset(); }
-    explicit ReinterpretDeleter(boost::shared_ptr<Original> const & original) : _original(original) {}
-};
-
 namespace detail {
 
 template <typename Array_>
 struct ComplexExtractor {
-    typedef typename ExpressionTraits<Array_>::Element Element;
+    typedef typename ExpressionTraits<Array_>::Element ComplexElement;
+    typedef typename boost::remove_const<ComplexElement>::type ComplexValue;
     typedef typename ExpressionTraits<Array_>::ND ND;
-    typedef typename boost::remove_const<Element>::type NonConst;
-    typedef typename boost::is_const<Element>::type IsConst;
-    BOOST_STATIC_ASSERT( boost::is_complex<NonConst>::value );
-    typedef typename NonConst::value_type NonConstValue;
-    typedef typename boost::add_const<NonConstValue>::type ConstValue;
-    typedef typename boost::mpl::if_<IsConst, ConstValue, NonConstValue>::type Value;
-    typedef ArrayRef<Value,ND::value,0> View;
+    BOOST_STATIC_ASSERT( boost::is_complex<ComplexValue>::value );
+    typedef typename ComplexValue::value_type RealValue;
+    typedef typename boost::mpl::if_<
+        boost::is_const<ComplexElement>, RealValue const, RealValue
+        >::type RealElement;
+    typedef ArrayRef<RealElement,ND::value,0> Result;
+    typedef detail::ArrayAccess<Result> Access;
     typedef Vector<int,ND::value> Index;
-    typedef ReinterpretDeleter<Element,Value> Deleter;
 
-    static inline View apply(Array_ const & array, int offset) {
-        Value * p = reinterpret_cast<Value*>(array.getData()) + offset;
-        boost::shared_ptr<Value> owner(p, Deleter(array.getOwner()));
-        return View(Array<Value,ND::value,0>(external(p, array.getShape(), array.getStrides() * 2, owner)));
+    static inline Result apply(Array_ const & array, int offset) {
+        return Access::construct(
+            reinterpret_cast<RealElement*>(array.getData()) + offset,
+            Access::Core::create(array.getShape(), array.getStrides() * 2, array.getManager())
+        );
     }
 };
 
@@ -124,7 +116,7 @@ dynamic_dimension_cast(Array<T,N,C> const & array) {
  *  @brief Return an ArrayRef view into the real part of a complex array.
  */
 template <typename Array_>
-typename detail::ComplexExtractor<Array_>::View
+typename detail::ComplexExtractor<Array_>::Result
 getReal(Array_ const & array) {
     return detail::ComplexExtractor<Array_>::apply(array, 0);
 }
@@ -133,7 +125,7 @@ getReal(Array_ const & array) {
  *  @brief Return an ArrayRef view into the imaginary part of a complex array.
  */
 template <typename Array_>
-typename detail::ComplexExtractor<Array_>::View
+typename detail::ComplexExtractor<Array_>::Result
 getImag(Array_ const & array) {
     return detail::ComplexExtractor<Array_>::apply(array, 1);
 }
@@ -147,6 +139,8 @@ getImag(Array_ const & array) {
 template <int Nf, typename T, int N, int C>
 inline typename boost::enable_if_c< ((C+Nf-N)>=1), ArrayRef<T,Nf,(C+Nf-N)> >::type
 flatten(Array<T,N,C> const & input) {
+    typedef detail::ArrayAccess< ArrayRef<T,Nf,(C+Nf-N)> > Access;
+    typedef typename Access::Core Core;
     BOOST_STATIC_ASSERT(C+Nf-N >= 1);
     Vector<int,N> oldShape = input.getShape();
     Vector<int,Nf> newShape = oldShape.template first<Nf>();
@@ -154,15 +148,11 @@ flatten(Array<T,N,C> const & input) {
         newShape[Nf-1] *= oldShape[n];
     Vector<int,Nf> newStrides = input.getStrides().template first<Nf>();
     newStrides[Nf-1] = 1;
-    return ArrayRef<T,Nf,(C+Nf-N)>(
-        Array<T,Nf,(C+Nf-N)>(
-            ndarray::external(input.getData(), newShape, newStrides, input.getOwner())
-        )
-    );
+    return Access::construct(input.getData(), Core::create(newShape, newStrides, input.getManager()));
 }
 
 /// @}
 
 }} // namespace lsst::ndarray
 
-#endif // !LSST_NDARRAY_casts_hpp_INCLUDED
+#endif // !LSST_NDARRAY_casts_h_INCLUDED

@@ -1,6 +1,7 @@
+// -*- lsst-c++ -*-
 /* 
  * LSST Data Management System
- * Copyright 2008, 2009, 2010 LSST Corporation.
+ * Copyright 2008, 2009, 2010, 2011 LSST Corporation.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -19,12 +20,11 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-
-#ifndef LSST_NDARRAY_ArrayBase_hpp_INCLUDED
-#define LSST_NDARRAY_ArrayBase_hpp_INCLUDED
+#ifndef LSST_NDARRAY_ArrayBase_h_INCLUDED
+#define LSST_NDARRAY_ArrayBase_h_INCLUDED
 
 /** 
- *  @file lsst/ndarray/ArrayBase.hpp
+ *  @file lsst/ndarray/ArrayBase.h
  *
  *  @brief Definitions for ArrayBase.
  */
@@ -71,8 +71,6 @@ public:
     typedef typename Traits::RMC RMC;
     /// @brief Vector type for N-dimensional indices.
     typedef Vector<int,ND::value> Index;
-    /// @brief Shared pointer that manages memory.
-    typedef boost::shared_ptr<Element> Owner;
     /// @brief ArrayRef to a noncontiguous array; the result of a call to transpose().
     typedef ArrayRef<Element,ND::value,0> Transpose;
     /// @brief The corresponding Array type.
@@ -82,7 +80,10 @@ public:
 
     /// @brief Return a single subarray.
     Reference operator[](int n) const {
-        return Traits::makeReference(this->_data + n * this->template getStride<0>(), this->_core);
+        return Traits::makeReference(
+            this->_data + n * this->template getStride<0>(),
+            this->_core
+        );
     }
 
     /// @brief Return a single element from the array.
@@ -92,7 +93,11 @@ public:
 
     /// @brief Return an Iterator to the beginning of the array.
     Iterator begin() const {
-        return Traits::makeIterator(this->_data, this->_core, this->template getStride<0>());
+        return Traits::makeIterator(
+            this->_data,
+            this->_core,
+            this->template getStride<0>()
+        );
     }
 
     /// @brief Return an Iterator to one past the end of the array.
@@ -104,11 +109,11 @@ public:
         );
     }
 
-    /// @brief Return a pointer to the first element of the array.
+    /// @brief Return a raw pointer to the first element of the array.
     Element * getData() const { return _data; }
     
-    /// @brief Return the shared_ptr that manages the lifetime of the array data.
-    Owner getOwner() const { return this->_core->getOwner(); }
+    /// @brief Return the opaque object responsible for memory management.
+    Manager::Ptr getManager() const { return this->_core->getManager(); }
 
     /// @brief Return the size of a specific dimension.
     template <int P> int getSize() const {
@@ -152,7 +157,7 @@ public:
         }
         return Transpose(
             getData(), 
-            Core::create(newShape, newStrides, boost::const_pointer_cast<typename Core::Element>(getOwner()))
+            Core::create(newShape, newStrides, getManager())
         );
     }
 
@@ -203,4 +208,4 @@ protected:
 
 }} // namespace lsst::ndarray
 
-#endif // !LSST_NDARRAY_ArrayBase_hpp_INCLUDED
+#endif // !LSST_NDARRAY_ArrayBase_h_INCLUDED

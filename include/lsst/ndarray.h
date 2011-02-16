@@ -1,8 +1,30 @@
-#ifndef LSST_NDARRAY_ndarray_hpp_INCLUDED
-#define LSST_NDARRAY_ndarray_hpp_INCLUDED
+// -*- lsst-c++ -*-
+/* 
+ * LSST Data Management System
+ * Copyright 2008, 2009, 2010, 2011 LSST Corporation.
+ * 
+ * This product includes software developed by the
+ * LSST Project (http://www.lsst.org/).
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the LSST License Statement and 
+ * the GNU General Public License along with this program.  If not, 
+ * see <http://www.lsstcorp.org/LegalNotices/>.
+ */
+#ifndef LSST_NDARRAY_ndarray_h_INCLUDED
+#define LSST_NDARRAY_ndarray_h_INCLUDED
 
 /** 
- *  @file lsst/ndarray.hpp
+ *  @file lsst/ndarray.h
  *  @brief Main public header file for ndarray.
  */
 
@@ -115,11 +137,11 @@ namespace lsst { namespace ndarray {
  * %ndarray makes extensive use of C++ template metaprogramming, and may
  * not work with older or non-standard-compliant compilers.
  * <ul>
- * <li> Core %ndarray library (ndarray.hpp): boost 1.38-1.42
- * <li> Python conversion module (ndarray/python.hpp): python 2.6, numpy 1.2
+ * <li> Core %lsst/ndarray library (ndarray.h): boost 1.38-1.42
+ * <li> Python conversion module (lsst/ndarray/python.h): python 2.6, numpy 1.2
  * <li> Boost.Python module (ndarray/python/boost/): boost.python 1.38-1.42, python 2.6, numpy 1.2
- * <li> Eigen interface (ndarray/eigen.hpp): Eigen 2.0
- * <li> Fast Fourier transforms (ndarray/fft.hpp): FFTW 3.2
+ * <li> Eigen interface (lsst/ndarray/eigen.h): Eigen 2.0
+ * <li> Fast Fourier transforms (lsst/ndarray/fft.h): FFTW 3.2
  * </ul>
  * 
  * @subsection installation Installation
@@ -264,7 +286,7 @@ namespace lsst { namespace ndarray {
  * are also provided, though the const variants are not actually const (because Array provides
  * smart-pointer const-correctness rather than container const-correctness).
  *
- * Single elements can be extracted from multidimensional arrays by indexing with ndarray::Vector:
+ * Single elements can be extracted from multidimensional arrays by indexing with lsst::ndarray::Vector:
  * @code
  * a[makeVector(3,2,1)] == a[3][2][1];
  * @endcode
@@ -351,4 +373,4 @@ namespace lsst { namespace ndarray {
 
 }} // namespace lsst::ndarray
 
-#endif // !LSST_NDARRAY_ndarray_hpp_INCLUDED
+#endif // !LSST_NDARRAY_ndarray_h_INCLUDED

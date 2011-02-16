@@ -1,6 +1,7 @@
+// -*- lsst-c++ -*-
 /* 
  * LSST Data Management System
- * Copyright 2008, 2009, 2010 LSST Corporation.
+ * Copyright 2008, 2009, 2010, 2011 LSST Corporation.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -19,140 +20,88 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-
-#ifndef LSST_NDARRAY_initialization_hpp_INCLUDED
-#define LSST_NDARRAY_initialization_hpp_INCLUDED
+#ifndef LSST_NDARRAY_initialization_h_INCLUDED
+#define LSST_NDARRAY_initialization_h_INCLUDED
 
 /** 
- *  \file ndarray/initialization.hpp @brief Construction functions for array.
+ *  \file lsst/ndarray/initialization.h @brief Construction functions for array.
  */
 
 #include "lsst/ndarray/Array.h"
+#include "lsst/ndarray/Manager.h"
 
 namespace lsst { namespace ndarray {
 namespace detail {
 
-/** 
- *  @internal @class ArrayDeleter
- *  @ingroup InternalGroup
- *  @brief A boost::shared_ptr deleter functor for STL allocators.
- *
- *  This allows a shared_ptr (not a shared_array) to store memory allocated by any STL allocator.
- */
-template <typename Allocator>
-struct AllocatorDeleter : private Allocator {
+struct NullOwner {};
 
-    typename Allocator::size_type _size;
-
-    explicit AllocatorDeleter(typename Allocator::size_type size, Allocator const & alloc = Allocator()) : 
-        Allocator(alloc), _size(size) {}
-
-    void operator()(typename Allocator::pointer p) { Allocator::deallocate(p,_size); }
-};
-
-/** 
- *  @internal @class AllocationInitializer
- *  @ingroup InternalGroup
- *  @brief An expression class that specifies dimensions and an allocator for a new array.
- *
- *  AllocationInitializer objects are returned by the allocate() functions, and are implicitly
- *  convertible to Array; they will typically only exist as temporaries used to construct new
- *  Arrays or shallow-assign to existing Arrays.
- *
- *  \sa allocate
- */
-template <int N, typename Allocator>
-class AllocationInitializer : private Allocator {
-    Vector<int,N> _shape;
+template <int N, typename Derived>
+class Initializer {
 public:
-
-    AllocationInitializer(Vector<int,N> const & shape, Allocator const & alloc = Allocator()) : 
-        Allocator(alloc), _shape(shape) {}
 
     template <typename T, int C>
     operator Array<T,N,C> () const {
-        typedef detail::ArrayAccess< Array<T,N,C> > Access;
-        typedef typename Access::Core Core;
-        typedef typename Core::Element Element;
-        typedef typename Allocator::template rebind<Element>::other BoundAllocator;
-        int total = _shape.product();
-        BoundAllocator alloc(*this);
-        boost::shared_ptr<Element> owner(alloc.allocate(total), AllocatorDeleter<BoundAllocator>(total, alloc));
-        return Access::construct(owner.get(), Core::create(_shape,owner));
+        return static_cast<Derived const *>(this)->template apply< Array<T,N,C> >();
     }
 
     template <typename T, int C>
     operator ArrayRef<T,N,C> () const {
-        typedef detail::ArrayAccess< ArrayRef<T,N,C> > Access;
-        typedef typename Access::Core Core;
-        typedef typename Core::Element Element;
-        typedef typename Allocator::template rebind<Element>::other BoundAllocator;
-        int total = _shape.product();
-        BoundAllocator alloc(*this);
-        boost::shared_ptr<Element> owner(
-            alloc.allocate(total),
-            AllocatorDeleter<BoundAllocator>(total, alloc)
-        );
-        return Access::construct(owner.get(), Core::create(_shape,owner));
+        return static_cast<Derived const *>(this)->template apply< ArrayRef<T,N,C> >();
     }
 
 };
 
-/** 
- *  @internal @class ExternalInitializer
- *  @ingroup InternalGroup
- *  @brief An expression class that allows construction of an Array from external data.
- *
- *  ExpressionInitializer objects are returned by the external() functions, and are implicitly
- *  convertible to Array; they will typically only exist as temporaries used to construct new
- *  Arrays or shallow-assign to existing Arrays.
- *
- *  \sa external
- */
-template <typename T, int N>
-class ExternalInitializer {
-    T * _data;
-    boost::shared_ptr<T> _owner;
-    Vector<int,N> _shape;
-    Vector<int,N> _strides;
+template <int N>
+class SimpleInitializer : public Initializer< N, SimpleInitializer<N> > {
 public:
-    
+
+    template <typename Target>
+    Target apply() const {
+        typedef detail::ArrayAccess< Target > Access;
+        typedef typename Access::Core Core;
+        typedef typename Access::Element Element;
+        int total = _shape.product();
+        std::pair<Manager::Ptr,Element*> p = SimpleManager<Element>::allocate(total);
+        return Access::construct(p.second, Core::create(_shape, p.first));
+    }
+
+    explicit SimpleInitializer(Vector<int,N> const & shape) : _shape(shape) {}
+
+private:
+    Vector<int,N> const & _shape;
+};
+
+template <typename T, int N, typename Owner>
+class ExternalInitializer : public Initializer< N, ExternalInitializer<T,N,Owner> > {
+public:
+
+    template <typename Target>
+    Target apply() const {
+        typedef detail::ArrayAccess< Target > Access;
+        typedef typename Access::Core Core;
+        typedef typename Access::Element Element;
+        Manager::Ptr manager;
+        if (!boost::is_same<Owner,NullOwner>::value) {
+            manager = ExternalManager<Owner>::make(_owner);
+        }
+        return Access::construct(_data, Core::create(_shape, _strides, manager));
+    }
+
     ExternalInitializer(
         T * data, 
         Vector<int,N> const & shape,
         Vector<int,N> const & strides,
-        boost::shared_ptr<T> const & owner
+        Owner const & owner
     ) : _data(data), _owner(owner), _shape(shape), _strides(strides) {}
 
-    template <typename U, int C>
-    operator Array<U,N,C> () const {
-        typedef detail::ArrayAccess< Array<U,N,C> > Access;
-        typedef typename Access::Core Core;
-        return Access::construct(
-            _data,
-            Core::create(
-                _shape,_strides,
-                boost::const_pointer_cast<typename boost::remove_const<T>::type>(_owner)
-            )
-        );
-    }
-
-    template <typename U, int C>
-    operator ArrayRef<U,N,C> () const {
-        typedef detail::ArrayAccess< ArrayRef<U,N,C> > Access;
-        typedef typename Access::Core Core;
-        return Access::construct(
-            _data,
-            Core::create(
-                _shape,_strides,
-                boost::const_pointer_cast<typename boost::remove_const<T>::type>(_owner)
-            )
-        );
-    }
-    
+private:
+    T * _data;
+    Owner const & _owner;
+    Vector<int,N> const & _shape;
+    Vector<int,N> const & _strides;
 };
 
-} // namespace lsst::ndarray::detail
+} // namespace detail
 
 /// @addtogroup MainGroup
 /// @{
@@ -160,66 +109,48 @@ public:
 /** 
  *  @brief Create an expression that allocates uninitialized memory for an array.
  *
- *  A custom STL-style allocator can be passed as the second argument.
- *  If no allocator is passed, the default STL allocator will be used.
- *
- *  \returns A temporary object convertible to an Array with fully contiguous row-major strides.
- */
-template <typename Allocator, int N>
-inline detail::AllocationInitializer<N,Allocator> allocate(
-    Vector<int,N> const & shape, ///< A Vector of dimensions for the new Array.
-    Allocator const & alloc=Allocator() ///< An instance of an STL allocator.
-) {
-    return detail::AllocationInitializer<N,Allocator>(shape,alloc); 
-}
-
-/** 
- *  @brief Create an expression that allocates uninitialized memory for an array.
- *
- *  This overload uses the default STL allocator, std::allocator.
- *
- *  \returns A temporary object convertible to an Array with fully contiguous row-major strides.
+ *  @returns A temporary object convertible to an Array with fully contiguous row-major strides.
  */
 template <int N>
-inline detail::AllocationInitializer<N,std::allocator<void> > allocate(
-    Vector<int,N> const & shape ///< A Vector of dimensions for the new Array.
-) {
-    return detail::AllocationInitializer<N,std::allocator<void> >(shape); 
+inline detail::SimpleInitializer<N> allocate(Vector<int,N> const & shape) {
+    return detail::SimpleInitializer<N>(shape); 
 }
 
 /** 
- *  @brief Create a new Array by copying an Expression.
+ *  @brief Create an expression that allocates uninitialized memory for a 1-d array.
  *
- *  A custom STL-style allocator can be passed as the second argument.
- *  If no allocator is passed, the default STL allocator will be used.
+ *  @returns A temporary object convertible to an Array with fully contiguous row-major strides.
  */
-template <typename Allocator, typename Derived>
-inline ArrayRef<typename boost::remove_const<typename Derived::Element>::type, 
-                Derived::ND::value, Derived::ND::value>
-copy(
-    ExpressionBase<Derived> const & expr, ///< The expression to copy.
-    Allocator const & alloc=Allocator() ///< An instance of an STL allocator.
-) {
-    ArrayRef<typename boost::remove_const<typename Derived::Element>::type,
-        Derived::ND::value,Derived::ND::value> r(
-            allocate(expr.getShape(),alloc)
-        );
-    r = expr;
-    return r;
+inline detail::SimpleInitializer<1> allocate(int n) {
+    return detail::SimpleInitializer<1>(lsst::ndarray::makeVector(n)); 
+}
+
+/** 
+ *  @brief Create an expression that allocates uninitialized memory for a 2-d array.
+ *
+ *  @returns A temporary object convertible to an Array with fully contiguous row-major strides.
+ */
+inline detail::SimpleInitializer<2> allocate(int n1, int n2) {
+    return detail::SimpleInitializer<2>(lsst::ndarray::makeVector(n1, n2)); 
+}
+
+/** 
+ *  @brief Create an expression that allocates uninitialized memory for a 3-d array.
+ *
+ *  @returns A temporary object convertible to an Array with fully contiguous row-major strides.
+ */
+inline detail::SimpleInitializer<3> allocate(int n1, int n2, int n3) {
+    return detail::SimpleInitializer<3>(lsst::ndarray::makeVector(n1, n2, n3)); 
 }
 
 /** 
  *  @brief Create a new Array by copying an Expression.
- *
- *  This overload uses the default STL allocator, std::allocator.
  */
 template <typename Derived>
 inline ArrayRef<typename boost::remove_const<typename Derived::Element>::type, 
                 Derived::ND::value, Derived::ND::value>
-copy(
-    ExpressionBase<Derived> const & expr ///< The expression to copy.
-) {
-    ArrayRef<typename boost::remove_const<typename Derived::Element>::type,
+copy(ExpressionBase<Derived> const & expr) {
+    ArrayRef<typename boost::remove_const<typename Derived::Element>::type, 
         Derived::ND::value,Derived::ND::value> r(
             allocate(expr.getShape())
         );
@@ -245,77 +176,95 @@ Vector<int,N> computeStrides(Vector<int,N> const & shape, DataOrderEnum order=RO
 /** 
  *  @brief Create an expression that initializes an Array with externally allocated memory.
  *
- *  No checking is done to ensure the shape, strides, and data pointers are sensible.  If no
- *  owner shared_ptr is supplied, the user must ensure the data pointer remains valid for
- *  the lifetime of the Array.
- *
- *  \returns A temporary object convertible to an Array.
- */
-template <typename T, int N>
-inline detail::ExternalInitializer<T,N> external(
-    T * data, ///< A raw pointer to the first element of the Array.
-    Vector<int,N> const & shape, ///< A Vector of dimensions for the new Array.
-    Vector<int,N> const & strides,  ///< A Vector of strides for the new Array.
-    boost::shared_ptr<T> const & owner = boost::shared_ptr<T>() /**< A shared_ptr that manages the
-                                                                 *   lifetime of the memory. */
-) {
-    return detail::ExternalInitializer<T,N>(data,shape,strides,owner);
-}
-
-/** 
- *  @brief Create an expression that initializes an Array with externally allocated memory.
- *
  *  No checking is done to ensure the shape, strides, and data pointers are sensible.
  *
- *  \returns A temporary object convertible to an Array.
+ *  @param[in] data     A raw pointer to the first element of the Array.
+ *  @param[in] shape    A Vector of dimensions for the new Array.
+ *  @param[in] strides  A Vector of strides for the new Array.
+ *  @param[in] owner    A copy-constructable object with an internal reference count
+ *                      that owns the memory pointed at by 'data'.
+ *
+ *  @returns A temporary object convertible to an Array.
  */
-template <typename T, int N>
-inline detail::ExternalInitializer<T,N> external(
-    boost::shared_ptr<T> const & owner, ///< A shared_ptr to the first element of the Array.
-    Vector<int,N> const & shape, ///< A Vector of dimensions for the new Array.
-    Vector<int,N> const & strides ///< A Vector of strides for the new Array.
+template <typename T, int N, typename Owner>
+inline detail::ExternalInitializer<T,N,Owner> external(
+    T * data,
+    Vector<int,N> const & shape,
+    Vector<int,N> const & strides,
+    Owner const & owner
 ) {
-    return detail::ExternalInitializer<T,N>(owner.get(),shape,strides,owner);
+    return detail::ExternalInitializer<T,N,Owner>(data, shape, strides, owner);
 }
 
 /** 
  *  @brief Create an expression that initializes an Array with externally allocated memory.
  *
- *  No checking is done to ensure the shape, strides, and data pointers are sensible.  If no
- *  owner shared_ptr is supplied, the user must ensure the data pointer remains valid for
- *  the lifetime of the Array.
+ *  No checking is done to ensure the shape, strides, and data pointers are sensible.  Memory will not
+ *  be managed at all; the user must ensure the data pointer remains valid for the lifetime of the array.
  *
- *  \returns A temporary object convertible to an Array.
+ *  @param[in] data     A raw pointer to the first element of the Array.
+ *  @param[in] shape    A Vector of dimensions for the new Array.
+ *  @param[in] strides  A Vector of strides for the new Array.
+ *
+ *  @returns A temporary object convertible to an Array.
  */
 template <typename T, int N>
-inline detail::ExternalInitializer<T,N> external(
-    T * data, ///< A raw pointer to the first element of the Array.
-    Vector<int,N> const & shape, ///< A Vector of dimensions for the new Array.
-    DataOrderEnum order = ROW_MAJOR,  ///< Whether strides are row- or column-major.
-    boost::shared_ptr<T> const & owner = boost::shared_ptr<T>() /**< A shared_ptr that manages the
-                                                                 *   lifetime of the memory. */
+inline detail::ExternalInitializer<T,N,detail::NullOwner> external(
+    T * data,
+    Vector<int,N> const & shape,
+    Vector<int,N> const & strides
 ) {
-    return detail::ExternalInitializer<T,N>(data,shape,computeStrides(shape,order),owner);
+    return detail::ExternalInitializer<T,N,detail::NullOwner>(data, shape, strides, detail::NullOwner());
 }
 
 /** 
  *  @brief Create an expression that initializes an Array with externally allocated memory.
  *
- *  No checking is done to ensure the shape, strides, and data pointers are sensible.
+ *  No checking is done to ensure the shape and data pointers are sensible.
  *
- *  \returns A temporary object convertible to an Array.
+ *  @param[in] data     A raw pointer to the first element of the Array.
+ *  @param[in] shape    A Vector of dimensions for the new Array.
+ *  @param[in] order    Whether the strides are row- or column-major.
+ *  @param[in] owner    A copy-constructable object with an internal reference count
+ *                      that owns the memory pointed at by 'data'.
+ *
+ *  @returns A temporary object convertible to an Array.
+ */
+template <typename T, int N, typename Owner>
+inline detail::ExternalInitializer<T,N,Owner> external(
+    T * data,
+    Vector<int,N> const & shape,
+    DataOrderEnum order,
+    Owner const & owner
+) {
+    return detail::ExternalInitializer<T,N,Owner>(data, shape, computeStrides(shape, order), owner);
+}
+
+/** 
+ *  @brief Create an expression that initializes an Array with externally allocated memory.
+ *
+ *  No checking is done to ensure the shape and data pointers are sensible.  Memory will not
+ *  be managed at all; the user must ensure the data pointer remains valid for the lifetime of the array.
+ *
+ *  @param[in] data     A raw pointer to the first element of the Array.
+ *  @param[in] shape    A Vector of dimensions for the new Array.
+ *  @param[in] order    Whether the strides are row- or column-major.
+ *
+ *  @returns A temporary object convertible to an Array.
  */
 template <typename T, int N>
-inline detail::ExternalInitializer<T,N> external(
-    boost::shared_ptr<T> const & owner, ///< A shared_ptr to the first element of the Array.
-    Vector<int,N> const & shape, ///< A Vector of dimensions for the new Array.
-    DataOrderEnum order = ROW_MAJOR  ///< Whether strides are row- or column-major.
+inline detail::ExternalInitializer<T,N,detail::NullOwner> external(
+    T * data,
+    Vector<int,N> const & shape,
+    DataOrderEnum order = ROW_MAJOR
 ) {
-    return detail::ExternalInitializer<T,N>(owner.get(),shape,computeStrides(shape,order),owner);
+    return detail::ExternalInitializer<T,N,detail::NullOwner>(
+        data, shape, computeStrides(shape, order), detail::NullOwner()
+    );
 }
 
 /// @}
 
 }} // namespace lsst::ndarray
 
-#endif // !LSST_NDARRAY_initialization_hpp_INCLUDED
+#endif // !LSST_NDARRAY_initialization_h_INCLUDED

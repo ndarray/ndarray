@@ -1,6 +1,7 @@
+// -*- lsst-c++ -*-
 /* 
  * LSST Data Management System
- * Copyright 2008, 2009, 2010 LSST Corporation.
+ * Copyright 2008, 2009, 2010, 2011 LSST Corporation.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -19,9 +20,8 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-
-#ifndef NDARRAY_FFT_FFTWTraits_hpp_INCLUDED
-#define NDARRAY_FFT_FFTWTraits_hpp_INCLUDED
+#ifndef LSST_NDARRAY_FFT_FFTWTraits_h_INCLUDED
+#define LSST_NDARRAY_FFT_FFTWTraits_h_INCLUDED
 
 /** 
  *  @file lsst/ndarray/fft/FFTWTraits.h
@@ -56,21 +56,21 @@ template <typename T> struct FFTWTraits { BOOST_STATIC_ASSERT(sizeof(T) < 0); };
                                    ElementX *in, const int *inembed, int istride, int idist,
                                    ElementK *out, const int *onembed, int ostride, int odist,
                                    unsigned flags) {			
-            return fftwf_plan_many_dft_r2c(rank,n,howmany,
-                                                in,inembed,istride,idist,
-                                                reinterpret_cast<fftwf_complex*>(out),
-                                                onembed,ostride,odist,
-                                                flags);			
+            return fftwf_plan_many_dft_r2c(rank, n, howmany,
+                                        in, inembed, istride, idist,
+                                        reinterpret_cast<fftwf_complex*>(out),
+                                        onembed, ostride, odist,
+                                        flags);			
         }
         static inline Plan inverse(int rank, const int *n, int howmany,
                                    ElementK *in, const int *inembed, int istride, int idist,
                                    ElementX *out, const int *onembed, int ostride, int odist,
                                    unsigned flags) {			
-            return fftwf_plan_many_dft_c2r(rank,n,howmany,
-                                                reinterpret_cast<fftwf_complex*>(in),
-                                                inembed,istride,idist,
-                                                out,onembed,ostride,odist,
-                                                flags);			
+            return fftwf_plan_many_dft_c2r(rank, n, howmany,
+                                        reinterpret_cast<fftwf_complex*>(in),
+                                        inembed, istride, idist,
+                                        out, onembed, ostride, odist,
+                                        flags);			
         }
         static inline void destroy(Plan p) { fftwf_destroy_plan(p); }
         static inline void execute(Plan p) { fftwf_execute(p); }	
@@ -101,23 +101,23 @@ template <typename T> struct FFTWTraits { BOOST_STATIC_ASSERT(sizeof(T) < 0); };
                                    ElementX *in, const int *inembed, int istride, int idist,
                                    ElementK *out, const int *onembed, int ostride, int odist,
                                    unsigned flags) {			
-            return fftwf_plan_many_dft(rank,n,howmany,
-                                            reinterpret_cast<fftwf_complex*>(in),
-                                            inembed,istride,idist,
-                                            reinterpret_cast<fftwf_complex*>(out),
-                                            onembed,ostride,odist,
-                                            FFTW_FORWARD,flags);
+            return fftwf_plan_many_dft(rank, n, howmany,
+                                    reinterpret_cast<fftwf_complex*>(in),
+                                    inembed, istride, idist,
+                                    reinterpret_cast<fftwf_complex*>(out),
+                                    onembed, ostride, odist,
+                                    FFTW_FORWARD, flags);
         }
         static inline Plan inverse(int rank, const int *n, int howmany,
                                    ElementK *in, const int *inembed, int istride, int idist,
                                    ElementX *out, const int *onembed, int ostride, int odist,
                                    unsigned flags) {			
-            return fftwf_plan_many_dft(rank,n,howmany,
-                                            reinterpret_cast<fftwf_complex*>(in),
-                                            inembed,istride,idist,
-                                            reinterpret_cast<fftwf_complex*>(out),
-                                            onembed,ostride,odist,
-                                            FFTW_BACKWARD,flags);
+            return fftwf_plan_many_dft(rank, n, howmany,
+                                    reinterpret_cast<fftwf_complex*>(in),
+                                    inembed, istride, idist,
+                                    reinterpret_cast<fftwf_complex*>(out),
+                                    onembed, ostride, odist,
+                                    FFTW_BACKWARD,flags);
         }
         static inline void destroy(Plan p) { fftwf_destroy_plan(p); }
         static inline void execute(Plan p) { fftwf_execute(p); }	
@@ -150,21 +150,21 @@ template <typename T> struct FFTWTraits { BOOST_STATIC_ASSERT(sizeof(T) < 0); };
                                    ElementX *in, const int *inembed, int istride, int idist,
                                    ElementK *out, const int *onembed, int ostride, int odist,
                                    unsigned flags) {			
-            return fftw_plan_many_dft_r2c(rank,n,howmany,
-                                                in,inembed,istride,idist,
-                                                reinterpret_cast<fftw_complex*>(out),
-                                                onembed,ostride,odist,
-                                                flags);			
+            return fftw_plan_many_dft_r2c(rank, n, howmany,
+                                        in, inembed, istride, idist,
+                                        reinterpret_cast<fftw_complex*>(out),
+                                        onembed, ostride, odist,
+                                        flags);			
         }
         static inline Plan inverse(int rank, const int *n, int howmany,
                                    ElementK *in, const int *inembed, int istride, int idist,
                                    ElementX *out, const int *onembed, int ostride, int odist,
                                    unsigned flags) {			
-            return fftw_plan_many_dft_c2r(rank,n,howmany,
-                                                reinterpret_cast<fftw_complex*>(in),
-                                                inembed,istride,idist,
-                                                out,onembed,ostride,odist,
-                                                flags);			
+            return fftw_plan_many_dft_c2r(rank, n, howmany,
+                                        reinterpret_cast<fftw_complex*>(in),
+                                        inembed, istride, idist,
+                                        out, onembed, ostride, odist,
+                                        flags);			
         }
         static inline void destroy(Plan p) { fftw_destroy_plan(p); }
         static inline void execute(Plan p) { fftw_execute(p); }	
@@ -195,23 +195,23 @@ template <typename T> struct FFTWTraits { BOOST_STATIC_ASSERT(sizeof(T) < 0); };
                                    ElementX *in, const int *inembed, int istride, int idist,
                                    ElementK *out, const int *onembed, int ostride, int odist,
                                    unsigned flags) {			
-            return fftw_plan_many_dft(rank,n,howmany,
-                                            reinterpret_cast<fftw_complex*>(in),
-                                            inembed,istride,idist,
-                                            reinterpret_cast<fftw_complex*>(out),
-                                            onembed,ostride,odist,
-                                            FFTW_FORWARD,flags);
+            return fftw_plan_many_dft(rank, n, howmany,
+                                    reinterpret_cast<fftw_complex*>(in),
+                                    inembed, istride, idist,
+                                    reinterpret_cast<fftw_complex*>(out),
+                                    onembed, ostride, odist,
+                                    FFTW_FORWARD, flags);
         }
         static inline Plan inverse(int rank, const int *n, int howmany,
                                    ElementK *in, const int *inembed, int istride, int idist,
                                    ElementX *out, const int *onembed, int ostride, int odist,
                                    unsigned flags) {			
-            return fftw_plan_many_dft(rank,n,howmany,
-                                            reinterpret_cast<fftw_complex*>(in),
-                                            inembed,istride,idist,
-                                            reinterpret_cast<fftw_complex*>(out),
-                                            onembed,ostride,odist,
-                                            FFTW_BACKWARD,flags);
+            return fftw_plan_many_dft(rank, n, howmany,
+                                    reinterpret_cast<fftw_complex*>(in),
+                                    inembed, istride, idist,
+                                    reinterpret_cast<fftw_complex*>(out),
+                                    onembed, ostride, odist,
+                                    FFTW_BACKWARD,flags);
         }
         static inline void destroy(Plan p) { fftw_destroy_plan(p); }
         static inline void execute(Plan p) { fftw_execute(p); }	
@@ -232,7 +232,7 @@ template <typename T> struct FFTWTraits { BOOST_STATIC_ASSERT(sizeof(T) < 0); };
             );
         }
     };
-#ifndef LSST_NDARRAY_NO_LONG_DOUBLE
+#ifndef NDARRAY_NO_LONG_DOUBLE
 
     template <> struct FFTWTraits<long double> {
         BOOST_STATIC_ASSERT((!boost::is_const<long double>::value));
@@ -245,21 +245,21 @@ template <typename T> struct FFTWTraits { BOOST_STATIC_ASSERT(sizeof(T) < 0); };
                                    ElementX *in, const int *inembed, int istride, int idist,
                                    ElementK *out, const int *onembed, int ostride, int odist,
                                    unsigned flags) {			
-            return fftwl_plan_many_dft_r2c(rank,n,howmany,
-                                                in,inembed,istride,idist,
-                                                reinterpret_cast<fftwl_complex*>(out),
-                                                onembed,ostride,odist,
-                                                flags);			
+            return fftwl_plan_many_dft_r2c(rank, n, howmany,
+                                        in, inembed, istride, idist,
+                                        reinterpret_cast<fftwl_complex*>(out),
+                                        onembed, ostride, odist,
+                                        flags);			
         }
         static inline Plan inverse(int rank, const int *n, int howmany,
                                    ElementK *in, const int *inembed, int istride, int idist,
                                    ElementX *out, const int *onembed, int ostride, int odist,
                                    unsigned flags) {			
-            return fftwl_plan_many_dft_c2r(rank,n,howmany,
-                                                reinterpret_cast<fftwl_complex*>(in),
-                                                inembed,istride,idist,
-                                                out,onembed,ostride,odist,
-                                                flags);			
+            return fftwl_plan_many_dft_c2r(rank, n, howmany,
+                                        reinterpret_cast<fftwl_complex*>(in),
+                                        inembed, istride, idist,
+                                        out, onembed, ostride, odist,
+                                        flags);			
         }
         static inline void destroy(Plan p) { fftwl_destroy_plan(p); }
         static inline void execute(Plan p) { fftwl_execute(p); }	
@@ -290,23 +290,23 @@ template <typename T> struct FFTWTraits { BOOST_STATIC_ASSERT(sizeof(T) < 0); };
                                    ElementX *in, const int *inembed, int istride, int idist,
                                    ElementK *out, const int *onembed, int ostride, int odist,
                                    unsigned flags) {			
-            return fftwl_plan_many_dft(rank,n,howmany,
-                                            reinterpret_cast<fftwl_complex*>(in),
-                                            inembed,istride,idist,
-                                            reinterpret_cast<fftwl_complex*>(out),
-                                            onembed,ostride,odist,
-                                            FFTW_FORWARD,flags);
+            return fftwl_plan_many_dft(rank, n, howmany,
+                                    reinterpret_cast<fftwl_complex*>(in),
+                                    inembed, istride, idist,
+                                    reinterpret_cast<fftwl_complex*>(out),
+                                    onembed, ostride, odist,
+                                    FFTW_FORWARD, flags);
         }
         static inline Plan inverse(int rank, const int *n, int howmany,
                                    ElementK *in, const int *inembed, int istride, int idist,
                                    ElementX *out, const int *onembed, int ostride, int odist,
                                    unsigned flags) {			
-            return fftwl_plan_many_dft(rank,n,howmany,
-                                            reinterpret_cast<fftwl_complex*>(in),
-                                            inembed,istride,idist,
-                                            reinterpret_cast<fftwl_complex*>(out),
-                                            onembed,ostride,odist,
-                                            FFTW_BACKWARD,flags);
+            return fftwl_plan_many_dft(rank, n, howmany,
+                                    reinterpret_cast<fftwl_complex*>(in),
+                                    inembed, istride, idist,
+                                    reinterpret_cast<fftwl_complex*>(out),
+                                    onembed, ostride, odist,
+                                    FFTW_BACKWARD,flags);
         }
         static inline void destroy(Plan p) { fftwl_destroy_plan(p); }
         static inline void execute(Plan p) { fftwl_execute(p); }	
@@ -330,8 +330,8 @@ template <typename T> struct FFTWTraits { BOOST_STATIC_ASSERT(sizeof(T) < 0); };
 #endif
 /// \endcond
 
-} // namespace lsst:ndarray::detail
+} // namespace detail
 /// \endcond
 }} // namespace lsst::ndarray
 
-#endif // !LSST_NDARRAY_FFT_FFTWTraits_hpp_INCLUDED
+#endif // !LSST_NDARRAY_FFT_FFTWTraits_h_INCLUDED

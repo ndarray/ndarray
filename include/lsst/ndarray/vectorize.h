@@ -1,6 +1,7 @@
+// -*- lsst-c++ -*-
 /* 
  * LSST Data Management System
- * Copyright 2008, 2009, 2010 LSST Corporation.
+ * Copyright 2008, 2009, 2010, 2011 LSST Corporation.
  * 
  * This product includes software developed by the
  * LSST Project (http://www.lsst.org/).
@@ -19,12 +20,11 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-
-#ifndef LSST_NDARRAY_vectorize_hpp_INCLUDED
-#define LSST_NDARRAY_vectorize_hpp_INCLUDED
+#ifndef LSST_NDARRAY_vectorize_h_INCLUDED
+#define LSST_NDARRAY_vectorize_h_INCLUDED
 
 /** 
- *  \file ndarray/vectorize.hpp @brief Code to apply arbitrary scalar functors to arrays.
+ *  \file lsst/ndarray/vectorize.h @brief Code to apply arbitrary scalar functors to arrays.
  */
 
 #include "lsst/ndarray_fwd.h"
@@ -64,7 +64,7 @@ struct vectorize<T1,T2,void> {
     >::type type;
 };
 
-} // namespace lsst::ndarray::result_of
+} // namespace result_of
 
 /// @addtogroup MainGroup
 /// @{
@@ -152,4 +152,4 @@ vectorize(
 
 }} // namespace lsst::ndarray
 
-#endif // !LSST_NDARRAY_vectorize_hpp_INCLUDED
+#endif // !LSST_NDARRAY_vectorize_h_INCLUDED
