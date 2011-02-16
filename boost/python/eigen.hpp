@@ -7,4 +7,4 @@
 #include <boost/python/eigen/specializations.hpp>
 #include <boost/python/eigen/squeeze_matrix.hpp>
 
-#endif // !BOOST_AUGMENTED_PYTHON_EIGEN_HPP_INCLUDED
+#endif // !BOOST_PYTHON_EIGEN_HPP_INCLUDED

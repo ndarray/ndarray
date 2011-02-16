@@ -1,7 +1,7 @@
 #ifndef BOOST_PYTHON_EIGEN_SQUEEZE_MATRIX_HPP_INCLUDED
 #define BOOST_PYTHON_EIGEN_SQUEEZE_MATRIX_HPP_INCLUDED
 
-#include <boost/python/numpy/numpy.hpp>
+#include <boost/python/numpy.hpp>
 #include <Eigen/Core>
 
 namespace boost { namespace python {

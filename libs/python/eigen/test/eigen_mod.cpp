@@ -1,4 +1,4 @@
-#include <boost/python/eigen/eigen.hpp>
+#include <boost/python/eigen.hpp>
 
 namespace bp = boost::python;
 
