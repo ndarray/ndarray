@@ -68,7 +68,7 @@ public:
     explicit SimpleInitializer(Vector<int,N> const & shape) : _shape(shape) {}
 
 private:
-    Vector<int,N> const & _shape;
+    Vector<int,N> _shape;
 };
 
 template <typename T, int N, typename Owner>
@@ -96,9 +96,9 @@ public:
 
 private:
     T * _data;
-    Owner const & _owner;
-    Vector<int,N> const & _shape;
-    Vector<int,N> const & _strides;
+    Owner _owner;
+    Vector<int,N> _shape;
+    Vector<int,N> _strides;
 };
 
 } // namespace detail

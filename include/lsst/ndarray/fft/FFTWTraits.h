@@ -232,7 +232,7 @@ template <typename T> struct FFTWTraits { BOOST_STATIC_ASSERT(sizeof(T) < 0); };
             );
         }
     };
-#ifndef NDARRAY_NO_LONG_DOUBLE
+#ifndef NDARRAY_FFT_NO_LONG_DOUBLE
 
     template <> struct FFTWTraits<long double> {
         BOOST_STATIC_ASSERT((!boost::is_const<long double>::value));
