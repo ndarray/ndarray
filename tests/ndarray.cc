@@ -20,7 +20,7 @@
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
 
-#include "lsst/ndarray.hpp"
+#include "lsst/ndarray.h"
 
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE ndarray

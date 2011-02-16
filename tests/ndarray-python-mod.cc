@@ -22,7 +22,7 @@
 
 #include "Python.h"
 #include "numpy/arrayobject.h"
-#include "lsst/ndarray/python.hpp"
+#include "lsst/ndarray/python.h"
 
 namespace ndarray = lsst::ndarray;
 

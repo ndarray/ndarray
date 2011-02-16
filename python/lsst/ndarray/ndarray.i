@@ -22,8 +22,8 @@
  */
  
 %{
-#include "lsst/ndarray/python.hpp"
-#include "lsst/ndarray/python/eigen.hpp"
+#include "lsst/ndarray/python.h"
+#include "lsst/ndarray/python/eigen.h"
 #include <boost/scoped_ptr.hpp>
 %}
 

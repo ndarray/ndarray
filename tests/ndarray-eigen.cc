@@ -20,7 +20,7 @@
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
 
-#include "lsst/ndarray/eigen.hpp"
+#include "lsst/ndarray/eigen.h"
 
 #include <Eigen/Array>
 

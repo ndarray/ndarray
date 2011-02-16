@@ -20,8 +20,8 @@
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
 
-#include "lsst/ndarray/fft/FFTWTraits.hpp"
-#include "lsst/ndarray/fft/FourierTransform.hpp"
+#include "lsst/ndarray/fft/FFTWTraits.h"
+#include "lsst/ndarray/fft/FourierTransform.h"
 
 namespace lsst { namespace ndarray {
 

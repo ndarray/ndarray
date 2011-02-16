@@ -31,10 +31,10 @@ env.Append(M4FLAGS="-I%s" % os.path.join(os.path.abspath(eups.productDir(pkg)), 
 #
 # Build/install things
 #
-generated = ["#include/lsst/ndarray/ArrayRef.hpp",
-             "#include/lsst/ndarray/operators.hpp",
-             "#include/lsst/ndarray/Vector.hpp",
-             "#include/lsst/ndarray/fft/FFTWTraits.hpp",
+generated = ["#include/lsst/ndarray/ArrayRef.h",
+             "#include/lsst/ndarray/operators.h",
+             "#include/lsst/ndarray/Vector.h",
+             "#include/lsst/ndarray/fft/FFTWTraits.h",
              ]
 headers = [env.M4(filename, "%s.m4" % filename) for filename in generated]
 
