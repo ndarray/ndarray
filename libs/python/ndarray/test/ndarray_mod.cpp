@@ -47,6 +47,17 @@ bool acceptArray(ndarray::Array<T,N,C> const & p) {
 }
 
 template <typename T, int N, int C>
+bool acceptArrayVal(ndarray::Array<T,N,C> p) {
+    ndarray::Array<typename boost::remove_const<T>::type,N,N> a = ndarray::allocate(p.getShape());
+    a.deep() = p;
+    ndarray::Array<typename boost::remove_const<T>::type,1,1> flat = ndarray::flatten<1>(a);
+    for (int n=0; n < flat.template getSize<0>(); ++n) {
+        if (flat[n] != n) return false;
+    }
+    return true;
+}
+
+template <typename T, int N, int C>
 bool extractArray(boost::python::object const & obj) {
     ndarray::Array<T,N,C> p = boost::python::extract< ndarray::Array<T,N,C> >(obj);
     ndarray::Array<typename boost::remove_const<T>::type,N,N> a = ndarray::allocate(p.getShape());
@@ -143,6 +154,24 @@ BOOST_PYTHON_MODULE(ndarray_mod) {
     boost::python::def("acceptArray_dc32", acceptArray<double const,3,2>);
     boost::python::def("acceptArray_dc31", acceptArray<double const,3,1>);
     boost::python::def("acceptArray_dc30", acceptArray<double const,3,0>);
+    boost::python::def("acceptArrayVal_d11", acceptArrayVal<double,1,1>);
+    boost::python::def("acceptArrayVal_d10", acceptArrayVal<double,1,0>);
+    boost::python::def("acceptArrayVal_d22", acceptArrayVal<double,2,2>);
+    boost::python::def("acceptArrayVal_d21", acceptArrayVal<double,2,1>);
+    boost::python::def("acceptArrayVal_d20", acceptArrayVal<double,2,0>);
+    boost::python::def("acceptArrayVal_d33", acceptArrayVal<double,3,3>);
+    boost::python::def("acceptArrayVal_d32", acceptArrayVal<double,3,2>);
+    boost::python::def("acceptArrayVal_d31", acceptArrayVal<double,3,1>);
+    boost::python::def("acceptArrayVal_d30", acceptArrayVal<double,3,0>);
+    boost::python::def("acceptArrayVal_dc11", acceptArrayVal<double const,1,1>);
+    boost::python::def("acceptArrayVal_dc10", acceptArrayVal<double const,1,0>);
+    boost::python::def("acceptArrayVal_dc22", acceptArrayVal<double const,2,2>);
+    boost::python::def("acceptArrayVal_dc21", acceptArrayVal<double const,2,1>);
+    boost::python::def("acceptArrayVal_dc20", acceptArrayVal<double const,2,0>);
+    boost::python::def("acceptArrayVal_dc33", acceptArrayVal<double const,3,3>);
+    boost::python::def("acceptArrayVal_dc32", acceptArrayVal<double const,3,2>);
+    boost::python::def("acceptArrayVal_dc31", acceptArrayVal<double const,3,1>);
+    boost::python::def("acceptArrayVal_dc30", acceptArrayVal<double const,3,0>);
     boost::python::def("extractArray_d11", extractArray<double,1,1>);
     boost::python::def("extractArray_d10", extractArray<double,1,0>);
     boost::python::def("extractArray_d22", extractArray<double,2,2>);

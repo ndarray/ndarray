@@ -26,6 +26,17 @@ class TestNdArrayWrappers(unittest.TestCase):
             self.assert_(func(array))
             self.assert_(cfunc(array))
 
+    def testAcceptArrayVal(self):
+        for suffix in ("11","10","22","21","20","33","32","31","30"):
+            func = getattr(ndarray_mod, "acceptArrayVal_d%s" % suffix)
+            cfunc = getattr(ndarray_mod, "acceptArrayVal_dc%s" % suffix)
+            nd = int(suffix[0])
+            shape = tuple(int(i) for i in numpy.random.randint(low=2,high=5,size=nd))
+            array = numpy.zeros(shape, dtype=float)
+            array[:] = numpy.arange(0, array.size).reshape(array.shape)
+            self.assert_(func(array))
+            self.assert_(cfunc(array))
+
     def testExtractArray(self):
         for suffix in ("11","10","22","21","20","33","32","31","30"):
             func = getattr(ndarray_mod, "extractArray_d%s" % suffix)

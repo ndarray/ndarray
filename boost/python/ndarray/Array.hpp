@@ -116,6 +116,26 @@ struct arg_rvalue_from_python< ndarray::Array<T,N,C> const & > {
 };
 
 template <typename T, int N, int C>
+struct arg_rvalue_from_python< ndarray::Array<T,N,C> > 
+    : public arg_rvalue_from_python< ndarray::Array<T,N,C> const &> 
+{
+
+    arg_rvalue_from_python(PyObject * p) : 
+        arg_rvalue_from_python< ndarray::Array<T,N,C> const & >(p) {}
+
+};
+
+template <typename T, int N, int C>
+struct arg_rvalue_from_python< ndarray::Array<T,N,C> const > 
+    : public arg_rvalue_from_python< ndarray::Array<T,N,C> const &> 
+{
+
+    arg_rvalue_from_python(PyObject * p) : 
+        arg_rvalue_from_python< ndarray::Array<T,N,C> const & >(p) {}
+
+};
+
+template <typename T, int N, int C>
 struct extract_rvalue< ndarray::Array<T,N,C> > : private noncopyable {
     typedef ndarray::Array<T,N,C> result_type;
 
