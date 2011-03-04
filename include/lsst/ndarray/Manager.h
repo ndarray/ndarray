@@ -67,7 +67,7 @@ class SimpleManager : public Manager {
 public:
     
     static std::pair<Manager::Ptr,T*> allocate(int size) {
-        boost::intrusive_ptr<SimpleManager> r(new SimpleManager(size));
+        boost::intrusive_ptr<SimpleManager> r(new SimpleManager(size), false);
         return std::pair<Manager::Ptr,T*>(r, r->_p.get());
     }
 
@@ -82,7 +82,7 @@ public:
     typedef U Owner;
 
     static Manager::Ptr make(Owner const & owner) {
-        return Manager::Ptr(new ExternalManager(owner));
+        return Manager::Ptr(new ExternalManager(owner), false);
     }
 
     Owner const & getOwner() const { return *static_cast<Owner const *>(this); }

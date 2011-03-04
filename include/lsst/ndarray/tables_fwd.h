@@ -61,6 +61,6 @@ struct Traits {
     typedef Row<T> ConstRecord;
 };
 
-}} // namespace lsst::ndarray::tables
+}}} // namespace lsst::ndarray::tables
 
 #endif // !LSST_NDARRAY_tables_fwd_h_INCLUDED

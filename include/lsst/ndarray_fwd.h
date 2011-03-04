@@ -108,7 +108,7 @@ template <typename Derived> class ExpressionBase;
 template <typename Derived> class ArrayBase;
 template <typename T, int N, int C=0> class ArrayRef;
 template <typename T, int N, int C=0> class Array;
-template <typename T, int N> class Vector;
+template <typename T, int N> struct Vector;
 
 }} // namespace lsst::ndarray
 
