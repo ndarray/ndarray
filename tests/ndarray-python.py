@@ -12,24 +12,37 @@ class TestNDArray(unittest.TestCase):
         self.assertEqual(a,b)
 
     def testArrayConversion(self):
-        a = numpy.zeros((5,3,4),dtype=float)
-        b = ndarray_python_test.passFloatArray33(a)
-        self.assert_(b.flags["WRITEABLE"])
-        self.assertEqual(a.shape,b.shape)
-        self.assertEqual(a.strides,b.strides)
-        c = a[:,:,:2]
-        self.assert_(c.flags["WRITEABLE"])
-        d = ndarray_python_test.passFloatArray33(c)
-        self.assertEqual(c.shape,d.shape)
-        self.assertNotEqual(c.strides,d.strides)
-        del d
-        d = ndarray_python_test.passFloatArray30(c)
-        self.assertEqual(c.shape,d.shape)
-        self.assertEqual(c.strides,d.strides)
-        e = ndarray_python_test.passConstFloatArray33(a)
-        self.assertEqual(a.shape,e.shape)
-        self.assertEqual(a.strides,e.strides)
-        self.assert_(not e.flags.writeable)
+        a1 = numpy.zeros((5,3,4),dtype=float)
+        a2 = a1[:,:,:2]
+        self.assert_(a1.flags["WRITEABLE"])
+        self.assert_(a2.flags["WRITEABLE"])
+
+        b1 = ndarray_python_test.passFloatArray33(a1)
+        self.assert_(b1.flags["WRITEABLE"])
+        self.assertEqual(a1.shape,b1.shape)
+        self.assertEqual(a1.strides,b1.strides)
+
+        c1 = ndarray_python_test.passFloatArray30(a1)
+        self.assert_(c1.flags["WRITEABLE"])
+        self.assertEqual(a1.shape,c1.shape)
+        self.assertEqual(a1.strides,c1.strides)
+
+        d1 = ndarray_python_test.passConstFloatArray33(a1)
+        self.assertEqual(a1.shape,d1.shape)
+        self.assertEqual(a1.strides,d1.strides)
+        self.assert_(not d1.flags.writeable)
+
+        self.assertRaises(ValueError, ndarray_python_test.passFloatArray33, a2)
+
+        c2 = ndarray_python_test.passFloatArray30(a2)
+        self.assert_(c2.flags["WRITEABLE"])
+        self.assertEqual(a2.shape,c2.shape)
+        self.assertEqual(a2.strides,c2.strides)
+
+        d2 = ndarray_python_test.passConstFloatArray33(a2)
+        self.assertEqual(a2.shape,d2.shape)
+        self.assertNotEqual(a2.strides,d2.strides)
+        self.assert_(not d2.flags.writeable)
 
     def testArrayCreation(self):
         a = ndarray_python_test.makeFloatArray3((3,4,5))

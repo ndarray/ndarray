@@ -182,13 +182,22 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
         for (int i=1; i<=C; ++i) { // verify that we have at least C contiguous dimensions
             int stride = PyArray_STRIDE(array.get(),N-i);
             if (stride != full_size) {
-                flags |= NPY_C_CONTIGUOUS;
-                array = PyPtr(
-                    PyArray_FROMANY(input.get(),detail::NumpyTraits<NonConst>::getCode(),N,N,flags),
-                    false
-                );
-                if (!array) return false;
-                break;
+                if (writeable) {
+                    PyErr_SetString(
+                        PyExc_ValueError,
+                        "The given NumPy array does not have the required number of contiguous dimensions"
+                        " for conversion to ndarray::Array."
+                    );
+                    return false;
+                } else {
+                    flags |= NPY_C_CONTIGUOUS;
+                    array = PyPtr(
+                        PyArray_FROMANY(input.get(),detail::NumpyTraits<NonConst>::getCode(),N,N,flags),
+                        false
+                    );
+                    if (!array) return false;
+                    break;
+                }
             }
             full_size *= PyArray_DIM(array.get(),N-i);
         }
