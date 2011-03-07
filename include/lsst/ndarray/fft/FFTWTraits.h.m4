@@ -142,7 +142,7 @@ template <typename T> struct FFTWTraits { BOOST_STATIC_ASSERT(sizeof(T) < 0); };
 /// \cond SPECIALIZATIONS
 FFTW_TRAITS(float,fftwf);
 FFTW_TRAITS(double,fftw);
-#ifndef NDARRAY_NO_LONG_DOUBLE
+#ifndef NDARRAY_FFT_NO_LONG_DOUBLE
 FFTW_TRAITS(long double, fftwl);
 #endif
 /// \endcond
