@@ -74,13 +74,13 @@ template <
     int N       ///< Number of elements.
     >
 struct Vector {
+    
     typedef T Element;
     typedef T Value;
     typedef T & Reference;
     typedef T const & ConstReference;
     typedef T * Iterator;
     typedef T const * ConstIterator;
-    typedef boost::mpl::int_<N> ND;
     
     typedef Value value_type;
     typedef Iterator iterator;
@@ -92,6 +92,9 @@ struct Vector {
     typedef T * pointer;
     typedef int difference_type;
     typedef int size_type;
+
+
+    typedef boost::mpl::int_<N> ND;
 
     size_type size() const { return N; }           ///< \brief Return the size of the Vector.
     size_type max_size() const { return N; }       ///< \brief Return the size of the Vector.
@@ -387,6 +390,119 @@ struct Vector {
 
     T elems[N];
 };
+
+/// @brief PArtial specialization for zero-size vectors to avoid compiler errors on some platforms.
+template <typename T>
+struct Vector<T,0> {
+    
+    typedef T Element;
+    typedef T Value;
+    typedef T & Reference;
+    typedef T const & ConstReference;
+    typedef T * Iterator;
+    typedef T const * ConstIterator;
+    
+    typedef Value value_type;
+    typedef Iterator iterator;
+    typedef ConstIterator const_iterator;
+    typedef Reference reference;
+    typedef ConstReference const_reference;
+    typedef boost::reverse_iterator<T*> reverse_iterator;
+    typedef boost::reverse_iterator<const T*> const_reverse_iterator;
+    typedef T * pointer;
+    typedef int difference_type;
+    typedef int size_type;
+
+
+    typedef boost::mpl::int_<0> ND;
+
+    size_type size() const { return 0; }           ///< \brief Return the size of the Vector.
+    size_type max_size() const { return 0; }       ///< \brief Return the size of the Vector.
+    bool empty() const { return true; }            ///< \brief Return true if size() == 0.
+    /// \brief Return an iterator to the beginning of the Vector.
+    iterator begin() { return 0; }
+    /// \brief Return a const_iterator to the beginning of the Vector.
+    const_iterator begin() const { return 0; }
+    /// \brief Return an iterator to the end of the Vector.
+    iterator end() { return 0; }
+    /// \brief Return a const_iterator to the end of the Vector.
+    const_iterator end() const { return 0; }
+    /// \brief Return a reverse_iterator to the beginning of the reversed Vector.
+    reverse_iterator rbegin() { return reverse_iterator(); }
+    /// \brief Return a const_reverse_iterator to the beginning of the reversed Vector.
+    const_reverse_iterator rbegin() const { return const_reverse_iterator(); }
+    /// \brief Return a reverse_iterator to the end of the reversed Vector.
+    reverse_iterator rend() { return reverse_iterator(); }
+    /// \brief Return a const_reverse_iterator to the end of the reversed Vector.
+    const_reverse_iterator rend() const { return const_reverse_iterator(); }
+
+    /// \brief Return a reference to the first element.
+    reference front() { LSST_NDARRAY_ASSERT(false); return 0; }
+    /// \brief Return a reference to the last element.
+    reference back() { return LSST_NDARRAY_ASSERT(false); return 0; }
+    /// \brief Return a const_reference to the first element.
+    const_reference front() const { LSST_NDARRAY_ASSERT(false); return 0; }
+    /// \brief Return a const_reference to the last element.
+    const_reference back() const { LSST_NDARRAY_ASSERT(false); return 0; }
+
+    /// \brief Return a reference to the element with the given index.
+    reference operator[](int i) { LSST_NDARRAY_ASSERT(false); return 0; }
+    /// \brief Return a const_reference to the element with the given index.
+    const_reference operator[](int i) const { LSST_NDARRAY_ASSERT(false); return 0; }
+
+    /// \brief Create a new Vector that is a subset of this.
+    template <int Start, int Stop>
+    Vector<T,Stop-Start> getRange() const {
+        return Vector<T,Stop-Start>();
+    }
+
+    /// \brief Create a new Vector from the first M elements of this.
+    template <int M> Vector<T,M> first() const {
+        return Vector<T,M>();
+    }
+
+    /// \brief Create a new Vector from the last M elements of this.
+    template <int M> Vector<T,M> last() const {
+        return Vector<T,M>();
+    }
+
+    /** \brief Stream output. */
+    friend std::ostream& operator<<(std::ostream& os, Vector<T,0> const & obj) {
+        return os << "()";
+    }
+
+    /**
+     *  \brief Default constructor.
+     *
+     *  Initializes the elements to zero.
+     */
+    Vector() {}
+
+    /// \brief Construct with copies of a scalar.
+    template <typename U>
+    explicit Vector(U scalar) {}
+
+    /// \brief Converting copy constructor.
+    template <typename U>
+    explicit Vector(Vector<U,0> const & other) {}
+
+    /// \brief Return true if elements of other are equal to the elements of this.
+    bool operator==(Vector const & other) const { return true; }
+
+    /// \brief Return false if any elements of other are not equal to the elements of this.
+    bool operator!=(Vector const & other) const { return false; }
+
+    /// \brief Return the sum of all elements.
+    T sum() const { return 0; }
+
+    /// \brief Return the product of all elements.
+    T product() const { return 1; }
+
+    /// \brief Return a Vector with the elements reversed.
+    Vector reverse() const { return Vector(); }
+
+};
+
 
 /// \brief Concatenate two Vectors into a single long Vector.
 template <typename T, int N, int M>

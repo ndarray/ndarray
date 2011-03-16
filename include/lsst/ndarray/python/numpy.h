@@ -156,9 +156,8 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
      *  @brief Complete a Python to C++ conversion begun with fromPythonStage1().
      * 
      *  The copy will be shallow if possible and deep if necessary to meet the data type
-     *  and contiguousness requirements.  The NPY_UPDATEIFCOPY flag will set on the numpy
-     *  array if a deep copy is necessary and the Array data type is non-const; this will
-     *  cause the copy to be written back to the original when it is deallocated.
+     *  and contiguousness requirements.  If a non-const array is required, the copy will
+     *  always be shallow; if this is not possible, ValueError will be raised.
      *
      *  The output Array's shared_ptr owner attribute will own a reference to the numpy
      *  array that ultimately owns the data (either the original or the copy).
