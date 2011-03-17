@@ -54,6 +54,8 @@ BOOST_AUTO_TEST_CASE(vectors) {
     lsst::ndarray::Vector<int,0> e;
     lsst::ndarray::Vector<int,3> f = lsst::ndarray::concatenate(a, e);
     BOOST_CHECK_EQUAL(a, f);
+
+    e = a.last<0>();
 }
 
 BOOST_AUTO_TEST_CASE(cores) {

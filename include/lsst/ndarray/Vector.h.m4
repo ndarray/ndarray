@@ -177,28 +177,28 @@ struct Vector {
     template <int Start, int Stop>
     Vector<T,Stop-Start> getRange() const {
         Vector<T,Stop-Start> r;
-        std::copy(elems + Start, elems+Stop, r.elems);
+        std::copy(begin() + Start, begin()+Stop, r.begin());
         return r;
     }
 
     /// \brief Create a new Vector from the first M elements of this.
     template <int M> Vector<T,M> first() const {
         Vector<T,M> r;
-        std::copy(elems,elems+M,r.elems);
+        std::copy(begin(), begin() + M, r.begin());
         return r;
     }
 
     /// \brief Create a new Vector from the last M elements of this.
     template <int M> Vector<T,M> last() const {
         Vector<T,M> r;
-        std::copy(elems+(N-M),elems+N,r.elems);
+        std::copy(begin() + (N - M), begin() + N, r.begin());
         return r;
     }
 
     /** \brief Stream output. */
     friend std::ostream& operator<<(std::ostream& os, Vector<T,N> const & obj) {
         os << "(";
-        std::copy(obj.begin(),obj.end(),std::ostream_iterator<T>(os,","));
+        std::copy(obj.begin(), obj.end(), std::ostream_iterator<T>(os,","));
         return os << ")";
     }
 
@@ -223,7 +223,7 @@ struct Vector {
 
     /// \brief Return true if elements of other are equal to the elements of this.
     bool operator==(Vector const & other) const {
-        return std::equal(begin(),end(),other.begin());
+        return std::equal(begin(), end(), other.begin());
     }
 
     /// \brief Return false if any elements of other are not equal to the elements of this.
@@ -234,16 +234,14 @@ struct Vector {
     /// \brief Return the sum of all elements.
     T sum() const {
         T r = 0;
-        ConstIterator const i_end = end();
-        for (ConstIterator i=begin; i != i_end; ++i) r += (*i);
+        for (ConstIterator i = begin(); i != end(); ++i) r += (*i);
         return r;
     }
 
     /// \brief Return the product of all elements.
     T product() const {
         T r = 1;
-        ConstIterator const i_end = this->end();
-        for (ConstIterator i = this->begin(); i != i_end; ++i) r *= (*i);
+        for (ConstIterator i = begin(); i != end(); ++i) r *= (*i);
         return r;
     }
 
