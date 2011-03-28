@@ -154,11 +154,11 @@ public:
         PyPtr matrixType(getNumpyMatrixType());
         if (!matrixType) return false;
         LSST_NDARRAY_ASSERT(PyObject_IsInstance(p.get(),matrixType.get()));
-        Array<Scalar,2,2> array;
-        if (!PyConverter< Array<Scalar,2,2> >::fromPythonStage2(p,array)) return false;
+        Array<Scalar,2,0> array;
+        if (!PyConverter< Array<Scalar,2,0> >::fromPythonStage2(p,array)) return false;
         int rows = array.template getSize<0>();
         int cols = array.template getSize<1>();
-        Eigen::Block<ndarray::EigenView<Scalar,2,2>,Rows::value,Cols::value> block(
+        Eigen::Block<ndarray::EigenView<Scalar,2,0>,Rows::value,Cols::value> block(
             ndarray::viewAsEigen(array), 0, 0, rows, cols
         );
         output = block;
