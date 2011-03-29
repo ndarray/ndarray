@@ -104,6 +104,6 @@ private:
     ColumnsPtr _columns;
 };
 
-}} // namespace lsst::ndarray::tables
+}}} // namespace lsst::ndarray::tables
 
 #endif // !LSST_NDARRAY_TABLES_Row_h_INCLUDED

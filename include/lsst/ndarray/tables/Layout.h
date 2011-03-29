@@ -92,6 +92,6 @@ private:
     int _alignment;
 };
 
-}} // namespace lsst::ndarray::tables
+}}} // namespace lsst::ndarray::tables
 
 #endif // !LSST_NDARRAY_TABLES_Layout_h_INCLUDED

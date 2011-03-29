@@ -94,6 +94,7 @@ define(`VECTOR_TYPEDEFS',
 
 #include <iostream>
 
+#include "lsst/ndarray_fwd.h"
 #include "lsst/ndarray/types.h"
 
 /// \cond MACROS

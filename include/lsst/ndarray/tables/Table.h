@@ -141,6 +141,6 @@ private:
 
 };
 
-}} // namespace lsst::ndarray::tables
+}}} // namespace lsst::ndarray::tables
 
 #endif // !LSST_NDARRAY_TABLES_Table_h_INCLUDED
