@@ -26,7 +26,7 @@ Multidimensional array and NumPy support package for C++
 
 pkg = env["eups_product"]
 env.libs[pkg] = env.getlibs(" ".join(dependencies))
-env.Append(M4FLAGS="-I%s" % os.path.join(os.path.abspath(eups.productDir(pkg)), 'm4'))
+m4flags = "-I%s" % os.path.join(os.path.abspath(eups.productDir(pkg)), 'm4')
 
 #
 # Build/install things
@@ -36,7 +36,7 @@ generated = ["#include/lsst/ndarray/ArrayRef.h",
              "#include/lsst/ndarray/Vector.h",
              "#include/lsst/ndarray/fft/FFTWTraits.h",
              ]
-headers = [env.M4(filename, "%s.m4" % filename) for filename in generated]
+headers = [env.M4(filename, "%s.m4" % filename, M4FLAGS=m4flags) for filename in generated]
 
 for d in (
     ".",
