@@ -1,0 +1,5 @@
+svn co @SVNROOT@/DMS/@PRODUCT@/tags/@VERSION@ @PRODUCT@-@VERSION@ &&
+cd @PRODUCT@-@VERSION@ &&
+setup -r . &&
+scons opt=3 &&
+scons opt=3 install
