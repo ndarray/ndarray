@@ -6,7 +6,7 @@ import eups
 dependencies = ["boost", "python", "eigen", "fftw"]  # utils also needed, but only for scons
 
 env = scons.makeEnv("ndarray",
-                    r"$HeadURL: svn+ssh://svn.lsstcorp.org/DMS/ndarray/trunk/SConstruct $",
+                    r"$HeadURL$",
                     [["boost", "boost/shared_ptr.hpp"],
                      ["boost", "boost/test/unit_test.hpp", "boost_unit_test_framework:C++"],
                      ["python", "Python.h"],
