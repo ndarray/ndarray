@@ -2,6 +2,9 @@ import os
 import sys
 import lsst.tests
 Import("env")
+
+# Note: ndarray-tables test is disabled until we move to a newer boost version (>= 1.41).
+
 cc_tests = ["ndarray.cc", "ndarray-eigen.cc", "ndarray-fft.cc"]
 python_mod = env.LoadableModuleIncomplete("ndarray_python_test", ["ndarray-python-mod.cc"],
                                           LIBS=env.libs[env["eups_product"]])

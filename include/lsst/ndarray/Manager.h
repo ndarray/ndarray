@@ -26,7 +26,7 @@
 /** 
  *  @file lsst/ndarray/Manager.h
  *
- *  @brief Traits for Expression.
+ *  @brief Definition of Manager, which manages the ownership of array data.
  */
 
 #include "lsst/ndarray_fwd.h"
@@ -51,6 +51,8 @@ public:
 
     int getRC() const { return _rc; }
 
+    virtual bool isUnique() const { return false; }
+
 protected:
 
     explicit Manager() : _rc(1) {}
@@ -70,6 +72,8 @@ public:
         boost::intrusive_ptr<SimpleManager> r(new SimpleManager(size), false);
         return std::pair<Manager::Ptr,T*>(r, r->_p.get());
     }
+
+    virtual bool isUnique() const { return true; }
 
 private:
     explicit SimpleManager(int size) : _p(new U[size]) {}

@@ -207,6 +207,9 @@ public:
     /// @brief Return the reference count (for debugging purposes).
     int getRC() const { return _rc; }
 
+    /// @brief Return true if the Core and Manager reference counts are 1 and the manager is unique.
+    bool isUnique() const { return (_rc == 1) && (_manager->getRC() == 1) && _manager->isUnique(); }
+
 protected:
 
     virtual ~Core() {}

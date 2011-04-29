@@ -479,3 +479,22 @@ BOOST_AUTO_TEST_CASE(flatten) {
         data, lsst::ndarray::makeVector(24), lsst::ndarray::makeVector(1)
     );
 }
+
+BOOST_AUTO_TEST_CASE(unique) {
+    lsst::ndarray::Array<double,2,2> a = lsst::ndarray::allocate(5,4);
+    BOOST_CHECK(a.isUnique());
+    lsst::ndarray::Array<double const,2,2> b(a);
+    BOOST_CHECK(!a.isUnique());
+    BOOST_CHECK(!b.isUnique());
+    a = lsst::ndarray::Array<double,2,2>();
+    BOOST_CHECK(b.isUnique());    
+    lsst::ndarray::Array<double const,2,1> c = b[lsst::ndarray::view(1,4)(1,3)];
+    BOOST_CHECK(!c.isUnique());
+    BOOST_CHECK(!b.isUnique());
+    b = lsst::ndarray::Array<double const,2,2>();
+    BOOST_CHECK(c.isUnique());
+    lsst::ndarray::Array<double const,2,1> d = lsst::ndarray::allocate(6,3);
+    d.swap(c);
+    BOOST_CHECK(c.isUnique());
+    BOOST_CHECK(d.isUnique());
+}

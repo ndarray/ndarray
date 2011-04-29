@@ -156,6 +156,21 @@ public:
         return !this->operator==(other);
     }
 
+    /// @brief Lightweight shallow swap.
+    void swap(Array & other) {
+        std::swap(this->_data, other._data);
+        this->_core.swap(other._core);
+    }
+
+    /**
+     *  @brief Return true if the Array is definitely unique.
+     *
+     *  This will only return true if the manager overrides Manager::isUnique();
+     *  this is true for the SimpleManager used by lsst::ndarray::allocate, but it is
+     *  not true for ExternalManager.
+     */
+    bool isUnique() const { return this->_core->isUnique(); }
+
 private:
     template <typename T_, int N_, int C_> friend class Array;
     template <typename T_, int N_, int C_> friend class ArrayRef;
