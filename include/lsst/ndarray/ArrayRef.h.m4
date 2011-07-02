@@ -127,6 +127,18 @@ public:
      *  all elements of the ArrayRef to a single value.
      */
     /// @{
+    ArrayRef const & operator=(Array<T,N,C> const & other) const {
+        LSST_NDARRAY_ASSERT(other.getShape() == this->getShape());
+        std::copy(other.begin(), other.end(), this->begin());
+        return *this;
+    }
+
+    ArrayRef const & operator=(ArrayRef const & other) const {
+        LSST_NDARRAY_ASSERT(other.getShape() == this->getShape());
+        std::copy(other.begin(), other.end(), this->begin());
+        return *this;
+    }
+
 BASIC_ASSIGN
 AUGMENTED_ASSIGN(+=)
 AUGMENTED_ASSIGN(-=)
