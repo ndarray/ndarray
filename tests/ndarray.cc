@@ -498,3 +498,29 @@ BOOST_AUTO_TEST_CASE(unique) {
     BOOST_CHECK(c.isUnique());
     BOOST_CHECK(d.isUnique());
 }
+
+BOOST_AUTO_TEST_CASE(ticket1720) {
+    lsst::ndarray::Array<int,2,2> a = lsst::ndarray::allocate(5,4);
+    a.deep() = 0;
+    lsst::ndarray::Array<int,2,2> b = lsst::ndarray::allocate(5,4);
+    b.deep() = 1;
+    a[0] = b[1];
+    BOOST_CHECK_EQUAL(a[0][0], 1);
+    lsst::ndarray::Array<int,2,0> c(b);
+    a[1] = c[1];
+    BOOST_CHECK_EQUAL(a[1][0], 1);
+}
+
+BOOST_AUTO_TEST_CASE(zeroSize) {
+    lsst::ndarray::Array<double,1,1> a = lsst::ndarray::allocate(0);
+    BOOST_CHECK(!a.getData());
+    BOOST_CHECK_EQUAL(a.getSize<0>(), 0);
+    lsst::ndarray::Array<double,2,2> b = lsst::ndarray::allocate(0, 5);
+    BOOST_CHECK(!b.getData());
+    BOOST_CHECK_EQUAL(b.getSize<0>(), 0);
+    BOOST_CHECK_EQUAL(b.getSize<1>(), 5);
+    lsst::ndarray::Array<double,2,2> c = lsst::ndarray::allocate(5, 0);
+    BOOST_CHECK(!c.getData());
+    BOOST_CHECK_EQUAL(c.getSize<0>(), 5);
+    BOOST_CHECK_EQUAL(c.getSize<1>(), 0);
+}

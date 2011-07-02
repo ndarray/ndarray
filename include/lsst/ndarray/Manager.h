@@ -76,7 +76,9 @@ public:
     virtual bool isUnique() const { return true; }
 
 private:
-    explicit SimpleManager(int size) : _p(new U[size]) {}
+    explicit SimpleManager(int size) : _p() {
+        if (size > 0) _p.reset(new U[size]);
+    }
     boost::scoped_array<U> _p;
 };
 

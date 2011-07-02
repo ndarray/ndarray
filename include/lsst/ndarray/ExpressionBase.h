@@ -104,7 +104,7 @@ public:
     /// @brief Return the size of the first dimension.
     size_type size() const { return this->template getSize<0>(); }
 
-    /// @brief Return true if the expression has no elements.
+    /// @brief Return true if the first dimension has no elements.
     bool empty() const { return this->template getSize<0>() == 0; }
 
     /* ---------------------------------------------------------------------- */
