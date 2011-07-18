@@ -1,3 +1,4 @@
+setupRequired(scons)
 setupRequired(boost >= 1.37.0)
 setupRequired(python >= 2.5.2)
 setupRequired(numpy >= 1.2.1)
