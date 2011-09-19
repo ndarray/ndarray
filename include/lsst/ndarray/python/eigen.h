@@ -120,22 +120,39 @@ public:
                    *   fromPythonStage2().
                    */
     ) {
-        PyPtr tmp = makeNumpyMatrix(p);
-        if (!tmp) return false;
-        if (Cols::value != Eigen::Dynamic && Cols::value != PyArray_DIM(tmp.get(),1)) {
-            if (Cols::value == 1 && PyArray_DIM(tmp.get(),0) == 1) { 
-                tmp = PyPtr(PyObject_CallMethod(tmp.get(),const_cast<char*>("transpose"),NULL),false);
+
+        // eigen matrix PyConvert will only convert from a numpy.array of the same data type
+        //PyObject* numpyModule = PyImport_ImportModule("numpy");
+        //PyObject* arrayclass = PyObject_GetAttrString(numpyModule, "array");
+        //if (!PyObject_IsInstance(p.get(), arrayclass))
+
+        // this code now expects a numpy array of the correct type for the matrix class 
+        // the array is no longer converted in Stage1, and makeNumpyMatrix is not called
+        if (!PyArray_Check(p.get()))
+        {
+            PyErr_SetString(PyExc_ValueError,"Input to matrix PyConverter must be numpy.array");
+            return false;
+        }
+        int intype = PyArray_TYPE(p.get());
+        int matrixtype = detail::NumpyTraits<Scalar>::getCode();
+        if (intype != matrixtype)
+        {
+            PyErr_SetString(PyExc_ValueError,"Can only convert to a matrix from a numpy.array of the same type");
+            return false;
+        }
+        if (Cols::value != Eigen::Dynamic && Cols::value != PyArray_DIM(p.get(),1)) {
+            if (Cols::value == 1 && PyArray_DIM(p.get(),0) == 1) { 
+                p = PyPtr(PyObject_CallMethod(p.get(),const_cast<char*>("transpose"),NULL),false);
             } else {
                 PyErr_SetString(PyExc_ValueError,"Incorrect number of columns for matrix.");
                 return false;
             }
         }
-        if (Rows::value != Eigen::Dynamic && Rows::value != PyArray_DIM(tmp.get(),0)) {
+        if (Rows::value != Eigen::Dynamic && Rows::value != PyArray_DIM(p.get(),0)) {
             PyErr_SetString(PyExc_ValueError,"Incorrect number of rows for matrix.");
             return false;
         }
         
-        p = tmp;
         return true;
     }
 
@@ -151,9 +168,9 @@ public:
         Matrix & output       ///< The output C++ object.
     ) {
         LSST_NDARRAY_ASSERT(p);
-        PyPtr matrixType(getNumpyMatrixType());
-        if (!matrixType) return false;
-        LSST_NDARRAY_ASSERT(PyObject_IsInstance(p.get(),matrixType.get()));
+//        PyPtr matrixType(getNumpyMatrixType());
+ //       if (!matrixType) return false;
+//        LSST_NDARRAY_ASSERT(PyObject_IsInstance(p.get(),matrixType.get()));
         Array<Scalar,2,0> array;
         if (!PyConverter< Array<Scalar,2,0> >::fromPythonStage2(p,array)) return false;
         int rows = array.template getSize<0>();
