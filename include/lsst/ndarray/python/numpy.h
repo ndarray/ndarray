@@ -143,6 +143,23 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
                    *   fromPythonStage2().
                    */
     ) {
+//        PyObject* numpyModule = PyImport_ImportModule("numpy");
+ //       PyObject* arrayclass = PyObject_GetAttrString(numpyModule, "array");
+//yyp        if (!PyObject_IsInstance(p.get(), arrayclass))
+
+        // check added so that only numpy array arrays of the type to match Array class are allowed
+        if (!PyArray_Check(p.get()))
+        {
+            PyErr_SetString(PyExc_ValueError,"Input to array PyConverter must be numpy.array");
+            return false;
+        }
+        int intype = PyArray_TYPE(p.get());
+        int matrixtype = detail::NumpyTraits<NonConst>::getCode();
+        if (intype != matrixtype)
+        {
+            PyErr_SetString(PyExc_ValueError,"Input to array PyConverter must be numpy.array of the same data type");
+            return false;
+        }
         int flags = NPY_ALIGNED;
         bool writeable = !boost::is_const<Element>::value;
         if (writeable) flags |= NPY_WRITEABLE;
