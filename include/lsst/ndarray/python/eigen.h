@@ -54,7 +54,7 @@ struct PyConverter< EigenView<T,N,C,XprKind_,Rows_,Cols_> > {
                     shape[1] = 1;
                 }
                 PyArray_Dims dims = { shape, 2 };
-                PyPtr r(PyArray_NewShape(reinterpret_cast<PyArrayObject*>(p.get()), &dims));
+                PyPtr r(PyArray_Newshape(reinterpret_cast<PyArrayObject*>(p.get()), &dims, NPY_ANYORDER));
                 if (!r) return false;
                 p.swap(r);
             } else if (N == 1) {
@@ -81,6 +81,7 @@ struct PyConverter< EigenView<T,N,C,XprKind_,Rows_,Cols_> > {
                 return false;
             }
         }
+        return true;
     }
 
     static bool fromPythonStage2(
@@ -93,14 +94,14 @@ struct PyConverter< EigenView<T,N,C,XprKind_,Rows_,Cols_> > {
         return true;
     }
 
-    static PyObject * toPython(EigenView<T,N,C> const & m, PyObject * owner=NULL) {
+    static PyObject * toPython(EigenView<T,N,C,XprKind_,Rows_,Cols_> const & m, PyObject * owner=NULL) {
         PyPtr r(PyConverter< Array<T,N,C> >::toPython(m.shallow(), owner));
-        if (!r) return r;
+        if (!r) return NULL;
         PyPtr p(PyArray_Squeeze(reinterpret_cast<PyArrayObject*>(r.get())));
-        return p;
+        Py_XINCREF(p.get());
+        return p.get();
     }
-        
-    )
+
 };
 
 namespace detail {
@@ -111,24 +112,25 @@ namespace detail {
  */
 template <typename Matrix>
 class EigenPyConverter : public detail::PyConverterBase<Matrix> {
-    typedef typename SelectEigenView<Matrix>::Type View;
+    typedef typename SelectEigenView<Matrix>::Type OutputView;
+    typedef typename SelectEigenView<Matrix const, false>::Type InputView;
 public:
 
     static PyObject * toPython(Matrix const & input, PyObject * owner = NULL) {
-        return PyConverter<View>::toPython(ndarray::copy(input, owner));
+        return PyConverter<OutputView>::toPython(ndarray::copy(input), owner);
     }
 
     static PyTypeObject const * getPyType() {
-        return reinterpret_cast<PyTypeObject*>(getNumpyMatrixType().get());
+        return PyArray_Type;
     }
 
     static bool fromPythonStage1(PyPtr & p) {
-        return PyConverter<View>::fromPythonStage1(p);
+        return PyConverter<InputView>::fromPythonStage1(p);
     }
 
     static bool fromPythonStage2(PyPtr const & p, Matrix & output) {
-        View v;
-        if (!PyConverter<View>::fromPythonStage2(p, v)) return false;
+        InputView v;
+        if (!PyConverter<InputView>::fromPythonStage2(p, v)) return false;
         output = v;
         return true;
     }

@@ -3,7 +3,7 @@
 #define PY_ARRAY_UNIQUE_SYMBOL LSST_SWIG_TEST_NUMPY_ARRAY_API
 #include "numpy/arrayobject.h"
 #include "lsst/ndarray/python.h"
-#include <Eigen/Array>
+#include "lsst/ndarray/python/eigen.h"
 %}
 %init %{
     import_array();

@@ -161,7 +161,7 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
             }
         } else if (C < 0) {
             int requiredStride = sizeof(Element);
-            for (int i = 0; i < C; ++i) {
+            for (int i = 0; i < -C; ++i) {
                 int actualStride = PyArray_STRIDE(p.get(), i);
                 if (actualStride != requiredStride) {
                     PyErr_SetString(

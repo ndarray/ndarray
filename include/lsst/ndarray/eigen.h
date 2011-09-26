@@ -248,11 +248,9 @@ public:
 
     explicit EigenView(ArrayRef<T,N,C> const & array) : _array(array) { checkDimensions(); }
 
-    EIGEN_INHERIT_ASSIGNMENT_OPERATORS(EigenView)
-
     EigenView & operator=(EigenView const & other) {
-        // Weird behavior to please SWIG: if we're default-constructed, do shallow assignment;
-        // otherwise all assignment is deep.
+        // Weird behavior to please SWIG: if we're default-constructed, and it's an exact match,
+        // do shallow assignment; otherwise all assignment is deep.
         if (_array.getData() == 0) {
             _array = other._array;
         } else {
@@ -260,6 +258,8 @@ public:
         }
         return *this;
     }
+
+    using Base::operator=;
 
     inline Index innerStride() const { return ST::getInnerStride(*Access::getCore(_array)); }
     inline Index outerStride() const { return ST::getOuterStride(*Access::getCore(_array)); }
@@ -341,20 +341,21 @@ private:
 };
 
 /// @brief A metafunction that computes the EigenView instantiation that most closely matches an Eigen type.
-template <typename T>
+template <typename T, bool contiguous=true>
 struct SelectEigenView {
     typedef Eigen::internal::traits<T> Traits;
     typedef typename Traits::Scalar Scalar;
+    typedef typename boost::mpl::if_< boost::is_const<T>, Scalar const, Scalar >::type Element;
     typedef typename Traits::XprKind XprKind;
     enum {
         N = 2,
-        C = ((Traits::Flags & Eigen::RowMajorBit) ? 2 : -2),
+        C = ((contiguous) ? ((Traits::Flags & Eigen::RowMajorBit) ? 2 : -2) : 0),
         Rows = Traits::RowsAtCompileTime,
         Cols = Traits::ColsAtCompileTime
     };
-    typedef Array<Scalar,N,C> Shallow;
-    typedef ArrayRef<Scalar,N,C> Deep;
-    typedef EigenView<Scalar,N,C,XprKind,Rows,Cols> Type;
+    typedef Array<Element,N,C> Shallow;
+    typedef ArrayRef<Element,N,C> Deep;
+    typedef EigenView<Element,N,C,XprKind,Rows,Cols> Type;
 };
 
 /// @brief Copy an arbitrary Eigen expression into a new EigenView.

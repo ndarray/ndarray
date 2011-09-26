@@ -58,6 +58,11 @@ static PyMethodDef methods[] = {
     {"passConstFloatArray33",&passArray<double const,3,3>,METH_VARARGS,NULL},
     {"passFloatArray30",&passArray<double,3,0>,METH_VARARGS,NULL},
     {"makeFloatArray3",&makeArray<double,3>,METH_VARARGS,NULL},
+    {"passIntVector3",&passVector<int,3>,METH_VARARGS,NULL},
+    {"passIntArray33",&passArray<int,3,3>,METH_VARARGS,NULL},
+    {"passConstIntArray33",&passArray<int const,3,3>,METH_VARARGS,NULL},
+    {"passIntArray30",&passArray<int,3,0>,METH_VARARGS,NULL},
+    {"makeIntArray3",&makeArray<int,3>,METH_VARARGS,NULL},
     {NULL}
 };
 
