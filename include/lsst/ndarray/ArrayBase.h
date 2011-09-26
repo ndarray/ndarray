@@ -38,8 +38,9 @@
 #include "lsst/ndarray/detail/NestedIterator.h"
 #include "lsst/ndarray/detail/StridedIterator.h"
 #include "lsst/ndarray/detail/ArrayAccess.h"
+#include "lsst/ndarray/detail/ViewBuilder.h"
 #include "lsst/ndarray/ArrayTraits.h"
-#include "lsst/ndarray/views.h"
+#include "lsst/ndarray/eigen_fwd.h"
 
 namespace lsst { namespace ndarray {
 
@@ -53,6 +54,7 @@ namespace lsst { namespace ndarray {
  */
 template <typename Derived>
 class ArrayBase : public ExpressionBase<Derived> {
+protected:
     typedef ExpressionTraits<Derived> Traits;
     typedef typename Traits::Core Core;
     typedef typename Traits::CorePtr CorePtr;
@@ -71,7 +73,9 @@ public:
     typedef typename Traits::RMC RMC;
     /// @brief Vector type for N-dimensional indices.
     typedef Vector<int,ND::value> Index;
-    /// @brief ArrayRef to a noncontiguous array; the result of a call to transpose().
+    /// @brief ArrayRef to an reverse-ordered contiguous array; the result of a call to transpose().
+    typedef ArrayRef<Element,ND::value,-RMC::value> FullTranspose;
+    /// @brief ArrayRef to a noncontiguous array; the result of a call to transpose(...).
     typedef ArrayRef<Element,ND::value,0> Transpose;
     /// @brief The corresponding Array type.
     typedef Array<Element,ND::value,RMC::value> Shallow;
@@ -135,14 +139,17 @@ public:
     int getNumElements() const { return this->_core->getNumElements(); }
 
     /// @brief Return a view of the array with the order of the dimensions reversed.
-    Transpose transpose() const {
-        Index order;
-        std::copy(
-            boost::counting_iterator<int>(0),
-            boost::counting_iterator<int>(ND::value),
-            order.rbegin()
+    FullTranspose transpose() const {
+        Index shape = getShape();
+        Index strides = getStrides();
+        for (int n=0; n < ND::value / 2; ++n) {
+            std::swap(shape[n], shape[ND::value-n-1]);
+            std::swap(strides[n], strides[ND::value-n-1]);
+        }
+        return FullTranspose(
+            getData(),
+            Core::create(shape, strides, getManager())
         );
-        return transpose(order);
     }
 
     /// @brief Return a view of the array with the dimensions permuted.
@@ -166,24 +173,43 @@ public:
 
     /// @brief Return an ArrayRef view to this.
     Deep const deep() const { return Deep(this->getSelf()); }
+    
+    //@{
+    /**
+     *  @name Eigen3 Interface
+     *
+     *  These methods return Eigen3 views to the array.  Template
+     *  parameters optionally control the expression type (Matrix/Array) and
+     *  the compile-time dimensions.
+     *
+     *  The inline implementation is included by lsst/ndarray/eigen.h.
+     */
+    template <typename XprKind, int Rows, int Cols>
+    EigenView<Element,ND::value,RMC::value,XprKind,Rows,Cols> asEigen() const;
+
+    template <typename XprKind>
+    EigenView<Element,ND::value,RMC::value,XprKind> asEigen() const;
+
+    template <int Rows, int Cols>
+    EigenView<Element,ND::value,RMC::value,Eigen::MatrixXpr,Rows,Cols> asEigen() const;
+
+    EigenView<Element,ND::value,RMC::value,Eigen::MatrixXpr> asEigen() const;
+    //@}
 
     /// @brief A template metafunction class to determine the result of a view indexing operation.
-    template <
-        typename View_, 
-        typename Seq_ = typename detail::ViewNormalizer<ND::value,typename View_::Sequence>::Output
-        >
+    template <typename View_>
     struct ResultOf {
         typedef Element Element_;
-        typedef typename detail::ViewTraits<ND::value,RMC::value,Seq_>::ND ND_;
-        typedef typename detail::ViewTraits<ND::value,RMC::value,Seq_>::RMC RMC_;
+        typedef typename detail::ViewTraits<ND::value, RMC::value, typename View_::Sequence>::ND ND_;
+        typedef typename detail::ViewTraits<ND::value, RMC::value, typename View_::Sequence>::RMC RMC_;
         typedef ArrayRef<Element_,ND_::value,RMC_::value> Type;
         typedef Array<Element_,ND_::value,RMC_::value> Value;
     };
 
-    /// @brief Return a general view into this array (see \ref tutorial).
-    template <typename View_>
-    typename ResultOf<View_>::Type
-    operator[](View_ const & def) const {
+    /// @brief Return a general view into this array (see @ref tutorial).
+    template <typename Seq>
+    typename ResultOf< View<Seq> >::Type
+    operator[](View<Seq> const & def) const {
         return detail::buildView(this->getSelf(), def._seq);
     }
 

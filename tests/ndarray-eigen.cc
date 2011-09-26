@@ -22,128 +22,158 @@
  */
 #include <lsst/ndarray/eigen.h>
 
-#include <Eigen/Array>
-
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE ndarray-eigen
 #include <boost/test/unit_test.hpp>
 
-BOOST_AUTO_TEST_CASE(MatrixXd) {
-    Eigen::MatrixXd m1 = Eigen::MatrixXd::Random(5,6);
-    lsst::ndarray::Array<double,2> a1(lsst::ndarray::viewMatrixAsArray(m1));
-    BOOST_CHECK_EQUAL(m1.data(),a1.getData());
-    BOOST_CHECK_EQUAL(m1.rows(),a1.getSize<0>());
-    BOOST_CHECK_EQUAL(m1.cols(),a1.getSize<1>());
-    Eigen::Block<Eigen::MatrixXd> m3 = m1.block(0,1,3,3);
-    lsst::ndarray::Array<double,2> a3(lsst::ndarray::viewMatrixAsArray(m3));
-    BOOST_CHECK_EQUAL(m3.data(),a3.getData());
-    BOOST_CHECK_EQUAL(m3.rows(),a3.getSize<0>());
-    BOOST_CHECK_EQUAL(m3.cols(),a3.getSize<1>());
-}
-
-BOOST_AUTO_TEST_CASE(Matrix3d) {
-    Eigen::Matrix3d m1 = Eigen::Matrix3d::Random();
-    lsst::ndarray::Array<double,2> a1(lsst::ndarray::viewMatrixAsArray(m1));
-    BOOST_CHECK_EQUAL(m1.data(),a1.getData());
-    BOOST_CHECK_EQUAL(m1.rows(),a1.getSize<0>());
-    BOOST_CHECK_EQUAL(m1.cols(),a1.getSize<1>());
-    lsst::ndarray::Array<double,2,2> a2(lsst::ndarray::copy(a1));
-    {
-        Eigen::Block<Eigen::Matrix3d,2,2> m3 = m1.block<2,2>(0,0);
-        lsst::ndarray::Array<double,2> a3(lsst::ndarray::viewMatrixAsArray(m3));
-        lsst::ndarray::Array<double,2,2> a4(lsst::ndarray::copy(a3));
-        BOOST_CHECK_EQUAL(m3.data(),a3.getData());
-        BOOST_CHECK_EQUAL(m3.rows(),a3.getSize<0>());
-        BOOST_CHECK_EQUAL(m3.cols(),a3.getSize<1>());
-    }
-    {
-        Eigen::Block<Eigen::Matrix3d,2,1> m3 = m1.block<2,1>(0,2);
-        lsst::ndarray::Array<double,1> a3(lsst::ndarray::viewVectorAsArray(m3));
-        lsst::ndarray::Array<double,1,1> a4(lsst::ndarray::copy(a3));
-        BOOST_CHECK_EQUAL(m3.data(),a3.getData());
-        BOOST_CHECK_EQUAL(m3.rows(),a3.getSize<0>());
-        BOOST_CHECK_EQUAL(m3.cols(),a3.getSize<1>());
+template <typename T, typename U>
+void testElements2(T const & a, U const & b) {
+    BOOST_CHECK( a.template getSize<0>() == b.rows() );
+    BOOST_CHECK( a.template getSize<1>() == b.cols() );
+    BOOST_CHECK( a.template getStride<0>() == b.rowStride() );
+    BOOST_CHECK( a.template getStride<1>() == b.colStride() );
+    for (int i = 0; i < b.rows(); ++i) {
+        for (int j = 0; j < b.cols(); ++j) {
+            BOOST_CHECK(&a[i][j] == &b(i,j));
+        }
     }    
 }
 
-BOOST_AUTO_TEST_CASE(VectorXd) {
-    Eigen::VectorXd m1 = Eigen::VectorXd::Random(5);
-    lsst::ndarray::Array<double,2> a1(lsst::ndarray::viewMatrixAsArray(m1));
-    BOOST_CHECK_EQUAL(m1.data(),a1.getData());
-    BOOST_CHECK_EQUAL(m1.rows(),a1.getSize<0>());
-    BOOST_CHECK_EQUAL(m1.cols(),a1.getSize<1>());
-    lsst::ndarray::Array<double,1> a3(lsst::ndarray::viewVectorAsArray(m1));
-    BOOST_CHECK_EQUAL(m1.data(),a1.getData());
-    BOOST_CHECK_EQUAL(m1.rows(),a1.getSize<0>());
+template <typename T, typename U>
+void testElements1(T const & a, U const & b) {
+    BOOST_CHECK( a.template getSize<0>() == b.size() );
+    BOOST_CHECK( a.template getStride<0>() == b.innerStride() );
+    for (int i = 0; i < b.size(); ++i) {
+        BOOST_CHECK(&a[i] == &b[i]);
+    }
 }
 
-BOOST_AUTO_TEST_CASE(Vector3d) {
-    Eigen::Vector3d m1 = Eigen::Vector3d::Random();
-    lsst::ndarray::Array<double,2> a1(lsst::ndarray::viewMatrixAsArray(m1));
-    BOOST_CHECK_EQUAL(m1.data(),a1.getData());
-    BOOST_CHECK_EQUAL(m1.rows(),a1.getSize<0>());
-    BOOST_CHECK_EQUAL(m1.cols(),a1.getSize<1>());
-    lsst::ndarray::Array<double,1> a3(lsst::ndarray::viewVectorAsArray(m1));
-    BOOST_CHECK_EQUAL(m1.data(),a1.getData());
-    BOOST_CHECK_EQUAL(m1.rows(),a1.getSize<0>());
+template <int C, int Rows, int Cols>
+void testEigenView(lsst::ndarray::EigenView<double,2,C,Eigen::ArrayXpr,Rows,Cols> b) {
+    lsst::ndarray::Array<double,2,C> a(b.shallow());
+    b.setRandom();
+    testElements2(a, b);
+    Eigen::Matrix<double,Rows,Eigen::Dynamic> m1(b.rows(), 6);
+    m1.setRandom(b.rows(), 6);
+    Eigen::Matrix<double,Eigen::Dynamic,Cols> m2(6, b.cols());
+    m2.setRandom(6, b.cols());
+    b.matrix() = m1 * m2;
+    Eigen::Matrix<double,Rows,Cols> m3 = m1 * m2;
+    for (int i = 0; i < b.rows(); ++i) {
+        for (int j = 0; j < b.cols(); ++j) {
+            BOOST_CHECK(a[i][j] == m3(i,j));
+        }
+    }
+    Eigen::Array<double,Rows,Cols> m4(b.rows(), b.cols());
+    m4.setRandom();
+    Eigen::Array<double,Rows,Cols> m5 = m4 * b;
+    Eigen::Array<double,Rows,Cols> m6 = m4 * m3.array();
+    BOOST_CHECK( (m5 == m6).all() );
 }
 
-template <int C>
-void testEigenView2() {
-    lsst::ndarray::Vector<int,2> shape = lsst::ndarray::makeVector(5,4);
-
-    Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic,Eigen::RowMajor|Eigen::AutoAlign> 
-        mr(Eigen::MatrixXd::Random(shape[0],shape[1]));
-    Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic,Eigen::AutoAlign> 
-        mc(Eigen::MatrixXd::Random(shape[1],shape[0]));
-
-    lsst::ndarray::Array<double,2,C> a(lsst::ndarray::allocate(shape));
-
-    lsst::ndarray::EigenView<double,2,C> vr(a);
-    vr = mr;
-    BOOST_CHECK_EQUAL(vr,mr);
-    mr.setConstant(0.0);
-    mr = vr;
-    BOOST_CHECK_EQUAL(lsst::ndarray::viewAsEigen(a),mr);
-
-    lsst::ndarray::TransposedEigenView<double,2,C> vc(a);
-    vc = mc;
-    BOOST_CHECK_EQUAL(vc,mc);
-    mc.setConstant(0.0);
-    mc = vc;
-    BOOST_CHECK_EQUAL(lsst::ndarray::viewAsTransposedEigen(a),mc);
+template <int C, int Rows, int Cols>
+void testEigenView(lsst::ndarray::EigenView<double,1,C,Eigen::ArrayXpr,Rows,Cols> b) {
+    lsst::ndarray::Array<double,1,C> a(b.shallow());
+    b.setRandom();
+    testElements1(a, b);
+    Eigen::Matrix<double,Rows,Eigen::Dynamic> m1(b.rows(), 6);
+    m1.setRandom(b.rows(), 6);
+    Eigen::Matrix<double,Eigen::Dynamic,Cols> m2(6, b.cols());
+    m2.setRandom(6, b.cols());
+    b.matrix() = m1 * m2;
+    Eigen::Matrix<double,Rows,Cols> m3 = m1 * m2;
+    for (int i = 0; i < b.rows(); ++i) {
+        BOOST_CHECK(a[i] == m3[i]);
+    }
+    Eigen::Array<double,Rows,Cols> m4(b.rows(), b.cols());
+    m4.setRandom();
+    Eigen::Array<double,Rows,Cols> m5 = m4 * b;
+    Eigen::Array<double,Rows,Cols> m6 = m4 * m3.array();
+    BOOST_CHECK( (m5 == m6).all() );
 }
 
-template <int C>
-void testEigenView1() {
-    lsst::ndarray::Vector<int,1> shape = lsst::ndarray::makeVector(5);
+template <int C, int Rows, int Cols>
+void testEigenView(lsst::ndarray::EigenView<double,2,C,Eigen::MatrixXpr,Rows,Cols> b) {
+    lsst::ndarray::Array<double,2,C> a(b.shallow());
+    b.setRandom();
+    testElements2(a, b);
+    Eigen::Matrix<double,Rows,Eigen::Dynamic> m1(b.rows(), 6);
+    m1.setRandom(b.rows(), 6);
+    Eigen::Matrix<double,Eigen::Dynamic,Cols> m2(6, b.cols());
+    m2.setRandom(6, b.cols());
+    b = m1 * m2;
+    Eigen::Matrix<double,Rows,Cols> m3 = m1 * m2;
+    for (int i = 0; i < b.rows(); ++i) {
+        for (int j = 0; j < b.cols(); ++j) {
+            BOOST_CHECK(a[i][j] == m3(i,j));
+        }
+    }
+    Eigen::Array<double,Rows,Cols> m4(b.rows(), b.cols());
+    m4.setRandom();
+    Eigen::Array<double,Rows,Cols> m5 = m4 * b.array();
+    Eigen::Array<double,Rows,Cols> m6 = m4 * m3.array();
+    BOOST_CHECK( (m5 == m6).all() );
+}
 
-    Eigen::VectorXd mr(Eigen::VectorXd::Random(shape[0]));
-    Eigen::RowVectorXd mc(Eigen::RowVectorXd::Random(shape[0]));
-    lsst::ndarray::Array<double,1,C> a(lsst::ndarray::allocate(shape));
+template <int C, int Rows, int Cols>
+void testEigenView(lsst::ndarray::EigenView<double,1,C,Eigen::MatrixXpr,Rows,Cols> b) {
+    lsst::ndarray::Array<double,1,C> a(b.shallow());
+    b.setRandom();
+    testElements1(a, b);
+    Eigen::Matrix<double,Rows,Eigen::Dynamic> m1(b.rows(), 6);
+    m1.setRandom(b.rows(), 6);
+    Eigen::Matrix<double,Eigen::Dynamic,Cols> m2(6, b.cols());
+    m2.setRandom(6, b.cols());
+    b = m1 * m2;
+    Eigen::Matrix<double,Rows,Cols> m3 = m1 * m2;
+    for (int i = 0; i < b.rows(); ++i) {
+        BOOST_CHECK(a[i] == m3[i]);
+    }
+    Eigen::Array<double,Rows,Cols> m4(b.rows(), b.cols());
+    m4.setRandom();
+    Eigen::Array<double,Rows,Cols> m5 = m4 * b.array();
+    Eigen::Array<double,Rows,Cols> m6 = m4 * m3.array();
+    BOOST_CHECK( (m5 == m6).all() );
+}
 
-    lsst::ndarray::EigenView<double,1,C> vr(a);
-    vr = mr;
-    BOOST_CHECK_EQUAL(vr,mr);
-    mr.setConstant(0.0);
-    mr = vr;
-    BOOST_CHECK_EQUAL(lsst::ndarray::viewAsEigen(a),mr);
-
-    lsst::ndarray::TransposedEigenView<double,1,C> vc(a);
-    vc = mc;
-    BOOST_CHECK_EQUAL(vc,mc);
-    mc.setConstant(0.0);
-    mc = vc;
-    BOOST_CHECK_EQUAL(lsst::ndarray::viewAsTransposedEigen(a),mc);
+template <typename XprKind>
+void invokeEigenViewTests() {
+    lsst::ndarray::Array<double,2,2> a22(lsst::ndarray::allocate(5,4));
+    testEigenView(a22.asEigen<XprKind>());
+    testEigenView(a22.asEigen<XprKind,5,4>());
+    testEigenView(a22.transpose().asEigen<XprKind>());
+    testEigenView(a22.transpose().asEigen<XprKind,4,5>());
+    lsst::ndarray::Array<double,2,1> a21(a22[lsst::ndarray::view()(0,3)]);
+    testEigenView(a21.asEigen<XprKind>());
+    testEigenView(a21.asEigen<XprKind,5,3>());
+    testEigenView(a21.transpose().asEigen<XprKind>());
+    testEigenView(a21.transpose().asEigen<XprKind,3,5>());
+    lsst::ndarray::Array<double,2,0> a20(a22[lsst::ndarray::view()(0,4,2)]);
+    testEigenView(a20.asEigen<XprKind>());
+    testEigenView(a20.asEigen<XprKind,5,2>());
+    testEigenView(a20.transpose().asEigen<XprKind>());
+    testEigenView(a20.transpose().asEigen<XprKind,2,5>());
+    lsst::ndarray::Array<double,1,1> a11(lsst::ndarray::allocate(4));
+    testEigenView(a11.asEigen<XprKind>());
+    testEigenView(a11.asEigen<XprKind,4,1>());
+    testEigenView(a11.asEigen<XprKind,1,4>());
+    testEigenView(a11.transpose().asEigen<XprKind>());
+    testEigenView(a11.transpose().asEigen<XprKind,4,1>());
+    testEigenView(a11.transpose().asEigen<XprKind,1,4>());
+    lsst::ndarray::Array<double,1,0> a10(a11[lsst::ndarray::view(0,4,2)]);
+    testEigenView(a10.asEigen<XprKind>());
+    testEigenView(a10.asEigen<XprKind,2,1>());
+    testEigenView(a10.asEigen<XprKind,1,2>());
+    testEigenView(a10.transpose().asEigen<XprKind>());
+    testEigenView(a10.transpose().asEigen<XprKind,2,1>());
+    testEigenView(a10.transpose().asEigen<XprKind,1,2>());
 }
 
 BOOST_AUTO_TEST_CASE(EigenView) {
-    
-    testEigenView2<0>();
-    testEigenView2<1>();
-    testEigenView2<2>();
+    invokeEigenViewTests<Eigen::ArrayXpr>();
+    invokeEigenViewTests<Eigen::MatrixXpr>();
 
-    testEigenView1<0>();
-    testEigenView1<1>();
-
+    Eigen::MatrixXd m(Eigen::MatrixXd::Random(5,6));
+    lsst::ndarray::SelectEigenView<Eigen::MatrixXd>::Type v(lsst::ndarray::copy(m));
+    BOOST_CHECK( (v.array() == m.array()).all() );
 }

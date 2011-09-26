@@ -31,7 +31,7 @@
 
 #include "lsst/ndarray_fwd.h"
 #include "lsst/ndarray/ArrayTraits.h"
-#include "lsst/ndarray/ArrayBase.h"
+#include "lsst/ndarray/ArrayBaseN.h"
 #include "lsst/ndarray/Vector.h"
 #include "lsst/ndarray/detail/Core.h"
 #include "lsst/ndarray/views.h"
@@ -44,8 +44,8 @@ namespace lsst { namespace ndarray {
  *  Array is the workhorse class of the ndarray library.
  */
 template <typename T, int N, int C>
-class Array : public ArrayBase< Array<T,N,C> > {
-    typedef ArrayBase<Array> Super;
+class Array : public ArrayBaseN< Array<T,N,C> > {
+    typedef ArrayBaseN<Array> Super;
     typedef typename Super::Core Core;
     typedef typename Super::CorePtr CorePtr;
 public:
@@ -72,7 +72,7 @@ public:
     Array(
         Array<T_,N,C_> const & other
 #ifndef DOXYGEN
-        , typename boost::enable_if_c<((C_>=C) && boost::is_convertible<T_*,T*>::value),void*>::type=0
+        , typename boost::enable_if<detail::Convertible<N,T_,C_,T,C>,void*>::type=0
 #endif
     ) : Super(other._data, other._core) {}
 
@@ -86,7 +86,7 @@ public:
     Array(
         ArrayRef<T_,N,C_> const & other
 #ifndef DOXYGEN
-        , typename boost::enable_if_c<((C_>=C) && boost::is_convertible<T_*,T*>::value),void*>::type=0
+        , typename boost::enable_if<detail::Convertible<N,T_,C_,T,C>,void*>::type=0
 #endif
     ) : Super(other._data, other._core) {}
 
@@ -109,7 +109,7 @@ public:
      */
     template <typename T_, int C_>
 #ifndef DOXYGEN
-    typename boost::enable_if_c<((C_>=C) && boost::is_convertible<T_*,T*>::value), Array &>::type
+    typename boost::enable_if<detail::Convertible<N,T_,C_,T,C>, Array &>::type
 #else
     Array &
 #endif
@@ -127,7 +127,7 @@ public:
      */
     template <typename T_, int C_>
 #ifndef DOXYGEN
-    typename boost::enable_if_c<((C_>=C) && boost::is_convertible<T_*,T*>::value), Array &>::type
+    typename boost::enable_if<detail::Convertible<N,T_,C_,T,C>, Array &>::type
 #else
     Array &
 #endif

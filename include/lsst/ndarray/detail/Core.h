@@ -70,17 +70,22 @@ public:
         Vector<int,M> const & strides, 
         Manager::Ptr const & manager = Manager::Ptr()
     ) {
-        return Ptr(new Core(shape, strides, manager),false);
+        return Ptr(new Core(shape, strides, manager), false);
     }        
 
-    /// @brief Create a Core::Ptr with the given shape and manager with RMC strides.
+    /// @brief Create a Core::Ptr with the given shape and manager with contiguous strides.
     template <int M>
     static Ptr create(
         Vector<int,M> const & shape,
+        DataOrderEnum order,
         Manager::Ptr const & manager = Manager::Ptr()
     ) {
-        return Ptr(new Core(shape, manager),false);
-    }        
+        if (order == ROW_MAJOR) {
+            return Ptr(new Core(shape, manager), false);
+        } else {
+            return Ptr(new Core(shape, 1, manager), false);
+        }
+    }
 
     /// @brief Create a Core::Ptr with the given manager and zero shape and strides.
     static Ptr create(
@@ -130,6 +135,7 @@ public:
     
 protected:
 
+    // Explicit strides
     template <int M>
     Core (
         Vector<int,M> const & shape,
@@ -137,12 +143,22 @@ protected:
         Manager::Ptr const & manager
     ) : Super(shape, strides, manager), _size(shape[M-N]), _stride(strides[M-N]) {}
 
+    // Row-major strides
     template <int M>
     Core (
         Vector<int,M> const & shape,
         Manager::Ptr const & manager
     ) : Super(shape, manager), _size(shape[M-N]), _stride(Super::getStride() * Super::getSize()) {}
 
+    // Column-major strides
+    template <int M>
+    Core (
+        Vector<int,M> const & shape,
+        int stride,
+        Manager::Ptr const & manager
+    ) : Super(shape, stride * shape[M-N], manager), _size(shape[M-N]), _stride(stride) {}
+
+    // Zero shape and strides
     Core (
         Manager::Ptr const & manager
     ) : Super(manager), _size(0), _stride(0) {}
@@ -224,6 +240,13 @@ protected:
     template <int M>
     Core(
         Vector<int,M> const & shape,
+        Manager::Ptr const & manager
+    ) : _manager(manager), _rc(1) {}
+
+    template <int M>
+    Core(
+        Vector<int,M> const & shape,
+        int stride,
         Manager::Ptr const & manager
     ) : _manager(manager), _rc(1) {}
 

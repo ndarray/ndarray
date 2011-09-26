@@ -60,9 +60,10 @@ public:
         typedef detail::ArrayAccess< Target > Access;
         typedef typename Access::Core Core;
         typedef typename Access::Element Element;
+        DataOrderEnum order = (ExpressionTraits< Target >::RMC::value < 0) ? COLUMN_MAJOR : ROW_MAJOR;
         int total = _shape.product();
         std::pair<Manager::Ptr,Element*> p = SimpleManager<Element>::allocate(total);
-        return Access::construct(p.second, Core::create(_shape, p.first));
+        return Access::construct(p.second, Core::create(_shape, order, p.first));
     }
 
     explicit SimpleInitializer(Vector<int,N> const & shape) : _shape(shape) {}
@@ -157,9 +158,6 @@ copy(ExpressionBase<Derived> const & expr) {
     r = expr;
     return r;
 }
-
-/// @brief An enumeration for stride computation standards.
-enum DataOrderEnum { ROW_MAJOR=1, COLUMN_MAJOR=2 };
 
 /// @brief Compute row- or column-major strides for the given shape.
 template <int N>
