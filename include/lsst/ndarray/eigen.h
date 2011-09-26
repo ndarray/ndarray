@@ -240,6 +240,8 @@ public:
 
     typedef T * PointerType;
 
+    EigenView() : _array() {}
+    
     EigenView(EigenView const & other) : _array(other._array) {}
 
     explicit EigenView(Array<T,N,C> const & array) : _array(array) { checkDimensions(); }
@@ -247,6 +249,17 @@ public:
     explicit EigenView(ArrayRef<T,N,C> const & array) : _array(array) { checkDimensions(); }
 
     EIGEN_INHERIT_ASSIGNMENT_OPERATORS(EigenView)
+
+    EigenView & operator=(EigenView const & other) {
+        // Weird behavior to please SWIG: if we're default-constructed, do shallow assignment;
+        // otherwise all assignment is deep.
+        if (_array.getData() == 0) {
+            _array = other._array;
+        } else {
+            Base::operator=(other);
+        }
+        return *this;
+    }
 
     inline Index innerStride() const { return ST::getInnerStride(*Access::getCore(_array)); }
     inline Index outerStride() const { return ST::getOuterStride(*Access::getCore(_array)); }
