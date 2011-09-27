@@ -262,8 +262,6 @@ public:
 
     explicit EigenView(Array<T,N,C> const & array) : _array(array) { checkDimensions(); }
 
-    explicit EigenView(ArrayRef<T,N,C> const & array) : _array(array) { checkDimensions(); }
-
     EigenView & operator=(EigenView const & other) {
         // Weird behavior to please SWIG: if we're default-constructed, and it's an exact match,
         // do shallow assignment; otherwise all assignment is deep.
