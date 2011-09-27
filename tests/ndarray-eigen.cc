@@ -20,7 +20,8 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-#include <lsst/ndarray/eigen.h>
+#include "lsst/ndarray/eigen.h"
+#include "Eigen/SVD"
 
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE ndarray-eigen
@@ -176,4 +177,22 @@ BOOST_AUTO_TEST_CASE(EigenView) {
     Eigen::MatrixXd m(Eigen::MatrixXd::Random(5,6));
     lsst::ndarray::SelectEigenView<Eigen::MatrixXd>::Type v(lsst::ndarray::copy(m));
     BOOST_CHECK( (v.array() == m.array()).all() );
+}
+
+template <typename SVD, typename Matrix, typename Vector>
+void testSVD(Matrix const & a, Vector const & b, Vector & x) {
+    SVD svd(a, Eigen::ComputeThinU | Eigen::ComputeThinV);
+    x = svd.solve(b);
+    BOOST_CHECK((a.transpose() * a * x).isApprox(a.transpose() * b));
+}
+
+BOOST_AUTO_TEST_CASE(SVD) {
+    typedef lsst::ndarray::EigenView<double,2,2> Matrix;
+    typedef lsst::ndarray::EigenView<double,1,1> Vector;
+    Matrix a(lsst::ndarray::allocate(8,5));
+    Vector b(lsst::ndarray::allocate(8));
+    Vector x(lsst::ndarray::allocate(5));
+    a.setRandom();
+    b.setRandom();
+    testSVD< Eigen::JacobiSVD<Matrix::PlainEigenType> >(a, b, x);
 }

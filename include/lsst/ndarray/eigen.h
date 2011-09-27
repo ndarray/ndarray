@@ -43,7 +43,8 @@ struct EigenStrideTraits<1,0,Rows,1> {
         InnerStride = Eigen::Dynamic,
         OuterStride = Eigen::Dynamic,
         IsVector = 1,
-        Flags = Eigen::LinearAccessBit
+        Flags = Eigen::LinearAccessBit,
+        Options = Eigen::ColMajor | Eigen::AutoAlign
     };
     static int getInnerStride(Core<1> const & core) { return core.getStride(); }
     static int getOuterStride(Core<1> const & core) { return core.getSize() * core.getStride(); }
@@ -59,7 +60,8 @@ struct EigenStrideTraits<1,0,1,Cols> {
         InnerStride = Eigen::Dynamic,
         OuterStride = Eigen::Dynamic,
         IsVector = 1,
-        Flags = Eigen::LinearAccessBit | Eigen::RowMajorBit
+        Flags = Eigen::LinearAccessBit | Eigen::RowMajorBit,
+        Options = Eigen::RowMajor | Eigen::AutoAlign
     };
     static int getInnerStride(Core<1> const & core) { return core.getStride(); }
     static int getOuterStride(Core<1> const & core) { return core.getSize() * core.getStride(); }
@@ -75,7 +77,8 @@ struct EigenStrideTraits<1,C,1,1> {
         InnerStride = Eigen::Dynamic,
         OuterStride = Eigen::Dynamic,
         IsVector = 1,
-        Flags = Eigen::LinearAccessBit
+        Flags = Eigen::LinearAccessBit,
+        Options = Eigen::ColMajor | Eigen::AutoAlign
     };
     static int getInnerStride(Core<1> const & core) { return core.getStride(); }
     static int getOuterStride(Core<1> const & core) { return core.getStride(); }
@@ -91,7 +94,8 @@ struct EigenStrideTraits<1,C,Rows,1> {
         InnerStride = 1,
         OuterStride = Eigen::Dynamic,
         IsVector = 1,
-        Flags = Eigen::LinearAccessBit | Eigen::PacketAccessBit
+        Flags = Eigen::LinearAccessBit | Eigen::PacketAccessBit,
+        Options = Eigen::ColMajor | Eigen::AutoAlign
     };
     static int getInnerStride(Core<1> const & core) { return 1; }
     static int getOuterStride(Core<1> const & core) { return core.getSize(); }
@@ -107,7 +111,8 @@ struct EigenStrideTraits<1,C,1,Cols> {
         InnerStride = 1,
         OuterStride = Eigen::Dynamic,
         IsVector = 1,
-        Flags = Eigen::LinearAccessBit | Eigen::RowMajorBit | Eigen::PacketAccessBit
+        Flags = Eigen::LinearAccessBit | Eigen::RowMajorBit | Eigen::PacketAccessBit,
+        Options = Eigen::RowMajor | Eigen::AutoAlign
     };
     static int getInnerStride(Core<1> const & core) { return 1; }
     static int getOuterStride(Core<1> const & core) { return core.getSize(); }
@@ -123,7 +128,8 @@ struct EigenStrideTraits<2,0,Rows,Cols> {
         InnerStride = Eigen::Dynamic,
         OuterStride = Eigen::Dynamic,
         IsVector = 0,
-        Flags = 0
+        Flags = 0,
+        Options = Eigen::ColMajor | Eigen::AutoAlign
     };
     static int getInnerStride(Core<2> const & core) { return core.getStride(); }
     static int getOuterStride(Core<1> const & core) { return core.getStride(); }
@@ -139,7 +145,8 @@ struct EigenStrideTraits<2,1,Rows,Cols> {
         InnerStride = 1,
         OuterStride = Eigen::Dynamic,
         IsVector = 0,
-        Flags = Eigen::RowMajorBit | Eigen::PacketAccessBit
+        Flags = Eigen::RowMajorBit | Eigen::PacketAccessBit,
+        Options = Eigen::RowMajor | Eigen::AutoAlign
     };
     static int getInnerStride(Core<1> const & core) { return 1; }
     static int getOuterStride(Core<2> const & core) { return core.getStride(); }
@@ -158,7 +165,8 @@ struct EigenStrideTraits<2,-1,Rows,Cols> {
         InnerStride = 1,
         OuterStride = Eigen::Dynamic,
         IsVector = 0,
-        Flags = Eigen::PacketAccessBit
+        Flags = Eigen::PacketAccessBit,
+        Options = Eigen::ColMajor | Eigen::AutoAlign
     };
     static int getInnerStride(Core<2> const & core) { return 1; }
     static int getOuterStride(Core<1> const & core) { return core.getStride(); }
@@ -180,7 +188,7 @@ namespace internal {
 
 template <typename T, int N, int C, typename XprKind_, int Rows, int Cols>
 struct traits< lsst::ndarray::EigenView<T,N,C,XprKind_,Rows,Cols> > {
-    typedef int Index;
+    typedef DenseIndex Index;
     typedef Dense StorageKind;
     typedef XprKind_ XprKind;
     typedef typename boost::remove_const<T>::type Scalar;
@@ -237,6 +245,14 @@ public:
     typedef typename Eigen::internal::dense_xpr_base< EigenView<T,N,C,XprKind_,Rows_,Cols_> >::type Base;
 
     EIGEN_DENSE_PUBLIC_INTERFACE(EigenView)
+
+    enum { Options = ST::Options };
+
+    typedef typename boost::mpl::if_< 
+        boost::is_same<XprKind_,Eigen::MatrixXpr>,
+        Eigen::Matrix<Scalar,Rows_,Cols_,Options,Rows_,Cols_>,
+        Eigen::Array<Scalar,Rows_,Cols_,Options,Rows_,Cols_>
+        >::type PlainEigenType;
 
     typedef T * PointerType;
 
