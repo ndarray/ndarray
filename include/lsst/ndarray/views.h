@@ -90,6 +90,9 @@ struct View {
     template <typename OtherSequence>
     explicit View(OtherSequence const & other) : _seq(other) {}
 
+    template <typename OtherSequence>
+    View(View<OtherSequence> const & other) : _seq(other._seq) {}
+
     /// @brief The View that results from chaining an full dimension index <b><tt>()</tt></b> to this.
     typedef View<typename boost::fusion::result_of::push_back<Sequence const,index::Full>::type> Full;
 
