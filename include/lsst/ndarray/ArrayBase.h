@@ -116,6 +116,9 @@ public:
     /// @brief Return a raw pointer to the first element of the array.
     Element * getData() const { return _data; }
     
+    /// @brief Return true if the array has a null data point.
+    bool isEmpty() const { return _data == 0; }
+
     /// @brief Return the opaque object responsible for memory management.
     Manager::Ptr getManager() const { return this->_core->getManager(); }
 
