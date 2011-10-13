@@ -75,12 +75,25 @@ bool acceptMatrix2d(Eigen::Matrix2d const & m1) {
 
 bool acceptArray1(lsst::ndarray::Array<double,1,1> const & a1) {
     lsst::ndarray::Array<double,1,1> a2 = returnArray1();
+#ifndef GCC_45
     return lsst::ndarray::all(lsst::ndarray::equal(a1, a2));
+#else
+    return std::equal(a1.begin(), a1.end(), a2.begin());
+#endif
 }
 
 bool acceptArray3(lsst::ndarray::Array<double,3> const & a1) {
     lsst::ndarray::Array<double,3> a2 = returnArray3();
+#ifndef GCC_45
     return lsst::ndarray::all(lsst::ndarray::equal(a1, a2));
+#else
+    for (int i = 0; i < a1.getSize<0>(); ++i) {
+      for (int j = 0; j < a1.getSize<1>(); ++j) {
+	if (!std::equal(a1[i][j].begin(), a1[i][j].end(), a2[i][j].begin())) return false;
+      }
+    }
+    return true;
+#endif
 }
 
 int acceptOverload(int n) {

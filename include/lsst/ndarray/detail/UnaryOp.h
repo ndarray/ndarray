@@ -39,7 +39,7 @@ namespace detail {
 /**
  *  @internal @brief An iterator for unary expression templates.
  *
- *  @ingroup InternalGroup
+ *  @ingroup ndarrayInternalGroup
  *
  *  Acts as a "transform" iterator.
  */
@@ -78,7 +78,7 @@ private:
 /**
  *  @internal @brief A unary expression template.
  *
- *  @ingroup InternalGroup
+ *  @ingroup ndarrayInternalGroup
  *
  *  Represents the lazy evaluation of a unary expression.
  */

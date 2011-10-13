@@ -140,6 +140,6 @@ private:
     ColumnSequence _sequence;
 };
 
-}}} // namespace lsst::ndarray::tables::detail
+}}}} // namespace lsst::ndarray::tables::detail
 
 #endif // !LSST_NDARRAY_TABLES_DETAIL_Columns_h_INCLUDED

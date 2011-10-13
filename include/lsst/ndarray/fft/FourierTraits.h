@@ -39,7 +39,7 @@ namespace lsst { namespace ndarray {
 namespace detail {
 
 /**
- *  @internal @ingroup FFTInternalGroup
+ *  @internal @ingroup FFTndarrayInternalGroup
  *  @brief A traits class that defines x- and k-space data types and k-space array sizes.
  */
 template <typename T, bool IsConst>

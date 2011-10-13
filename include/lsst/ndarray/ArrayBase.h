@@ -180,7 +180,7 @@ public:
         typedef Array<Element_,ND_::value,RMC_::value> Value;
     };
 
-    /// @brief Return a general view into this array (see \ref tutorial).
+    /// @brief Return a general view into this array (see \ref ndarrayTutorial).
     template <typename View_>
     typename ResultOf<View_>::Type
     operator[](View_ const & def) const {

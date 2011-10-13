@@ -38,7 +38,7 @@ namespace detail {
 /**
  *  @internal @brief Strided iterator for noncontiguous 1D arrays.
  *
- *  @ingroup InternalGroup
+ *  @ingroup ndarrayInternalGroup
  */
 template <typename T>
 class StridedIterator : public boost::iterator_facade<

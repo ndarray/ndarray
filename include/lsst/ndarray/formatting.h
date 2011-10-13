@@ -39,7 +39,8 @@ template <typename Derived, int N = Derived::ND::value> struct Formatter;
 } // namespace detail
 
 /**
- *  @class FormatOptions @ingroup MainGroup
+ *  @class FormatOptions
+ *  @ingroup MainGroup
  *  @brief Options for controlling stream output of ExpressionBase.
  */
 class FormatOptions {
@@ -88,7 +89,7 @@ std::ostream & operator<<(std::ostream & os, ExpressionBase<Derived> const & exp
 namespace detail {
 
 /**
- *  @internal @ingroup InternalGroup
+ *  @internal @ingroup ndarrayInternalGroup
  *  @brief Recursive metafunction used in stream output.
  */
 template <typename Derived, int N>
@@ -115,7 +116,7 @@ struct Formatter {
 };
 
 /**
- *  @internal @ingroup InternalGroup
+ *  @internal @ingroup ndarrayInternalGroup
  *  @brief Recursive metafunction used in stream output (1d specialization).
  */
 template <typename Derived>

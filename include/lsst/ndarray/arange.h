@@ -38,7 +38,7 @@ namespace lsst { namespace ndarray {
 /**
  *  @internal @brief ExpressionTraits specialization for CountingExpression.
  *
- *  @ingroup InternalGroup
+ *  @ingroup ndarrayInternalGroup
  */
 template <>
 struct ExpressionTraits<detail::CountingExpression> {
@@ -55,7 +55,7 @@ namespace detail {
  *  @internal @class CountingExpression
  *  @brief Expression that simply iterates over integer values.
  *
- *  @ingroup InternalGroup
+ *  @ingroup ndarrayInternalGroup
  */
 class CountingExpression : public ExpressionBase<CountingExpression> {
 public:

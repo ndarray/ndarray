@@ -29,13 +29,13 @@
  * @brief Forward declarations and default template parameters for ndarray.
  */
 
-/// \defgroup MainGroup Main
+/// \defgroup ndarrayMainGroup Main
 
-/// \defgroup OpGroup Operators
+/// \defgroup ndarrayOpGroup Operators
 
-/// \defgroup VectorGroup Vectors
+/// \defgroup ndarrayVectorGroup Vectors
 
-/// @internal \defgroup InternalGroup Internals
+/// @internal \defgroup ndarrayInternalGroup Internals
 
 #include <boost/type_traits/is_const.hpp>
 #include <boost/type_traits/add_const.hpp>
@@ -50,14 +50,12 @@
 
 #define LSST_NDARRAY_ASSERT(ARG) assert(ARG)
 
-/** @namespace ndarray @brief Main public namespace */
 namespace lsst { namespace ndarray {
 
 template <typename T, int N, int C> struct ArrayTraits;
 template <typename Expression_> struct ExpressionTraits;
 class Manager;
 
-/** @internal @namespace lsst::ndarray::detail @brief Internal namespace */
 namespace detail {
 
 template <int N> class Core;

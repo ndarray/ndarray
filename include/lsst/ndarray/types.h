@@ -113,7 +113,7 @@ struct Promote<T1,T2,true,false> {
 namespace detail {
 
 /**
- *  @internal @ingroup InternalGroup
+ *  @internal @ingroup ndarrayInternalGroup
  *  @brief Provides careful floating point operations for use in floating point comparisons.
  *
  *  Implementation is roughly modeled after the floating point comparisons in the Boost.Test library.
@@ -140,7 +140,7 @@ struct SafeFloatingPointOps {
 } // namespace detail
 
 /**
- *  @ingroup MainGroup
+ *  @ingroup ndarrayMainGroup
  *  @brief Binary predicate for floating point equality comparison with tolerance.
  *
  *  Implementation is roughly modeled after the floating point comparisons in the Boost.Test library.
@@ -168,7 +168,7 @@ private:
 };
 
 /**
- *  @ingroup MainGroup
+ *  @ingroup ndarrayMainGroup
  *  @brief Binary predicate for complex floating point equality comparison with tolerance.
  *
  *  Implementation is roughly modeled after the floating point comparisons in the Boost.Test library.

@@ -41,7 +41,7 @@ namespace detail {
  *  @internal
  *  @brief Internal data class for Array.
  *
- *  @ingroup InternalGroup
+ *  @ingroup ndarrayInternalGroup
  *
  *  Core holds the shape, stride, and ownership data for an Array.
  *  A Core maintains its own reference count and can be shared
@@ -158,7 +158,7 @@ private:
  *  @internal
  *  @brief Internal data class for Array, 0-D specialization.
  *
- *  @ingroup InternalGroup
+ *  @ingroup ndarrayInternalGroup
  *
  *  The 0-D Core has size and stride == 1 and holds the reference
  *  count and manager; it is the base class for all other Cores.
@@ -242,7 +242,7 @@ private:
 /**
  *  @internal @brief Cast a Core reference to a particular dimension.
  *
- *  @ingroup InternalGroup
+ *  @ingroup ndarrayInternalGroup
  */
 template <int P, int N>
 inline Core<N-P> const & 
@@ -251,7 +251,7 @@ getDimension(Core<N> const & core) { return core; }
 /**
  *  @internal @brief Cast a Core smart pointer to a particular dimension.
  *
- *  @ingroup InternalGroup
+ *  @ingroup ndarrayInternalGroup
  */
 template <int P, int N>
 inline typename Core<N-P>::Ptr 

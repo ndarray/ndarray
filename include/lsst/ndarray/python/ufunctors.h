@@ -20,11 +20,11 @@
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
 
-#ifndef LSST_NDARRAY_PYTHON_ufunctors_hpp_INCLUDED
-#define LSST_NDARRAY_PYTHON_ufunctors_hpp_INCLUDED
+#ifndef LSST_NDARRAY_PYTHON_ufunctors_h_INCLUDED
+#define LSST_NDARRAY_PYTHON_ufunctors_h_INCLUDED
 
 /** 
- *  \file ndarray/python/ufunctors.hpp
+ *  \file ndarray/python/ufunctors.h
  *  @brief Python wrappers to create numpy ufunc objects from C++ function objects.
  */
 
@@ -138,4 +138,4 @@ struct PyBinaryUFunctor {
 
 }} // namespace lsst::ndarray
 
-#endif // !LSST_NDARRAY_PYTHON_ufunctors_hpp_INCLUDED
+#endif // !LSST_NDARRAY_PYTHON_ufunctors_h_INCLUDED

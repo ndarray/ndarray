@@ -31,7 +31,7 @@
  */
 
 /** 
- * \defgroup EigenGroup Eigen
+ * \defgroup ndarrayEigenGroup Eigen
  * Interoperability with the Eigen 2 linear algebra library.
  */
 

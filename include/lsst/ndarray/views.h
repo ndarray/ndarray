@@ -43,7 +43,7 @@ namespace lsst { namespace ndarray {
 namespace detail {
 
 /** 
- *  @internal @ingroup InternalGroup
+ *  @internal @ingroup ndarrayInternalGroup
  *  @brief A temporary object used in constructing a Core object in a view operation.
  */
 template <typename T, int M, int N>
@@ -64,7 +64,7 @@ struct CoreTransformer {
 };
 
 /** 
- *  @internal @ingroup InternalGroup
+ *  @internal @ingroup ndarrayInternalGroup
  *  @brief Simple structure defining a noncontiguous array section.
  */
 struct SliceDim {
@@ -76,7 +76,7 @@ struct SliceDim {
     int computeSize() const { return (step>1) ? (stop-start+1)/step : stop-start; }
 
     /**
-     *  @internal @ingroup InternalGroup
+     *  @internal @ingroup ndarrayInternalGroup
      *  @brief Compute the dimensions of an Array<T,N,C> after a slice at index I is applied.
      */
     template <int N, int C, int I> struct Dimensions {
@@ -85,7 +85,7 @@ struct SliceDim {
     };
 
     /**
-     *  @internal @ingroup InternalGroup
+     *  @internal @ingroup ndarrayInternalGroup
      *  @brief Metafunction for the result type of transform().
      */
     template <typename T, int M, int N> struct TransformResult {
@@ -109,7 +109,7 @@ struct SliceDim {
 };
 
 /**
- *  @internal @ingroup InternalGroup
+ *  @internal @ingroup ndarrayInternalGroup
  *  @brief Simple structure defining a contiguous array section. 
  */
 struct RangeDim {
@@ -118,7 +118,7 @@ struct RangeDim {
     RangeDim(int start_, int stop_) : start(start_), stop(stop_) {}
 
     /**
-     *  @internal @ingroup InternalGroup
+     *  @internal @ingroup ndarrayInternalGroup
      *  @brief Compute the dimensions of an Array<T,N,C> after a range at index I is applied.
      */
     template <int N, int C, int I> struct Dimensions {
@@ -127,7 +127,7 @@ struct RangeDim {
     };
 
     /**
-     *  @internal @ingroup InternalGroup
+     *  @internal @ingroup ndarrayInternalGroup
      *  @brief Metafunction for the result type of transform().
      */
     template <typename T, int M, int N, typename Tag> struct TransformResult {
@@ -154,7 +154,7 @@ struct RangeDim {
 struct FullDim {
 
     /**
-     *  @internal @ingroup InternalGroup
+     *  @internal @ingroup ndarrayInternalGroup
      *  @brief Compute the dimensions of an Array<T,N,C> after a full dimension index at I is applied.
      */
     template <int N, int C, int I> struct Dimensions {
@@ -163,7 +163,7 @@ struct FullDim {
     };
 
     /**
-     *  @internal @ingroup InternalGroup
+     *  @internal @ingroup ndarrayInternalGroup
      *  @brief Metafunction for the result type of transform().
      */
     template <typename T, int M, int N> struct TransformResult {
@@ -180,7 +180,7 @@ struct FullDim {
 };
 
 /**
- *  @internal @ingroup InternalGroup
+ *  @internal @ingroup ndarrayInternalGroup
  *  @brief Structure marking a single element of a dimension.
  */
 struct ScalarDim {
@@ -188,7 +188,7 @@ struct ScalarDim {
     explicit ScalarDim(int n_) : n(n_) {}
 
     /**
-     *  @internal @ingroup InternalGroup
+     *  @internal @ingroup ndarrayInternalGroup
      *  @brief Compute the dimensions of an Array<T,N,C> after a scalar index at I is applied.
      */
     template <int N, int C, int I> struct Dimensions {
@@ -197,7 +197,7 @@ struct ScalarDim {
     };
 
     /**
-     *  @internal @ingroup InternalGroup
+     *  @internal @ingroup ndarrayInternalGroup
      *  @brief Metafunction for the result type of transform().
      */
     template <typename T, int M, int N> struct TransformResult {
@@ -215,7 +215,7 @@ struct ScalarDim {
 };
 
 /** 
- *  @internal @ingroup InternalGroup  
+ *  @internal @ingroup ndarrayInternalGroup  
  *  @brief A recursively-defined traits class for computing the dimensions and contiguousness of views.
  */
 template <
@@ -279,7 +279,7 @@ struct ViewTraits {
 /// \endcond
 
 /**
- *  @internal @ingroup InternalGroup
+ *  @internal @ingroup ndarrayInternalGroup
  *  @brief Metafunction that pads a View with extra FullDim indices to make size<Seq_>::type::value == N.
  */
 template <int N, typename Seq_, bool IsNormalized=(boost::mpl::template size<Seq_>::type::value==N)>
@@ -306,7 +306,7 @@ struct ViewNormalizer<N,Seq_,true> {
 /// \endcond
 
 /**
- *  @internal @ingroup InternalGroup
+ *  @internal @ingroup ndarrayInternalGroup
  *  @brief Static function object that constructs a view Array.
  */
 template <typename Array_, typename Seq_>
@@ -346,7 +346,7 @@ struct ViewBuilder {
 };
 
 /**
- *  @internal @ingroup InternalGroup
+ *  @internal @ingroup ndarrayInternalGroup
  *  @brief Wrapper function for ViewBuilder that removes the need to specify its template parameters.
  */
 template <typename Array_, typename SeqIn>
@@ -366,7 +366,7 @@ buildView(Array_ const & array, SeqIn const & seqIn) {
 /** 
  *  @brief A template meta-sequence that defines an arbitrary view into an unspecified array. 
  *
- *  @ingroup MainGroup
+ *  @ingroup ndarrayMainGroup
  *
  *  A View is constructed from a call to the global view() function
  *  and subsequent chained calls to operator().
@@ -422,7 +422,7 @@ struct View {
     }
 };
 
-/// @addtogroup MainGroup
+/// @addtogroup ndarrayMainGroup
 /// @{
 
 /** @brief Start a view definition that includes the entire first dimension. */

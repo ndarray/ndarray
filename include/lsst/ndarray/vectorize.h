@@ -66,7 +66,7 @@ struct vectorize<T1,T2,void> {
 
 } // namespace result_of
 
-/// @addtogroup MainGroup
+/// @addtogroup ndarrayMainGroup
 /// @{
 
 /** 

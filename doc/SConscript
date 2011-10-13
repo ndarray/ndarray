@@ -1,7 +1,3 @@
-Import("env")
-
-doxy = env.Doxygen("htmlDir", "doxygen.conf")
-env.Depends(doxy, "#include/lsst/ndarray.hpp")
-env.Depends(doxy, "#include/lsst/ndarray_fwd.hpp")
-env.Depends(doxy, Glob("#include/lsst/ndarray/*.hpp"))
-env.Depends(doxy, Glob("#include/lsst/ndarray/*/*.hpp"))
+# -*- python -*-
+from lsst.sconsUtils import scripts
+scripts.BasicSConscript.doc(inputs=["#include"])

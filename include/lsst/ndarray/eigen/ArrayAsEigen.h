@@ -105,7 +105,7 @@ class TransposedEigenView {
 };
 
 /**
- *  @ingroup EigenGroup
+ *  @ingroup ndarrayEigenGroup
  *  @brief A Eigen matrix view into a 2D Array.
  *
  *  See the Eigen::MatrixBase documentation for more information.
@@ -164,7 +164,7 @@ private:
 
 
 /**
- *  @ingroup EigenGroup
+ *  @ingroup ndarrayEigenGroup
  *  @brief An Eigen vector view into a 1D Array.
  *
  *  See the Eigen::MatrixBase documentation for more information.
@@ -224,7 +224,7 @@ private:
 };
 
 /**
- *  @ingroup EigenGroup
+ *  @ingroup ndarrayEigenGroup
  *  @brief An Eigen matrix view into the transpose of a 2D Array.
  *
  *  See the Eigen::MatrixBase documentation for more information.
@@ -282,7 +282,7 @@ private:
 };
 
 /**
- *  @ingroup EigenGroup
+ *  @ingroup ndarrayEigenGroup
  *  @brief An Eigen vector view into the transpose of a 1D Array.
  *
  *  See the Eigen::MatrixBase documentation for more information.
@@ -342,7 +342,7 @@ private:
 };
 
 /**
- *  @ingroup EigenGroup
+ *  @ingroup ndarrayEigenGroup
  *  @brief Return a non-transposed Eigen view of the given 1D or 2D Array.
  */
 template <typename T, int N, int C>
@@ -352,7 +352,7 @@ viewAsEigen(Array<T,N,C> const & array) {
 }
 
 /**
- *  @ingroup EigenGroup
+ *  @ingroup ndarrayEigenGroup
  *  @brief Return a non-transposed Eigen view of the given 1D or 2D Array.
  */
 template <typename T, int N, int C>
@@ -362,7 +362,7 @@ viewAsEigen(ArrayRef<T,N,C> const & array) {
 }
 
 /**
- *  @ingroup EigenGroup
+ *  @ingroup ndarrayEigenGroup
  *  @brief Return a transposed Eigen view of the given 1D or 2D Array.
  */
 template <typename T, int N, int C>
@@ -372,7 +372,7 @@ viewAsTransposedEigen(Array<T,N,C> const & array) {
 }
 
 /**
- *  @ingroup EigenGroup
+ *  @ingroup ndarrayEigenGroup
  *  @brief Return a transposed Eigen view of the given 1D or 2D Array.
  */
 template <typename T, int N, int C>

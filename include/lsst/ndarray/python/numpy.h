@@ -20,11 +20,11 @@
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
 
-#ifndef LSST_NDARRAY_PYTHON_numpy_hpp_INCLUDED
-#define LSST_NDARRAY_PYTHON_numpy_hpp_INCLUDED
+#ifndef LSST_NDARRAY_PYTHON_numpy_h_INCLUDED
+#define LSST_NDARRAY_PYTHON_numpy_h_INCLUDED
 
 /** 
- *  @file lsst/ndarray/python/numpy.hpp
+ *  @file lsst/ndarray/python/numpy.h
  *  @brief Python C-API conversions between ndarray and numpy.
  */
 
@@ -35,7 +35,7 @@ namespace lsst { namespace ndarray {
 namespace detail {
 
 /** 
- *  @internal @ingroup PythonInternalGroup
+ *  @internal @ingroup PythonndarrayInternalGroup
  *  @brief Traits class that specifies Numpy typecodes for numeric types. 
  */
 template <typename T> struct NumpyTraits { 
@@ -90,7 +90,7 @@ template <> struct NumpyTraits<std::complex<long double> > {
 /// \endcond
 
 /** 
- *  @internal @ingroup PythonInternalGroup
+ *  @internal @ingroup PythonndarrayInternalGroup
  *  @brief A shared_ptr deleter that owns a reference to a Python object.
  *
  *  @todo Analyze possible reference cycles and figure out how to deal with them.
@@ -107,7 +107,7 @@ public:
 };
 
 /** 
- *  @internal @ingroup PythonInternalGroup
+ *  @internal @ingroup PythonndarrayInternalGroup
  *  @brief A destructor for a Python CObject that owns a shared_ptr.
  */
 inline void destroyCObject(void * p) {
@@ -118,7 +118,7 @@ inline void destroyCObject(void * p) {
 } // namespace lsst::ndarray::detail
 
 /**
- *  @ingroup PythonGroup
+ *  @ingroup ndarrayPythonGroup
  *  @brief A traits class providing Python conversion functions for Array.
  *
  *  This specialization, for Array, adds addititional optional arguments
@@ -265,4 +265,4 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
 
 }} // namespace lsst::ndarray
 
-#endif // !LSST_NDARRAY_PYTHON_numpy_hpp_INCLUDED
+#endif // !LSST_NDARRAY_PYTHON_numpy_h_INCLUDED

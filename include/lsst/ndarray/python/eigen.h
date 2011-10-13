@@ -20,11 +20,11 @@
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
 
-#ifndef LSST_NDARRAY_PYTHON_eigen_hpp_INCLUDED
-#define LSST_NDARRAY_PYTHON_eigen_hpp_INCLUDED
+#ifndef LSST_NDARRAY_PYTHON_eigen_h_INCLUDED
+#define LSST_NDARRAY_PYTHON_eigen_h_INCLUDED
 
 /**
- *  @file lsst/ndarray/python/eigen.hpp
+ *  @file lsst/ndarray/python/eigen.h
  *  @brief Python C-API conversions for Eigen matrices.
  *
  *  \note This file is not included by the main "lsst/ndarray/python.h" header file.
@@ -37,7 +37,7 @@ namespace lsst { namespace ndarray {
 namespace detail {
 
 /**
- *  @internal @ingroup PythonInternalGroup
+ *  @internal @ingroup PythonndarrayInternalGroup
  *  @brief Implementations for PyConverter for Eigen objects.
  */
 template <typename Matrix>
@@ -75,9 +75,9 @@ public:
      */
     static PyObject * toPython(
         Matrix const & input, ///< Input C++ object.
-        PyObject * owner = NULL,
-        bool writeable = true,
-        bool squeeze = false
+        PyObject * owner = NULL, ///< Python object that own's the array's buffer.
+        bool writeable = true, ///< Whether the array should have the writeable flag set.
+        bool squeeze = false   ///< If true, eliminate any dimensions with unit length.
     ) {
         Array<Scalar,2> array(ndarray::viewMatrixAsArray(const_cast<Matrix&>(input)));
         PyPtr pyArray;
@@ -170,7 +170,7 @@ public:
 } // namespace detail
 
 /**
- *  @ingroup PythonGroup
+ *  @ingroup ndarrayPythonGroup
  *  @brief Specialization of PyConverter for Eigen::Matrix.
  */
 template <typename Scalar, int Rows, int Cols, int Options, int MaxRows, int MaxCols>
@@ -179,7 +179,7 @@ struct PyConverter< Eigen::Matrix<Scalar,Rows,Cols,Options,MaxRows,MaxCols> >
 {};
 
 /**
- *  @ingroup PythonGroup
+ *  @ingroup ndarrayPythonGroup
  *  @brief Specialization of PyConverter for Eigen::Map.
  */
 template <typename MatrixType, int PacketAccess>
@@ -188,7 +188,7 @@ struct PyConverter< Eigen::Map<MatrixType,PacketAccess> >
 {};
 
 /**
- *  @ingroup PythonGroup
+ *  @ingroup ndarrayPythonGroup
  *  @brief Specialization of PyConverter for Eigen::Block.
  */
 template <typename MatrixType, int BlockRows, int BlockCols, int PacketAccess>
@@ -199,7 +199,7 @@ struct PyConverter< Eigen::Block<MatrixType,BlockRows,BlockCols,PacketAccess,Eig
 {};
 
 /**
- *  @ingroup PythonGroup
+ *  @ingroup ndarrayPythonGroup
  *  @brief Specialization of PyConverter for Eigen::Transpose.
  */
 template <typename Scalar, int Rows, int Cols, int Options, int MaxRows, int MaxCols>
@@ -210,14 +210,14 @@ struct PyConverter< Eigen::Transpose< Eigen::Matrix<Scalar,Rows,Cols,Options,Max
 {};
 
 /**
- *  @ingroup PythonGroup
+ *  @ingroup ndarrayPythonGroup
  *  @brief Specialization of PyConverter for ndarray::EigenView
  */
 template <typename T, int N, int C>
 struct PyConverter< EigenView<T,N,C> > : public detail::EigenPyConverter< EigenView<T,N,C> > {};
 
 /**
- *  @ingroup PythonGroup
+ *  @ingroup ndarrayPythonGroup
  *  @brief Specialization of PyConverter for ndarray::TransposedEigenView
  */
 template <typename T, int N, int C>
@@ -226,4 +226,4 @@ struct PyConverter< TransposedEigenView<T,N,C> > :
 
 }} // namespace lsst::ndarray
 
-#endif // !LSST_NDARRAY_PYTHON_eigen_hpp_INCLUDED
+#endif // !LSST_NDARRAY_PYTHON_eigen_h_INCLUDED

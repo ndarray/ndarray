@@ -66,7 +66,7 @@ public:
      *  @brief Converting copy constructor. 
      *
      *  Implicit conversion is allowed for non-const to const and for 
-     *  more guaranteed RMC to less guaranteed RMC (see \ref overview).
+     *  more guaranteed RMC to less guaranteed RMC (see \ref index).
      */
     template <typename T_, int C_>
     Array(
@@ -80,7 +80,7 @@ public:
      *  @brief Converting copy constructor. 
      *
      *  Implicit conversion is allowed for non-const to const and for 
-     *  more guaranteed RMC to less guaranteed RMC (see \ref overview).
+     *  more guaranteed RMC to less guaranteed RMC (see \ref index).
      */
     template <typename T_, int C_>
     Array(
@@ -105,7 +105,7 @@ public:
      *  @brief Converting shallow assignment. 
      *
      *  Implicit conversion is allowed for non-const -> const and for 
-     *  more guaranteed RMC -> less guaranteed RMC (see \ref overview).
+     *  more guaranteed RMC -> less guaranteed RMC (see \ref index).
      */
     template <typename T_, int C_>
 #ifndef DOXYGEN
@@ -123,7 +123,7 @@ public:
      *  @brief Converting shallow assignment. 
      *
      *  Implicit conversion is allowed for non-const -> const and for 
-     *  more guaranteed RMC -> less guaranteed RMC (see \ref overview).
+     *  more guaranteed RMC -> less guaranteed RMC (see \ref index).
      */
     template <typename T_, int C_>
 #ifndef DOXYGEN

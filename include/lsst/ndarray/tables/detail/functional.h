@@ -130,6 +130,6 @@ ViewColumns<Dim> makeViewColumns(Dim const & dim) {
     return ViewColumns<Dim>(dim);
 }
 
-}}} // namespace lsst::ndarray::tables::detail
+}}}} // namespace lsst::ndarray::tables::detail
 
 #endif // !LSST_NDARRAY_TABLES_DETAIL_functional_h_INCLUDED

@@ -48,7 +48,7 @@ typename boost::enable_if_c<
 >::type
 #else
 /**
- *  @ingroup EigenGroup
+ *  @ingroup ndarrayEigenGroup
  *  @brief Create a 1D Array view into an Eigen object.
  *
  *  The created Array does not own a reference to its data, so the user is responsible for 
@@ -76,7 +76,7 @@ typename boost::enable_if_c<
 >::type
 #else
 /**
- *  @ingroup EigenGroup
+ *  @ingroup ndarrayEigenGroup
  *  @brief Create a 2D Array view into an Eigen object.
  *
  *  The created Array does not own a reference to its data, so the user is responsible for 

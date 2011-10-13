@@ -41,12 +41,12 @@
 namespace lsst { namespace ndarray {
 
 /** 
- * @mainpage Overview
+ * @mainpage Multidimensional Arrays in C++
  *
- * %ndarray is a template library that provide multidimensional array objects in C++, with
+ * %ndarray is a template library that provides multidimensional array objects in C++, with
  * an interface and features designed to mimic the Python 'numpy' package as much as possible.
  *
- * A tutorial can be found \ref tutorial "here".
+ * A tutorial can be found \ref ndarrayTutorial "here".
  *
  * @section comparisons Other Multidimensional Array Libraries
  * A number of other public C++ multidimensional array libraries already exist, most notably
@@ -128,7 +128,7 @@ namespace lsst { namespace ndarray {
  */
 
 /** 
- * @page tutorial Tutorial
+ * @page ndarrayTutorial Tutorial
  *
  * @section environment Environment
  * @subsection dependencies Dependencies
