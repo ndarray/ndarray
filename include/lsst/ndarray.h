@@ -95,7 +95,7 @@ namespace lsst { namespace ndarray {
  * arrays with M<N RMC dimensions (dynamic_dimension_cast returns an empty Array if the
  * strides are not appropriately RMC, while static_dimension_cast does no checking).
  *
- * @section views Indexing and Views
+ * @section ndarrayViews Indexing and Views
  * An Array with dimension N>1 behaves like largely like 
  * an STL container of Array of dimension N-1.  An Array with dimension 1 behaves like a
  * simple container of elements.  Iterators over an Array with N>1 thus dereference
@@ -291,7 +291,7 @@ namespace lsst { namespace ndarray {
  * a[makeVector(3,2,1)] == a[3][2][1];
  * @endcode
  *
- * @section views Views
+ * @section ndarrayTutorialViews Views
  * General views into a an Array are created by passing a ViewDef object to the [] operators
  * of Array, returning a new Array that shares data and owns a reference to the original.
  *
