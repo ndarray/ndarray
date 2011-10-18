@@ -7,12 +7,12 @@ if env.dependencies.get("fftw"):
 else:
     print "Skipping fftw interface tests."
 
-mod = env.LoadableModuleIncomplete("ndarray_python_test", "ndarray-python-mod.cc",
-                                   LIBS=env.getLibs("main python"))
+mod = env.SwigLoadableModule("ndarray_python_test", "ndarray-python-mod.cc",
+                             LIBS=env.getLibs("main python"))
 
-ccTests, pyTests = scripts.BasicSConscript.tests(
+tests = scripts.BasicSConscript.tests(
     ccTests=ccTests,
     pyTests=["ndarray-python.py"]
 )
 
-env.Depends(pyTests, mod)
+env.Depends(tests, mod)

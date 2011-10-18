@@ -59,7 +59,7 @@ public:
      *  @brief Converting copy constructor. 
      *
      *  Implicit conversion is allowed for non-const to const and for 
-     *  more guaranteed RMC to less guaranteed RMC (see \ref index).
+     *  more guaranteed RMC to less guaranteed RMC (see \ref ndarrayTutorial).
      */
     template <typename T_, int C_>
     explicit ArrayRef(
@@ -73,7 +73,7 @@ public:
      *  @brief Converting copy constructor. 
      *
      *  Implicit conversion is allowed for non-const to const and for 
-     *  more guaranteed RMC to less guaranteed RMC (see \ref index).
+     *  more guaranteed RMC to less guaranteed RMC (see \ref ndarrayTutorial).
      */
     template <typename T_, int C_>
     ArrayRef(
