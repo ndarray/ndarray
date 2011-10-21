@@ -66,7 +66,7 @@ define(`AUGMENTED_ASSIGN',`GENERAL_ASSIGN($1,`AUGMENTED_ASSIGN_SCALAR',`AUGMENTE
 
 #include "lsst/ndarray_fwd.h"
 #include "lsst/ndarray/ArrayTraits.h"
-#include "lsst/ndarray/ArrayBase.h"
+#include "lsst/ndarray/ArrayBaseN.h"
 #include "lsst/ndarray/detail/ArrayAccess.h"
 #include "lsst/ndarray/Vector.h"
 #include "lsst/ndarray/detail/Core.h"
@@ -78,8 +78,8 @@ namespace lsst { namespace ndarray {
  *  @brief A proxy class for Array with deep assignment operators.
  */
 template <typename T, int N, int C>
-class ArrayRef : public ArrayBase< ArrayRef<T,N,C> > {
-    typedef ArrayBase<ArrayRef> Super;
+class ArrayRef : public ArrayBaseN< ArrayRef<T,N,C> > {
+    typedef ArrayBaseN<ArrayRef> Super;
     typedef typename Super::Core Core;
     typedef typename Super::CorePtr CorePtr;
 public:
@@ -100,7 +100,7 @@ public:
     explicit ArrayRef(
         Array<T_,N,C_> const & other
 #ifndef DOXYGEN
-        , typename boost::enable_if_c<((C_>=C) && boost::is_convertible<T_*,T*>::value),void*>::type=0
+        , typename boost::enable_if<detail::Convertible<N,T_,C_,T,C>,void*>::type=0
 #endif
     ) : Super(other._data, other._core) {}
 
@@ -114,7 +114,7 @@ public:
     ArrayRef(
         ArrayRef<T_,N,C_> const & other
 #ifndef DOXYGEN
-        , typename boost::enable_if_c<((C_>=C) && boost::is_convertible<T_*,T*>::value),void*>::type=0
+        , typename boost::enable_if<detail::Convertible<N,T_,C_,T,C>,void*>::type=0
 #endif
     ) : Super(other._data, other._core) {}
 

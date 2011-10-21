@@ -1,3 +1,4 @@
+// -*- lsst-c++ -*-
 /* 
  * LSST Data Management System
  * Copyright 2008, 2009, 2010 LSST Corporation.
@@ -51,7 +52,7 @@ template <typename T> struct PyConverter;
 namespace detail {
 
 /**
- *  @internal @ingroup PythonndarrayInternalGroup
+ *  @internal @ingroup ndarrayPythonInternalGroup
  *  @brief Non-specialized base class for PyConverter.
  */
 template <typename T>
@@ -108,7 +109,7 @@ struct PyConverterBase {
 } // namespace lsst::ndarray::detail
 
 /**
- *  @ingroup ndarrayPythonGroup
+ *  @ingroup ndarrayndarrayPythonGroup
  *  @brief A class providing Python conversion functions for T.
  *
  *  Undocumented specializations exist for bool, int, long, float, double,

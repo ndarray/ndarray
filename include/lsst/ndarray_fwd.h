@@ -56,6 +56,9 @@ template <typename T, int N, int C> struct ArrayTraits;
 template <typename Expression_> struct ExpressionTraits;
 class Manager;
 
+/// @brief An enumeration for stride computation.
+enum DataOrderEnum { ROW_MAJOR=1, COLUMN_MAJOR=2 };
+
 namespace detail {
 
 template <int N> class Core;

@@ -35,14 +35,14 @@
  *  \note This file is not included by the main "lsst/ndarray.h" header file.
  */
 
-/** \defgroup ndarrayPythonGroup Python Support
+/** \defgroup ndarrayndarrayPythonGroup Python Support
  *
  *  The ndarray Python support module provides conversion
  *  functions between ndarray objects, notably Array and
  *  Vector, and Python Numpy objects.
  */
 
-/// @internal \defgroup PythonndarrayInternalGroup Python Support Internals
+/// @internal \defgroup ndarrayPythonInternalGroup Python Support Internals
 
 #include "Python.h"
 #include "lsst/ndarray.h"

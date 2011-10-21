@@ -1,3 +1,4 @@
+// -*- lsst-c++ -*-
 /* 
  * LSST Data Management System
  * Copyright 2008, 2009, 2010 LSST Corporation.
@@ -33,7 +34,7 @@
 namespace lsst { namespace ndarray {
 
 /**
- *  @ingroup ndarrayPythonGroup
+ *  @ingroup ndarrayndarrayPythonGroup
  *  @brief A traits class providing Python conversion functions for Vector.
  */
 template <typename T, int N>

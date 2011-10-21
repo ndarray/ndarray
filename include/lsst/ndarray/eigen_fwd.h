@@ -26,25 +26,33 @@
 /**
  *  @file lsst/ndarray/eigen_fwd.h
  *  @brief Forward declarations for ndarray/eigen interface.
- *
- *  \note This file is not included by the main "lsst/ndarray.h" header file.
  */
 
 /** 
  * \defgroup ndarrayEigenGroup Eigen
- * Interoperability with the Eigen 2 linear algebra library.
+ * Interoperability with the Eigen 3 linear algebra library.
  */
 
-#include "lsst/ndarray_fwd.h"
-#include <Eigen/Core>
+namespace Eigen {
+
+struct MatrixXpr;
+
+} // namespace Eigen
 
 namespace lsst { namespace ndarray {
+namespace detail {
 
-template <typename T, int N, int C>
+template <int N, int C, int Rows, int Cols> struct EigenStrideTraits;
+
+} // namespace detail
+
+template <
+    typename T, int N, int C, 
+    typename XprKind_=Eigen::MatrixXpr,
+    int Rows_=-1,
+    int Cols_=((N == 1) ? 1 : -1)
+    >
 class EigenView;
-
-template <typename T, int N, int C>
-class TransposedEigenView;
 
 }} // namespace lsst::ndarray
 

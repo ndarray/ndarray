@@ -1,3 +1,4 @@
+// -*- lsst-c++ -*-
 /* 
  * LSST Data Management System
  * Copyright 2008, 2009, 2010 LSST Corporation.
@@ -34,134 +35,103 @@
 #include "lsst/ndarray/eigen.h"
 
 namespace lsst { namespace ndarray {
+
+/**
+ *  @ingroup ndarrayPythonGroup
+ *  @brief Specialization of PyConverter for EigenView.
+ */
+template <typename T, int N, int C, typename XprKind_, int Rows_, int Cols_>
+struct PyConverter< EigenView<T,N,C,XprKind_,Rows_,Cols_> > {
+    
+    static bool fromPythonStage1(PyPtr & p) {
+        // add or remove dimensions with size one so we have the right number of dimensions
+        if (PyArray_Check(p.get())) {
+            if ((Rows_ == 1 || Cols_ == 1) && N == 2) {
+                npy_intp shape[2] = { -1, -1 };
+                if (Rows_ == 1) {
+                    shape[0] = 1;
+                } else {
+                    shape[1] = 1;
+                }
+                PyArray_Dims dims = { shape, 2 };
+                PyPtr r(PyArray_Newshape(reinterpret_cast<PyArrayObject*>(p.get()), &dims, NPY_ANYORDER));
+                if (!r) return false;
+                p.swap(r);
+            } else if (N == 1) {
+                PyPtr r(PyArray_Squeeze(reinterpret_cast<PyArrayObject*>(p.get())));
+                if (!r) return false;
+                p.swap(r);
+            }
+        } // else let the Array converter raise the exception
+        if (!PyConverter< Array<T,N,C> >::fromPythonStage1(p)) return false;
+        // check whether the size is correct if it's static
+        if (N == 2) {
+            if (Rows_ != Eigen::Dynamic && PyArray_DIM(p.get(), 0) != Rows_) {
+                PyErr_SetString(PyExc_ValueError, "incorrect number of rows for matrix");
+                return false;
+            }
+            if (Cols_ != Eigen::Dynamic && PyArray_DIM(p.get(), 1) != Cols_) {
+                PyErr_SetString(PyExc_ValueError, "incorrect number of columns for matrix");
+                return false;
+            }
+        } else {
+            int requiredSize = Rows_ * Cols_;
+            if (requiredSize != Eigen::Dynamic && PyArray_SIZE(p.get()) != requiredSize) {
+                PyErr_SetString(PyExc_ValueError, "incorrect number of elements for vector");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    static bool fromPythonStage2(
+        PyPtr const & input,
+        EigenView<T,N,C,XprKind_,Rows_,Cols_> & output
+    ) {
+        Array<T,N,C> array;
+        if (!PyConverter< Array<T,N,C> >::fromPythonStage2(input, array)) return false;
+        output.reset(array);
+        return true;
+    }
+
+    static PyObject * toPython(EigenView<T,N,C,XprKind_,Rows_,Cols_> const & m, PyObject * owner=NULL) {
+        PyPtr r(PyConverter< Array<T,N,C> >::toPython(m.shallow(), owner));
+        if (!r) return NULL;
+        PyPtr p(PyArray_Squeeze(reinterpret_cast<PyArrayObject*>(r.get())));
+        Py_XINCREF(p.get());
+        return p.get();
+    }
+
+};
+
 namespace detail {
 
 /**
- *  @internal @ingroup PythonndarrayInternalGroup
+ *  @internal @ingroup ndarrayPythonInternalGroup
  *  @brief Implementations for PyConverter for Eigen objects.
  */
 template <typename Matrix>
 class EigenPyConverter : public detail::PyConverterBase<Matrix> {
-    typedef typename Matrix::Scalar Scalar;
-    typedef boost::mpl::int_<Matrix::RowsAtCompileTime> Rows;
-    typedef boost::mpl::int_<Matrix::ColsAtCompileTime> Cols;
-    typedef boost::mpl::int_<Matrix::SizeAtCompileTime> Size;
-    typedef Eigen::Matrix<Scalar,Rows::value,Cols::value> TrueMatrix;
-
-    static PyPtr getNumpyMatrixType() {
-        PyPtr numpyModule(PyImport_ImportModule("numpy"),false);
-        if (numpyModule) {
-            return PyPtr(PyObject_GetAttrString(numpyModule.get(),"matrix"),false);
-        }
-        return PyPtr();
-    }
-
-    static PyPtr makeNumpyMatrix(PyPtr const & array) {
-        PyPtr matrixType(getNumpyMatrixType());
-        if (!matrixType) return PyPtr();
-        PyPtr args(PyTuple_Pack(1,array.get()),false);
-        PyPtr kwds(PyDict_New(),false);
-        if (PyDict_SetItemString(kwds.get(),"copy",Py_False) != 0) return PyPtr();
-        return PyPtr(PyObject_Call(matrixType.get(),args.get(),kwds.get()),false);
-    }
-
+    typedef typename SelectEigenView<Matrix>::Type OutputView;
+    typedef typename SelectEigenView<Matrix const, false>::Type InputView;
 public:
 
-    /** 
-     *  @brief Convert a C++ object to a new Python object.
-     *
-     *  \return A new Python object, or NULL on failure (with
-     *  a Python exception set).
-     */
-    static PyObject * toPython(
-        Matrix const & input, ///< Input C++ object.
-        PyObject * owner = NULL, ///< Python object that own's the array's buffer.
-        bool writeable = true, ///< Whether the array should have the writeable flag set.
-        bool squeeze = false   ///< If true, eliminate any dimensions with unit length.
-    ) {
-        Array<Scalar,2> array(ndarray::viewMatrixAsArray(const_cast<Matrix&>(input)));
-        PyPtr pyArray;
-        if (writeable) {
-            pyArray = PyPtr(PyConverter< Array<Scalar,2> >::toPython(array,owner),false);
-        } else {
-            pyArray = PyPtr(PyConverter< Array<Scalar const,2> >::toPython(array,owner),false);
-        }
-        PyPtr r;
-        if (squeeze) {
-            r.reset(PyArray_Squeeze(reinterpret_cast<PyArrayObject*>(pyArray.get())));
-        } else {
-            r = makeNumpyMatrix(pyArray);
-        }
-        if (!r) return NULL;
-        Py_XINCREF(r.get());
-        return r.get();
-
+    static PyObject * toPython(Matrix const & input, PyObject * owner = NULL) {
+        return PyConverter<OutputView>::toPython(ndarray::copy(input), owner);
     }
 
-    /**
-     *  @brief Return the Python TypeObject that corresponds to
-     *  the object the toPython() function returns.
-     */
     static PyTypeObject const * getPyType() {
-        return reinterpret_cast<PyTypeObject*>(getNumpyMatrixType().get());
+        return PyArray_Type;
     }
 
-    /**
-     *  @brief Check if a Python object is convertible to T
-     *  and optionally begin the conversion by replacing the
-     *  input with an intermediate.
-     *
-     *  \return true if a conversion may be possible, and
-     *  false if it is not (with a Python exception set).
-     */
-    static bool fromPythonStage1(
-        PyPtr & p /**< On input, a Python object to be converted.
-                   *   On output, a Python object to be passed to
-                   *   fromPythonStage2().
-                   */
-    ) {
-        PyPtr tmp = makeNumpyMatrix(p);
-        if (!tmp) return false;
-        if (Cols::value != Eigen::Dynamic && Cols::value != PyArray_DIM(tmp.get(),1)) {
-            if (Cols::value == 1 && PyArray_DIM(tmp.get(),0) == 1) { 
-                tmp = PyPtr(PyObject_CallMethod(tmp.get(),const_cast<char*>("transpose"),NULL),false);
-            } else {
-                PyErr_SetString(PyExc_ValueError,"Incorrect number of columns for matrix.");
-                return false;
-            }
-        }
-        if (Rows::value != Eigen::Dynamic && Rows::value != PyArray_DIM(tmp.get(),0)) {
-            PyErr_SetString(PyExc_ValueError,"Incorrect number of rows for matrix.");
-            return false;
-        }
-        
-        p = tmp;
-        return true;
+    static bool fromPythonStage1(PyPtr & p) {
+        return PyConverter<InputView>::fromPythonStage1(p);
     }
 
-    /**
-     *  @brief Complete a Python to C++ conversion begun
-     *  with fromPythonStage1().
-     *
-     *  \return true if the conversion was successful,
-     *  and false otherwise (with a Python exception set).
-     */
-    static bool fromPythonStage2(
-        PyPtr const & p, ///< A Python object processed by fromPythonStage1().
-        Matrix & output       ///< The output C++ object.
-    ) {
-        LSST_NDARRAY_ASSERT(p);
-        PyPtr matrixType(getNumpyMatrixType());
-        if (!matrixType) return false;
-        LSST_NDARRAY_ASSERT(PyObject_IsInstance(p.get(),matrixType.get()));
-        Array<Scalar,2,0> array;
-        if (!PyConverter< Array<Scalar,2,0> >::fromPythonStage2(p,array)) return false;
-        int rows = array.template getSize<0>();
-        int cols = array.template getSize<1>();
-        Eigen::Block<ndarray::EigenView<Scalar,2,0>,Rows::value,Cols::value> block(
-            ndarray::viewAsEigen(array), 0, 0, rows, cols
-        );
-        output = block;
+    static bool fromPythonStage2(PyPtr const & p, Matrix & output) {
+        InputView v;
+        if (!PyConverter<InputView>::fromPythonStage2(p, v)) return false;
+        output = v;
         return true;
     }
 
@@ -180,49 +150,12 @@ struct PyConverter< Eigen::Matrix<Scalar,Rows,Cols,Options,MaxRows,MaxCols> >
 
 /**
  *  @ingroup ndarrayPythonGroup
- *  @brief Specialization of PyConverter for Eigen::Map.
- */
-template <typename MatrixType, int PacketAccess>
-struct PyConverter< Eigen::Map<MatrixType,PacketAccess> >
-    : public detail::EigenPyConverter< Eigen::Map<MatrixType,PacketAccess> > 
-{};
-
-/**
- *  @ingroup ndarrayPythonGroup
- *  @brief Specialization of PyConverter for Eigen::Block.
- */
-template <typename MatrixType, int BlockRows, int BlockCols, int PacketAccess>
-struct PyConverter< Eigen::Block<MatrixType,BlockRows,BlockCols,PacketAccess,Eigen::HasDirectAccess> >
-    : public detail::EigenPyConverter< 
-        Eigen::Block<MatrixType,BlockRows,BlockCols,PacketAccess,Eigen::HasDirectAccess> 
-    > 
-{};
-
-/**
- *  @ingroup ndarrayPythonGroup
- *  @brief Specialization of PyConverter for Eigen::Transpose.
+ *  @brief Specialization of PyConverter for Eigen::Array.
  */
 template <typename Scalar, int Rows, int Cols, int Options, int MaxRows, int MaxCols>
-struct PyConverter< Eigen::Transpose< Eigen::Matrix<Scalar,Rows,Cols,Options,MaxRows,MaxCols> > >
-    : public detail::EigenPyConverter< 
-          Eigen::Transpose< Eigen::Matrix<Scalar,Rows,Cols,Options,MaxRows,MaxCols> > 
-      > 
+struct PyConverter< Eigen::Array<Scalar,Rows,Cols,Options,MaxRows,MaxCols> >
+    : public detail::EigenPyConverter< Eigen::Array<Scalar,Rows,Cols,Options,MaxRows,MaxCols> > 
 {};
-
-/**
- *  @ingroup ndarrayPythonGroup
- *  @brief Specialization of PyConverter for ndarray::EigenView
- */
-template <typename T, int N, int C>
-struct PyConverter< EigenView<T,N,C> > : public detail::EigenPyConverter< EigenView<T,N,C> > {};
-
-/**
- *  @ingroup ndarrayPythonGroup
- *  @brief Specialization of PyConverter for ndarray::TransposedEigenView
- */
-template <typename T, int N, int C>
-struct PyConverter< TransposedEigenView<T,N,C> > : 
-    public detail::EigenPyConverter< TransposedEigenView<T,N,C> > {};
 
 }} // namespace lsst::ndarray
 
