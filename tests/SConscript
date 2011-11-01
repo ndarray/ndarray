@@ -1,9 +1,9 @@
 # -*- python -*-
 from lsst.sconsUtils import scripts, env
 
-ccTests = ["ndarray.cc", "ndarray-tables.cc", "ndarray-eigen.cc"]
+ccList = ["ndarray.cc", "ndarray-tables.cc", "ndarray-eigen.cc"]
 if env.dependencies.get("fftw"):
-    ccTests.append("ndarray-fft.cc")
+    ccList.append("ndarray-fft.cc")
 else:
     print "Skipping fftw interface tests."
 
@@ -11,8 +11,8 @@ mod = env.SwigLoadableModule("ndarray_python_test", "ndarray-python-mod.cc",
                              LIBS=env.getLibs("main python"))
 
 tests = scripts.BasicSConscript.tests(
-    ccTests=ccTests,
-    pyTests=["ndarray-python.py"]
+    ccList=ccList,
+    pyList=["ndarray-python.py"]
 )
 
 env.Depends(tests, mod)

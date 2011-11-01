@@ -1,4 +1,6 @@
-svn co @SVNROOT@/DMS/@PRODUCT@/tags/@VERSION@ @PRODUCT@-@VERSION@ &&
+BASEVER=@VERSION.sub("\+[0-9]", "")@
+SVNNAME=@PRODUCT.replace("_", "/")@
+svn co @SVNROOT@/DMS/$SVNNAME/tags/$BASEVER @PRODUCT@-@VERSION@ &&
 cd @PRODUCT@-@VERSION@ &&
 setup -r . &&
 scons opt=3 &&
