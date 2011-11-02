@@ -121,7 +121,7 @@ public:
     }
 
     static PyTypeObject const * getPyType() {
-        return PyArray_Type;
+        return &PyArray_Type;
     }
 
     static bool fromPythonStage1(PyPtr & p) {
