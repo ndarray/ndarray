@@ -24,7 +24,7 @@
 
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE ndarray-tables
-#include "boost/test/included/unit_test.hpp"
+#include "boost/test/unit_test.hpp"
 #include "boost/fusion/container/vector.hpp"
 #include "boost/make_shared.hpp"
 #include "boost/random/mersenne_twister.hpp"
