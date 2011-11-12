@@ -1,7 +1,2 @@
-BASEVER=@VERSION.sub("\+[0-9]", "")@
-SVNNAME=@PRODUCT.replace("_", "/")@
-svn co @SVNROOT@/DMS/$SVNNAME/tags/$BASEVER @PRODUCT@-@VERSION@ &&
-cd @PRODUCT@-@VERSION@ &&
-setup -r . &&
-scons opt=3 &&
-scons opt=3 install
+@LSST BUILD@
+build_lsst @PRODUCT.replace("_", "/")@ @REPOVERSION@ @PRODUCT@-@VERSION@
