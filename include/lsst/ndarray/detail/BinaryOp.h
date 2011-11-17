@@ -41,7 +41,7 @@ namespace detail {
 /**
  *  @internal @brief An iterator for binary expression templates.
  *
- *  @ingroup InternalGroup
+ *  @ingroup ndarrayInternalGroup
  *
  *  Acts as a combination "zip" and "transform" iterator.
  */
@@ -95,7 +95,7 @@ private:
 /**
  *  @internal @brief A binary expression template.
  *
- *  @ingroup InternalGroup
+ *  @ingroup ndarrayInternalGroup
  *
  *  Represents the lazy evaluation of a binary expression.
  */

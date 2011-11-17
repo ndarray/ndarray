@@ -104,10 +104,18 @@ Array<T,N,C_>
 dynamic_dimension_cast(Array<T,N,C> const & array) {
     Vector<int,N> shape = array.getShape();
     Vector<int,N> strides = array.getStrides();
-    int n = 1;
-    for (int i=1; i <= C_; ++i) {
-        if (strides[N-i] != n) return Array<T,N,C_>();
-        n *= shape[N-i];
+    if (C_ >= 0) {
+        int n = 1;
+        for (int i=1; i <= C_; ++i) {
+            if (strides[N-i] != n) return Array<T,N,C_>();
+            n *= shape[N-i];
+        }
+    } else {
+        int n = 1;
+        for (int i=0; i < -C_; ++i) {
+            if (strides[i] != n) return Array<T,N,C_>();
+            n *= strides[i];
+        }
     }
     return static_dimension_cast<C_>(array);
 }

@@ -55,6 +55,6 @@ struct FieldInfo< Field<T,N> & > : public FieldInfo< Field<T,N> > {};
 template <typename T, int N>
 struct FieldInfo< Field<T,N> const & > : public FieldInfo< Field<T,N> > {};
 
-}}} // namespace lsst::ndarray::tables::detail
+}}}} // namespace lsst::ndarray::tables::detail
 
 #endif // !LSST_NDARRAY_TABLES_DETAIL_FieldInfo_h_INCLUDED

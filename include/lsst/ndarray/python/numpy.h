@@ -1,3 +1,4 @@
+// -*- lsst-c++ -*-
 /* 
  * LSST Data Management System
  * Copyright 2008, 2009, 2010 LSST Corporation.
@@ -20,11 +21,11 @@
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
 
-#ifndef LSST_NDARRAY_PYTHON_numpy_hpp_INCLUDED
-#define LSST_NDARRAY_PYTHON_numpy_hpp_INCLUDED
+#ifndef LSST_NDARRAY_PYTHON_numpy_h_INCLUDED
+#define LSST_NDARRAY_PYTHON_numpy_h_INCLUDED
 
 /** 
- *  @file lsst/ndarray/python/numpy.hpp
+ *  @file lsst/ndarray/python/numpy.h
  *  @brief Python C-API conversions between ndarray and numpy.
  */
 
@@ -35,7 +36,7 @@ namespace lsst { namespace ndarray {
 namespace detail {
 
 /** 
- *  @internal @ingroup PythonInternalGroup
+ *  @internal @ingroup ndarrayPythonInternalGroup
  *  @brief Traits class that specifies Numpy typecodes for numeric types. 
  */
 template <typename T> struct NumpyTraits { 
@@ -90,24 +91,7 @@ template <> struct NumpyTraits<std::complex<long double> > {
 /// \endcond
 
 /** 
- *  @internal @ingroup PythonInternalGroup
- *  @brief A shared_ptr deleter that owns a reference to a Python object.
- *
- *  @todo Analyze possible reference cycles and figure out how to deal with them.
- */
-class PythonDeleter {
-    PyPtr _p;
-public:
-
-    template <typename T> void operator()(T * r) { _p.reset(); }
-
-    // steals a reference
-    explicit PythonDeleter(PyPtr const & p) : _p(p) {}
-
-};
-
-/** 
- *  @internal @ingroup PythonInternalGroup
+ *  @internal @ingroup ndarrayPythonInternalGroup
  *  @brief A destructor for a Python CObject that owns a shared_ptr.
  */
 inline void destroyCObject(void * p) {
@@ -118,7 +102,7 @@ inline void destroyCObject(void * p) {
 } // namespace lsst::ndarray::detail
 
 /**
- *  @ingroup PythonGroup
+ *  @ingroup ndarrayPythonGroup
  *  @brief A traits class providing Python conversion functions for Array.
  *
  *  This specialization, for Array, adds addititional optional arguments
@@ -143,29 +127,52 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
                    *   fromPythonStage2().
                    */
     ) {
-//        PyObject* numpyModule = PyImport_ImportModule("numpy");
- //       PyObject* arrayclass = PyObject_GetAttrString(numpyModule, "array");
-//yyp        if (!PyObject_IsInstance(p.get(), arrayclass))
-
-        // check added so that only numpy array arrays of the type to match Array class are allowed
-        if (!PyArray_Check(p.get()))
-        {
-            PyErr_SetString(PyExc_ValueError,"Input to array PyConverter must be numpy.array");
+        if (!PyArray_Check(p.get())) {
+            PyErr_SetString(PyExc_TypeError, "numpy.ndarray argument required");
             return false;
         }
-        int intype = PyArray_TYPE(p.get());
-        int matrixtype = detail::NumpyTraits<NonConst>::getCode();
-        if (intype != matrixtype)
-        {
-            PyErr_SetString(PyExc_ValueError,"Input to array PyConverter must be numpy.array of the same data type");
+        int actualType = PyArray_TYPE(p.get());
+        int requiredType = detail::NumpyTraits<NonConst>::getCode();
+        if (actualType != requiredType) {
+            PyErr_SetString(PyExc_ValueError, "numpy.ndarray argument has incorrect data type");
             return false;
         }
-        int flags = NPY_ALIGNED;
+        if (PyArray_NDIM(p.get()) != N) {
+            PyErr_SetString(PyExc_ValueError, "numpy.ndarray argument has incorrect number of dimensions");
+            return false;
+        }
         bool writeable = !boost::is_const<Element>::value;
-        if (writeable) flags |= NPY_WRITEABLE;
-        PyPtr array(PyArray_FROMANY(p.get(),detail::NumpyTraits<NonConst>::getCode(),N,N,flags),false);
-        if (!array) return false;
-        p = array;
+        if (writeable && !(PyArray_FLAGS(p.get()) & NPY_WRITEABLE)) {
+            PyErr_SetString(PyExc_TypeError, "numpy.ndarray argument must be writeable");
+            return false;
+        }
+        if (C > 0) {
+            int requiredStride = sizeof(Element);
+            for (int i = 0; i < C; ++i) {
+                int actualStride = PyArray_STRIDE(p.get(), N-i-1);
+                if (actualStride != requiredStride) {
+                    PyErr_SetString(
+                        PyExc_ValueError,
+                        "numpy.ndarray does not have enough row-major contiguous dimensions"
+                    );
+                    return false;
+                }
+                requiredStride *= PyArray_DIM(p.get(), N-i-1);
+            }
+        } else if (C < 0) {
+            int requiredStride = sizeof(Element);
+            for (int i = 0; i < -C; ++i) {
+                int actualStride = PyArray_STRIDE(p.get(), i);
+                if (actualStride != requiredStride) {
+                    PyErr_SetString(
+                        PyExc_ValueError,
+                        "numpy.ndarray does not have enough column-major contiguous dimensions"
+                    );
+                    return false;
+                }
+                requiredStride *= PyArray_DIM(p.get(), i);
+            }
+        }
         return true;
     }
 
@@ -185,46 +192,18 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
         PyPtr const & input,  ///< Result of fromPythonStage1().
         Array<T,N,C> & output ///< Reference to existing output C++ object.
     ) {
-        int flags = NPY_ALIGNED;
-        bool writeable = !boost::is_const<Element>::value;
-        if (writeable) flags |= (NPY_WRITEABLE | NPY_UPDATEIFCOPY);
-        LSST_NDARRAY_ASSERT(input);
-        LSST_NDARRAY_ASSERT(PyArray_Check(input.get()));
-        LSST_NDARRAY_ASSERT(reinterpret_cast<PyArrayObject*>(input.get())->nd == N);
-        LSST_NDARRAY_ASSERT(reinterpret_cast<PyArrayObject*>(input.get())->flags & flags);
-        PyPtr array(input);
-        int element_size = sizeof(Element);
-        int full_size = element_size;
-        for (int i=1; i<=C; ++i) { // verify that we have at least C contiguous dimensions
-            int stride = PyArray_STRIDE(array.get(),N-i);
-            if (stride != full_size) {
-                if (writeable) {
-                    PyErr_SetString(
-                        PyExc_ValueError,
-                        "The given NumPy array does not have the required number of contiguous dimensions"
-                        " for conversion to ndarray::Array."
-                    );
-                    return false;
-                } else {
-                    flags |= NPY_C_CONTIGUOUS;
-                    array = PyPtr(
-                        PyArray_FROMANY(input.get(),detail::NumpyTraits<NonConst>::getCode(),N,N,flags),
-                        false
-                    );
-                    if (!array) return false;
-                    break;
-                }
-            }
-            full_size *= PyArray_DIM(array.get(),N-i);
+        if (!(PyArray_FLAGS(input.get()) & NPY_ALIGNED)) {
+            PyErr_SetString(PyExc_ValueError, "unaligned arrays cannot be converted to C++");
+            return false;
         }
         Vector<int,N> shape;
         Vector<int,N> strides;
-        std::copy(PyArray_DIMS(array.get()),PyArray_DIMS(array.get())+N,shape.begin());
-        std::copy(PyArray_STRIDES(array.get()),PyArray_STRIDES(array.get())+N,strides.begin());
-        for (int i=0; i<N; ++i) strides[i] /= element_size;
+        std::copy(PyArray_DIMS(input.get()), PyArray_DIMS(input.get()) + N, shape.begin());
+        std::copy(PyArray_STRIDES(input.get()), PyArray_STRIDES(input.get()) + N , strides.begin());
+        for (int i = 0; i < N; ++i) strides[i] /= sizeof(Element);
         output = external(
-            reinterpret_cast<Element*>(PyArray_DATA(array.get())),
-            shape, strides, array
+            reinterpret_cast<Element*>(PyArray_DATA(input.get())),
+            shape, strides, input
         );
         return true;
     }
@@ -248,16 +227,19 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
         if (C==N) flags |= NPY_C_CONTIGUOUS;
         bool writeable = !boost::is_const<Element>::value;
         if (writeable) flags |= NPY_WRITEABLE;
-        npy_intp shape[N];
-        npy_intp strides[N];
-        Vector<int,N> mshape = m.getShape();
-        Vector<int,N> mstrides = m.getStrides();
-        std::copy(mshape.begin(),mshape.end(),shape);
-        for (int i=0; i<N; ++i) strides[i] = mstrides[i]*sizeof(Element);
-        PyPtr array(PyArray_New(&PyArray_Type,N,shape,detail::NumpyTraits<NonConst>::getCode(),strides,
-                                const_cast<NonConst*>(m.getData()),
-                                sizeof(Element),flags,NULL),
-                    false);
+        npy_intp outShape[N];
+        npy_intp outStrides[N];
+        Vector<int,N> inShape = m.getShape();
+        Vector<int,N> inStrides = m.getStrides();
+        std::copy(inShape.begin(), inShape.end(), outShape);
+        for (int i = 0; i < N; ++i) outStrides[i] = inStrides[i] * sizeof(Element);
+        PyPtr array(
+            PyArray_New(
+                &PyArray_Type, N, outShape, detail::NumpyTraits<NonConst>::getCode(),
+                outStrides, const_cast<NonConst*>(m.getData()), sizeof(Element), flags, NULL
+            ),
+            false
+        );
         if (!array) return NULL;
         if (!m.getManager() && owner == NULL) {
             flags = NPY_CARRAY_RO | NPY_ENSURECOPY | NPY_C_CONTIGUOUS;
@@ -282,4 +264,4 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
 
 }} // namespace lsst::ndarray
 
-#endif // !LSST_NDARRAY_PYTHON_numpy_hpp_INCLUDED
+#endif // !LSST_NDARRAY_PYTHON_numpy_h_INCLUDED

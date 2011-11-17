@@ -24,7 +24,7 @@
 
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE ndarray
-#include <boost/test/unit_test.hpp>
+#include "boost/test/unit_test.hpp"
 
 BOOST_AUTO_TEST_CASE(sizes) {
     std::cerr << "sizeof(int): " << sizeof(int) << "\n";
@@ -74,6 +74,7 @@ BOOST_AUTO_TEST_CASE(allocation) {
     lsst::ndarray::Vector<int,3> shape = lsst::ndarray::makeVector(5,6,7);
     lsst::ndarray::Array<float,3,3> a = lsst::ndarray::allocate(shape);
     BOOST_CHECK_EQUAL(a.getShape(), shape);
+
     lsst::ndarray::Array<float,3> b = lsst::ndarray::allocate(shape);
     BOOST_CHECK_EQUAL(b.getShape(), shape);
     BOOST_CHECK_EQUAL(b.getSize<0>(), shape[0]);
@@ -82,9 +83,17 @@ BOOST_AUTO_TEST_CASE(allocation) {
     BOOST_CHECK_EQUAL(b.getStride<0>(), 6*7);
     BOOST_CHECK_EQUAL(b.getStride<1>(), 7);
     BOOST_CHECK_EQUAL(b.getStride<2>(), 1);
-    BOOST_CHECK_EQUAL(b.getStrides(), lsst::ndarray::makeVector(6*7,7,1));
-    lsst::ndarray::Array<int,1> c = lsst::ndarray::allocate(lsst::ndarray::makeVector(5));
-    BOOST_CHECK_EQUAL(b.size(), 5);
+    BOOST_CHECK_EQUAL(b.getStrides(), lsst::ndarray::makeVector(6*7 ,7, 1));
+
+    lsst::ndarray::Array<float,3,-3> c = lsst::ndarray::allocate(5,6,7);
+    BOOST_CHECK_EQUAL(c.getShape(), shape);
+    BOOST_CHECK_EQUAL(c.getSize<0>(), shape[0]);
+    BOOST_CHECK_EQUAL(c.getSize<1>(), shape[1]);
+    BOOST_CHECK_EQUAL(c.getSize<2>(), shape[2]);
+    BOOST_CHECK_EQUAL(c.getStride<0>(), 1);
+    BOOST_CHECK_EQUAL(c.getStride<1>(), 5);
+    BOOST_CHECK_EQUAL(c.getStride<2>(), 5*6);
+    BOOST_CHECK_EQUAL(c.getStrides(), lsst::ndarray::makeVector(1, 5, 5*6));
     
 }
 
@@ -173,6 +182,7 @@ BOOST_AUTO_TEST_CASE(indexing) {
         for (int j=0; j<a_shape[1]; ++j) {
             for (int k=0; k<a_shape[2]; ++k) {
                 BOOST_CHECK_EQUAL(a[i][j][k], n);
+                BOOST_CHECK_EQUAL(a(i,j,k), n);
                 ++n;
             }
         }
@@ -183,6 +193,7 @@ BOOST_AUTO_TEST_CASE(indexing) {
     for (int i=0; i<b_shape[0]; ++i) {
         for (int j=0; j<b_shape[1]; ++j) {
             BOOST_CHECK_EQUAL(b[i][j], i+8*j);
+            BOOST_CHECK_EQUAL(b(i,j), i+8*j);
         }
     }
     lsst::ndarray::Vector<int,2> c_shape = lsst::ndarray::makeVector(4,3);
@@ -191,6 +202,7 @@ BOOST_AUTO_TEST_CASE(indexing) {
     for (int i=0; i<c_shape[0]; ++i) {
         for (int j=0; j<c_shape[1]; ++j) {
             BOOST_CHECK_EQUAL(c[i][j], i+8*j);
+            BOOST_CHECK_EQUAL(c(i,j), i+8*j);
         }
     }
 }
@@ -432,9 +444,8 @@ BOOST_AUTO_TEST_CASE(assignment) {
     }
 }
 
-
 BOOST_AUTO_TEST_CASE(transpose) {
-    double data[3*4*2] = { 
+    double data[3*4*2] = {
          0, 1, 2, 3, 4, 5, 6, 7,
          8, 9,10,11,12,13,14,15,
         16,17,18,19,20,21,22,23,
@@ -442,7 +453,7 @@ BOOST_AUTO_TEST_CASE(transpose) {
     lsst::ndarray::Vector<int,3> shape = lsst::ndarray::makeVector(3,4,2);
     lsst::ndarray::Vector<int,3> strides = lsst::ndarray::makeVector(8,2,1);
     lsst::ndarray::Array<double,3,3> a = lsst::ndarray::external(data,shape,strides);
-    lsst::ndarray::Array<double const,3> b = a.transpose();
+    lsst::ndarray::Array<double const,3,-3> b = a.transpose();
     lsst::ndarray::Array<double const,3> c = a.transpose(lsst::ndarray::makeVector(1,0,2));
     for (int i=0; i<shape[0]; ++i) {
         for (int j=0; j<shape[1]; ++j) {
@@ -458,6 +469,42 @@ BOOST_AUTO_TEST_CASE(transpose) {
     BOOST_CHECK(a[lsst::ndarray::view()(1)(1)].shallow() == c[lsst::ndarray::view(1)()(1)].shallow());
     BOOST_CHECK(a[lsst::ndarray::view(0)()(1)].shallow() == c[lsst::ndarray::view()(0)(1)].shallow());
     BOOST_CHECK(a[lsst::ndarray::view(0)(0)()].shallow() == c[lsst::ndarray::view(0)(0)()].shallow());
+
+    {
+        lsst::ndarray::Array<double const,2,2> a1 = a[lsst::ndarray::view(0)()()];
+        lsst::ndarray::Array<double const,2,-2> b1 = b[lsst::ndarray::view()()(0)];
+        BOOST_CHECK(b1.transpose().shallow() == a1.shallow());
+        BOOST_CHECK(a1.transpose().shallow() == b1.shallow());
+    }
+    {
+        lsst::ndarray::Array<double const,3,3> a1 = a[lsst::ndarray::view(1,3)()()];
+        lsst::ndarray::Array<double const,3,-3> b1 = b[lsst::ndarray::view()()(1,3)];
+        BOOST_CHECK(b1.transpose().shallow() == a1.shallow());
+        BOOST_CHECK(a1.transpose().shallow() == b1.shallow());
+    }
+    {
+        lsst::ndarray::Array<double const,3,2> a1 = a[lsst::ndarray::view(0,3,2)()()];
+        lsst::ndarray::Array<double const,3,-2> b1 = b[lsst::ndarray::view()()(0,3,2)];
+        BOOST_CHECK(b1.transpose().shallow() == a1.shallow());
+        BOOST_CHECK(a1.transpose().shallow() == b1.shallow());
+    }
+    {
+        lsst::ndarray::Array<double const,3,2> a1 = a[lsst::ndarray::view()(1,3)()];
+        lsst::ndarray::Array<double const,3,-2> b1 = b[lsst::ndarray::view()(1,3)()];
+        BOOST_CHECK(b1.transpose().shallow() == a1.shallow());
+        BOOST_CHECK(a1.transpose().shallow() == b1.shallow());
+    }
+    {
+        lsst::ndarray::Array<double const,3,1> a1 = a[lsst::ndarray::view()(0,4,2)()];
+        lsst::ndarray::Array<double const,3,-1> b1 = b[lsst::ndarray::view()(0,4,2)()];
+        BOOST_CHECK(b1.transpose().shallow() == a1.shallow());
+        BOOST_CHECK(a1.transpose().shallow() == b1.shallow());
+    }
+    {
+        lsst::ndarray::Array<double const,1,1> a1 = a[0][0];
+        lsst::ndarray::Array<double const,1,-1> b1 = a1;
+        lsst::ndarray::Array<double const,1,1> c1 = b1;
+    }
 }
 
 BOOST_AUTO_TEST_CASE(flatten) {

@@ -59,17 +59,17 @@ public:
     Record const operator[](int n) const { return Record(n, _columns); }
 
     /// @brief Trivial indexing.
-    Table const & operator[](View< boost::fusion::vector<lsst::ndarray::detail::FullDim> > const & def) const {
+    Table const & operator[](View< boost::fusion::vector1<lsst::ndarray::index::Full> > const & def) const {
         return *this;
     }
 
     /// @brief Range indexing.
-    Table const operator[](View< boost::fusion::vector<lsst::ndarray::detail::RangeDim> > const & def) const {
+    Table const operator[](View< boost::fusion::vector1<lsst::ndarray::index::Range> > const & def) const {
         return Table(_columns->index(boost::fusion::front(def._seq)));
     }
 
     /// @brief Slice indexing.
-    Table const operator[](View< boost::fusion::vector<lsst::ndarray::detail::SliceDim> > const & def) const {
+    Table const operator[](View< boost::fusion::vector1<lsst::ndarray::index::Slice> > const & def) const {
         return Table(_columns->index(boost::fusion::front(def._seq)));
     }
 

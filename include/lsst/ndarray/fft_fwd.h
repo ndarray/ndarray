@@ -37,7 +37,7 @@
  *  @brief Fast fourier transforms using the FFTW library.
  */
 
-/// @internal \defgroup FFTInternalGroup Fourier Transform Internals
+/// @internal \defgroup FFTndarrayInternalGroup Fourier Transform Internals
 
 #include "lsst/ndarray_fwd.h"
 

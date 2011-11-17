@@ -36,6 +36,16 @@
 #include <boost/mpl/bool.hpp>
 
 namespace lsst { namespace ndarray {
+namespace detail {
+
+template <int N, typename T2, int C2, typename T1, int C1>
+struct Convertible : public boost::mpl::bool_<
+    (((C2>=C1 && C1>=0) || (C2<=C1 && C1<=0) || (N == 1 && C2 == -C1)) 
+     && boost::is_convertible<T2*,T1*>::value)
+> {};
+
+} // namespace detail
+
 
 /**
  *  @brief Dimension-specialized traits shared by Array and ArrayRef.
@@ -48,8 +58,8 @@ struct ArrayTraits {
     typedef boost::mpl::int_<N> ND;
     typedef boost::mpl::int_<C> RMC;
     typedef detail::NestedIterator<T,N,C> Iterator;
-    typedef ArrayRef<T,N-1,(N==C)?(N-1):C> Reference;
-    typedef Array<T,N-1,(N==C)?(N-1):C> Value;
+    typedef ArrayRef<T,N-1,(N==C)?(N-1):((C>0)?C:0)> Reference;
+    typedef Array<T,N-1,(N==C)?(N-1):((C>0)?C:0)> Value;
     typedef detail::Core<N> Core;
     typedef typename Core::ConstPtr CorePtr;
 
@@ -85,6 +95,25 @@ struct ArrayTraits<T,1,1> {
     typedef T Element;
     typedef boost::mpl::int_<1> ND;
     typedef boost::mpl::int_<1> RMC;
+    typedef Element * Iterator;
+    typedef Element & Reference;
+    typedef Element Value;
+    typedef detail::Core<1> Core;
+    typedef typename Core::ConstPtr CorePtr;
+
+    static Reference makeReference(Element * data, CorePtr const & core) {
+        return *data;
+    }
+    static Iterator makeIterator(Element * data, CorePtr const & core, int stride) {
+        return data;
+    }
+};
+
+template <typename T>
+struct ArrayTraits<T,1,-1> {
+    typedef T Element;
+    typedef boost::mpl::int_<1> ND;
+    typedef boost::mpl::int_<-1> RMC;
     typedef Element * Iterator;
     typedef Element & Reference;
     typedef Element Value;

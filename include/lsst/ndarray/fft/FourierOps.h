@@ -38,7 +38,7 @@ namespace lsst { namespace ndarray {
 namespace detail {
 
 /**
- *  @internal @ingroup FFTInternalGroup
+ *  @internal @ingroup FFTndarrayInternalGroup
  *  @brief Implementations for the shift() and differentiate() functions.
  */
 template <typename T, int N>
@@ -92,7 +92,7 @@ struct FourierOps {
 };
 
 /**
- *  @internal @ingroup FFTInternalGroup
+ *  @internal @ingroup FFTndarrayInternalGroup
  *  @brief Implementations for the shift() and differentiate() functions (1d specialization).
  */
 template <typename T>

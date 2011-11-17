@@ -20,11 +20,11 @@
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
 
-#ifndef LSST_NDARRAY_python_hpp_INCLUDED
-#define LSST_NDARRAY_python_hpp_INCLUDED
+#ifndef LSST_NDARRAY_python_h_INCLUDED
+#define LSST_NDARRAY_python_h_INCLUDED
 
 /**
- *  @file lsst/ndarray/python.hpp
+ *  @file lsst/ndarray/python.h
  *  @brief Public header file for ndarray Python support.
  *
  *  \warning Both the main Python C-API header, "Python.h", and the
@@ -35,14 +35,14 @@
  *  \note This file is not included by the main "lsst/ndarray.h" header file.
  */
 
-/** \defgroup PythonGroup Python Support
+/** \defgroup ndarrayndarrayPythonGroup Python Support
  *
  *  The ndarray Python support module provides conversion
  *  functions between ndarray objects, notably Array and
  *  Vector, and Python Numpy objects.
  */
 
-/// @internal \defgroup PythonInternalGroup Python Support Internals
+/// @internal \defgroup ndarrayPythonInternalGroup Python Support Internals
 
 #include "Python.h"
 #include "lsst/ndarray.h"
@@ -50,4 +50,4 @@
 #include "lsst/ndarray/python/ufunctors.h"
 #include "lsst/ndarray/python/Vector.h"
 
-#endif // !LSST_NDARRAY_python_hpp_INCLUDED
+#endif // !LSST_NDARRAY_python_h_INCLUDED

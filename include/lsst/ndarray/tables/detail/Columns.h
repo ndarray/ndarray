@@ -56,11 +56,11 @@ public:
         return boost::fusion::at_c<N>(_sequence);
     }
 
-    Ptr index(lsst::ndarray::detail::RangeDim const & dim) const {
+    Ptr index(lsst::ndarray::index::Range const & dim) const {
         return Ptr(new Columns(*this, dim));
     }
 
-    Ptr index(lsst::ndarray::detail::SliceDim const & dim) const {
+    Ptr index(lsst::ndarray::index::Slice const & dim) const {
         return Ptr(new Columns(*this, dim));
     }
 
@@ -107,14 +107,14 @@ private:
         return layout.getSequence();
     }
 
-    Columns(Columns const & other, lsst::ndarray::detail::RangeDim const & dim) :
+    Columns(Columns const & other, lsst::ndarray::index::Range const & dim) :
         _rc(1), _size(dim.stop - dim.start), _stride(other.getStride()),
         _raw(other.getRaw() + dim.start * other.getStride()),
         _manager(other.getManager()), _layout(other.getLayout()),
         _sequence(boost::fusion::transform(other.getSequence(), makeViewColumns(dim)))
     {}
 
-    Columns(Columns const & other, lsst::ndarray::detail::SliceDim const & dim) :
+    Columns(Columns const & other, lsst::ndarray::index::Slice const & dim) :
         _rc(1), _size(dim.stop - dim.start), _stride(other.getStride()),
         _raw(other.getRaw() + dim.start * other.getStride()),
         _manager(other.getManager()), _layout(other.getLayout()),
@@ -140,6 +140,6 @@ private:
     ColumnSequence _sequence;
 };
 
-}}} // namespace lsst::ndarray::tables::detail
+}}}} // namespace lsst::ndarray::tables::detail
 
 #endif // !LSST_NDARRAY_TABLES_DETAIL_Columns_h_INCLUDED

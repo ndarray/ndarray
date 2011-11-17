@@ -220,7 +220,7 @@ FUNCTION_TAG(LogicalOr,BinaryPredicate,||)
 } // namespace detail
 /// \endcond
 
-/// \addtogroup OpGroup
+/// \addtogroup ndarrayOpGroup
 /// @{
 BINARY_OP(detail::PlusTag,operator+)
 BINARY_OP(detail::MinusTag,operator-)

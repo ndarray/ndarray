@@ -31,7 +31,7 @@
 
 #include "lsst/ndarray_fwd.h"
 #include "lsst/ndarray/ArrayTraits.h"
-#include "lsst/ndarray/ArrayBase.h"
+#include "lsst/ndarray/ArrayBaseN.h"
 #include "lsst/ndarray/Vector.h"
 #include "lsst/ndarray/detail/Core.h"
 #include "lsst/ndarray/views.h"
@@ -44,8 +44,8 @@ namespace lsst { namespace ndarray {
  *  Array is the workhorse class of the ndarray library.
  */
 template <typename T, int N, int C>
-class Array : public ArrayBase< Array<T,N,C> > {
-    typedef ArrayBase<Array> Super;
+class Array : public ArrayBaseN< Array<T,N,C> > {
+    typedef ArrayBaseN<Array> Super;
     typedef typename Super::Core Core;
     typedef typename Super::CorePtr CorePtr;
 public:
@@ -66,13 +66,13 @@ public:
      *  @brief Converting copy constructor. 
      *
      *  Implicit conversion is allowed for non-const to const and for 
-     *  more guaranteed RMC to less guaranteed RMC (see \ref overview).
+     *  more guaranteed RMC to less guaranteed RMC (see \ref index).
      */
     template <typename T_, int C_>
     Array(
         Array<T_,N,C_> const & other
 #ifndef DOXYGEN
-        , typename boost::enable_if_c<((C_>=C) && boost::is_convertible<T_*,T*>::value),void*>::type=0
+        , typename boost::enable_if<detail::Convertible<N,T_,C_,T,C>,void*>::type=0
 #endif
     ) : Super(other._data, other._core) {}
 
@@ -80,13 +80,13 @@ public:
      *  @brief Converting copy constructor. 
      *
      *  Implicit conversion is allowed for non-const to const and for 
-     *  more guaranteed RMC to less guaranteed RMC (see \ref overview).
+     *  more guaranteed RMC to less guaranteed RMC (see \ref index).
      */
     template <typename T_, int C_>
     Array(
         ArrayRef<T_,N,C_> const & other
 #ifndef DOXYGEN
-        , typename boost::enable_if_c<((C_>=C) && boost::is_convertible<T_*,T*>::value),void*>::type=0
+        , typename boost::enable_if<detail::Convertible<N,T_,C_,T,C>,void*>::type=0
 #endif
     ) : Super(other._data, other._core) {}
 
@@ -105,11 +105,11 @@ public:
      *  @brief Converting shallow assignment. 
      *
      *  Implicit conversion is allowed for non-const -> const and for 
-     *  more guaranteed RMC -> less guaranteed RMC (see \ref overview).
+     *  more guaranteed RMC -> less guaranteed RMC (see \ref index).
      */
     template <typename T_, int C_>
 #ifndef DOXYGEN
-    typename boost::enable_if_c<((C_>=C) && boost::is_convertible<T_*,T*>::value), Array &>::type
+    typename boost::enable_if<detail::Convertible<N,T_,C_,T,C>, Array &>::type
 #else
     Array &
 #endif
@@ -123,11 +123,11 @@ public:
      *  @brief Converting shallow assignment. 
      *
      *  Implicit conversion is allowed for non-const -> const and for 
-     *  more guaranteed RMC -> less guaranteed RMC (see \ref overview).
+     *  more guaranteed RMC -> less guaranteed RMC (see \ref index).
      */
     template <typename T_, int C_>
 #ifndef DOXYGEN
-    typename boost::enable_if_c<((C_>=C) && boost::is_convertible<T_*,T*>::value), Array &>::type
+    typename boost::enable_if<detail::Convertible<N,T_,C_,T,C>, Array &>::type
 #else
     Array &
 #endif

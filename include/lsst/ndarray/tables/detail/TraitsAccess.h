@@ -68,6 +68,6 @@ struct TraitsAccess<T,true> {
     };
 };
 
-}}} // namespace lsst::ndarray::tables::detail
+}}}} // namespace lsst::ndarray::tables::detail
 
 #endif // !LSST_NDARRAY_TABLES_DETAIL_TraitsAccess_h_INCLUDED

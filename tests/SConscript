@@ -1,25 +1,18 @@
-import os
-import sys
-import lsst.tests
-Import("env")
+# -*- python -*-
+from lsst.sconsUtils import scripts, env
 
-# Note: ndarray-tables test is disabled until we move to a newer boost version (>= 1.41).
+ccList = ["ndarray.cc", "ndarray-tables.cc", "ndarray-eigen.cc"]
+if env.dependencies.get("fftw"):
+    ccList.append("ndarray-fft.cc")
+else:
+    print "Skipping fftw interface tests."
 
-cc_tests = ["ndarray.cc", "ndarray-eigen.cc", "ndarray-fft.cc"]
-python_mod = env.LoadableModuleIncomplete("ndarray_python_test", ["ndarray-python-mod.cc"],
-                                          LIBS=env.libs[env["eups_product"]])
-for src in cc_tests:
-    env.Program(src, LIBS=env.libs[env["eups_product"]])
+mod = env.SwigLoadableModule("ndarray_python_test", "ndarray-python-mod.cc",
+                             LIBS=env.getLibs("main python"))
 
-env.CheckSwig("python", ilang="c++", includedProducts="ndarray")
+tests = scripts.BasicSConscript.tests(
+    ccList=ccList,
+    pyList=["ndarray-python.py"]
+)
 
-swig_mod = env.LoadableModuleIncomplete("_swig_test_mod", ["swig_test_mod.i"])
-
-#
-# Tests
-#
-import lsst.tests
-tests = lsst.tests.Control(env, verbose = True, ignoreList=["ndarray-python-mod.cc"])
-tests.run("*.cc")
-for test in tests.run("ndarray-python.py"):
-    env.Depends(test, python_mod + swig_mod)
+env.Depends(tests, mod)

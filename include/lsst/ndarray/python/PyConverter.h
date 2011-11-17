@@ -1,3 +1,4 @@
+// -*- lsst-c++ -*-
 /* 
  * LSST Data Management System
  * Copyright 2008, 2009, 2010 LSST Corporation.
@@ -20,11 +21,11 @@
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
 
-#ifndef LSST_NDARRAY_PYTHON_PyConverter_hpp_INCLUDED
-#define LSST_NDARRAY_PYTHON_PyConverter_hpp_INCLUDED
+#ifndef LSST_NDARRAY_PYTHON_PyConverter_h_INCLUDED
+#define LSST_NDARRAY_PYTHON_PyConverter_h_INCLUDED
 
 /**
- *  @file lsst/ndarray/python/PyConverter.hpp
+ *  @file lsst/ndarray/python/PyConverter.h
  *  @brief Python C-API conversions for standard numeric types.
  */
 #include <Python.h>
@@ -32,10 +33,12 @@
 #include <boost/intrusive_ptr.hpp>
 #include <complex>
 
-namespace boost {
+#ifndef DOXYGEN
+//namespace boost {
 inline void intrusive_ptr_add_ref(PyObject * obj) { Py_INCREF(obj); }
 inline void intrusive_ptr_release(PyObject * obj) { Py_DECREF(obj); }
-}
+//}
+#endif
 
 namespace lsst { namespace ndarray {
 
@@ -49,7 +52,7 @@ template <typename T> struct PyConverter;
 namespace detail {
 
 /**
- *  @internal @ingroup PythonInternalGroup
+ *  @internal @ingroup ndarrayPythonInternalGroup
  *  @brief Non-specialized base class for PyConverter.
  */
 template <typename T>
@@ -106,7 +109,7 @@ struct PyConverterBase {
 } // namespace lsst::ndarray::detail
 
 /**
- *  @ingroup PythonGroup
+ *  @ingroup ndarrayndarrayPythonGroup
  *  @brief A class providing Python conversion functions for T.
  *
  *  Undocumented specializations exist for bool, int, long, float, double,
@@ -360,4 +363,4 @@ struct PyConverter< std::string > : public detail::PyConverterBase<std::string> 
 
 }} // namespace lsst::ndarray
 
-#endif // !LSST_NDARRAY_PYTHON_PyConverter_hpp_INCLUDED
+#endif // !LSST_NDARRAY_PYTHON_PyConverter_h_INCLUDED

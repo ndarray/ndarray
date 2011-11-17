@@ -56,12 +56,12 @@
 
 namespace lsst { namespace ndarray {
 
-/// \addtogroup VectorGroup
+/// \addtogroup ndarrayVectorGroup
 /// @{
 
 /** 
  *  @class Vector
- *  \brief A fixed-size 1D array class.
+ *  @brief A fixed-size 1D array class.
  *
  *  Vector (with T==int) is primarily used as the data
  *  type for the shape and strides attributes of Array.
@@ -97,41 +97,41 @@ struct Vector {
 
     typedef boost::mpl::int_<N> ND;
 
-    size_type size() const { return N; }           ///< \brief Return the size of the Vector.
-    size_type max_size() const { return N; }       ///< \brief Return the size of the Vector.
-    bool empty() const { return N==0; }            ///< \brief Return true if size() == 0.
-    /// \brief Return an iterator to the beginning of the Vector.
+    size_type size() const { return N; }           ///< @brief Return the size of the Vector.
+    size_type max_size() const { return N; }       ///< @brief Return the size of the Vector.
+    bool empty() const { return N==0; }            ///< @brief Return true if size() == 0.
+    /// @brief Return an iterator to the beginning of the Vector.
     iterator begin() { return elems; }
-    /// \brief Return a const_iterator to the beginning of the Vector.
+    /// @brief Return a const_iterator to the beginning of the Vector.
     const_iterator begin() const { return elems; }
-    /// \brief Return an iterator to the end of the Vector.
+    /// @brief Return an iterator to the end of the Vector.
     iterator end() { return elems+N; }
-    /// \brief Return a const_iterator to the end of the Vector.
+    /// @brief Return a const_iterator to the end of the Vector.
     const_iterator end() const { return elems+N; }
-    /// \brief Return a reverse_iterator to the beginning of the reversed Vector.
+    /// @brief Return a reverse_iterator to the beginning of the reversed Vector.
     reverse_iterator rbegin() { return reverse_iterator(end()); }
-    /// \brief Return a const_reverse_iterator to the beginning of the reversed Vector.
+    /// @brief Return a const_reverse_iterator to the beginning of the reversed Vector.
     const_reverse_iterator rbegin() const { return const_reverse_iterator(end()); }
-    /// \brief Return a reverse_iterator to the end of the reversed Vector.
+    /// @brief Return a reverse_iterator to the end of the reversed Vector.
     reverse_iterator rend() { return reverse_iterator(begin()); }
-    /// \brief Return a const_reverse_iterator to the end of the reversed Vector.
+    /// @brief Return a const_reverse_iterator to the end of the reversed Vector.
     const_reverse_iterator rend() const { return const_reverse_iterator(begin()); }
 
-    /// \brief Return a reference to the first element.
+    /// @brief Return a reference to the first element.
     reference front() { return *elems; }
-    /// \brief Return a reference to the last element.
+    /// @brief Return a reference to the last element.
     reference back() { return *(elems+N-1); }
-    /// \brief Return a const_reference to the first element.
+    /// @brief Return a const_reference to the first element.
     const_reference front() const { return *elems; }
-    /// \brief Return a const_reference to the last element.
+    /// @brief Return a const_reference to the last element.
     const_reference back() const { return *(elems+N-1); }
 
-    /// \brief Return a reference to the element with the given index.
+    /// @brief Return a reference to the element with the given index.
     reference operator[](int i) { return elems[i]; }
-    /// \brief Return a const_reference to the element with the given index.
+    /// @brief Return a const_reference to the element with the given index.
     const_reference operator[](int i) const { return elems[i]; }
 
-    /// \brief Create a new Vector that is a subset of this.
+    /// @brief Create a new Vector that is a subset of this.
     template <int Start, int Stop>
     Vector<T,Stop-Start> getRange() const {
         Vector<T,Stop-Start> r;
@@ -139,21 +139,21 @@ struct Vector {
         return r;
     }
 
-    /// \brief Create a new Vector from the first M elements of this.
+    /// @brief Create a new Vector from the first M elements of this.
     template <int M> Vector<T,M> first() const {
         Vector<T,M> r;
         std::copy(begin(), begin() + M, r.begin());
         return r;
     }
 
-    /// \brief Create a new Vector from the last M elements of this.
+    /// @brief Create a new Vector from the last M elements of this.
     template <int M> Vector<T,M> last() const {
         Vector<T,M> r;
         std::copy(begin() + (N - M), begin() + N, r.begin());
         return r;
     }
 
-    /** \brief Stream output. */
+    /** @brief Stream output. */
     friend std::ostream& operator<<(std::ostream& os, Vector<T,N> const & obj) {
         os << "(";
         std::copy(obj.begin(), obj.end(), std::ostream_iterator<T>(os,","));
@@ -161,49 +161,49 @@ struct Vector {
     }
 
     /**
-     *  \brief Default constructor.
+     *  @brief Default constructor.
      *
      *  Initializes the elements to zero.
      */
     Vector() { this->template operator=(0); }
 
-    /// \brief Construct with copies of a scalar.
+    /// @brief Construct with copies of a scalar.
     template <typename U>
     explicit Vector(U scalar) {
         this->template operator=(scalar);
     }
 
-    /// \brief Converting copy constructor.
+    /// @brief Converting copy constructor.
     template <typename U>
     explicit Vector(Vector<U,N> const & other) {
         this->template operator=(other);
     }
 
-    /// \brief Return true if elements of other are equal to the elements of this.
+    /// @brief Return true if elements of other are equal to the elements of this.
     bool operator==(Vector const & other) const {
         return std::equal(begin(), end(), other.begin());
     }
 
-    /// \brief Return false if any elements of other are not equal to the elements of this.
+    /// @brief Return false if any elements of other are not equal to the elements of this.
     bool operator!=(Vector const & other) const {
         return !(*this == other);
     }
 
-    /// \brief Return the sum of all elements.
+    /// @brief Return the sum of all elements.
     T sum() const {
         T r = 0;
         for (ConstIterator i = begin(); i != end(); ++i) r += (*i);
         return r;
     }
 
-    /// \brief Return the product of all elements.
+    /// @brief Return the product of all elements.
     T product() const {
         T r = 1;
         for (ConstIterator i = begin(); i != end(); ++i) r *= (*i);
         return r;
     }
 
-    /// \brief Return a Vector with the elements reversed.
+    /// @brief Return a Vector with the elements reversed.
     Vector reverse() const {
         Vector r;
         std::copy(begin(), end(), r.rbegin());
@@ -211,7 +211,7 @@ struct Vector {
     }
 
     
-    /// \brief Augmented = assignment from another vector.
+    /// @brief Augmented = assignment from another vector.
     template <typename U>
     typename boost::enable_if<boost::is_convertible<U,T>,Vector&>::type
     operator = (Vector<U,N> const & other) {
@@ -219,7 +219,7 @@ struct Vector {
         for (Iterator i = begin(); i != end(); ++i, ++j) (*i) = (*j);
         return *this;
     }
-    /// \brief Augmented = assignment from a scalar.
+    /// @brief Augmented = assignment from a scalar.
     template <typename U>
     typename boost::enable_if<boost::is_convertible<U,T>,Vector&>::type
     operator = (U scalar) {
@@ -227,7 +227,7 @@ struct Vector {
         return *this;
     }
     
-    /// \brief Augmented += assignment from another vector.
+    /// @brief Augmented += assignment from another vector.
     template <typename U>
     typename boost::enable_if<boost::is_convertible<U,T>,Vector&>::type
     operator += (Vector<U,N> const & other) {
@@ -235,7 +235,7 @@ struct Vector {
         for (Iterator i = begin(); i != end(); ++i, ++j) (*i) += (*j);
         return *this;
     }
-    /// \brief Augmented += assignment from a scalar.
+    /// @brief Augmented += assignment from a scalar.
     template <typename U>
     typename boost::enable_if<boost::is_convertible<U,T>,Vector&>::type
     operator += (U scalar) {
@@ -243,7 +243,7 @@ struct Vector {
         return *this;
     }
     
-    /// \brief Augmented -= assignment from another vector.
+    /// @brief Augmented -= assignment from another vector.
     template <typename U>
     typename boost::enable_if<boost::is_convertible<U,T>,Vector&>::type
     operator -= (Vector<U,N> const & other) {
@@ -251,7 +251,7 @@ struct Vector {
         for (Iterator i = begin(); i != end(); ++i, ++j) (*i) -= (*j);
         return *this;
     }
-    /// \brief Augmented -= assignment from a scalar.
+    /// @brief Augmented -= assignment from a scalar.
     template <typename U>
     typename boost::enable_if<boost::is_convertible<U,T>,Vector&>::type
     operator -= (U scalar) {
@@ -259,7 +259,7 @@ struct Vector {
         return *this;
     }
     
-    /// \brief Augmented *= assignment from another vector.
+    /// @brief Augmented *= assignment from another vector.
     template <typename U>
     typename boost::enable_if<boost::is_convertible<U,T>,Vector&>::type
     operator *= (Vector<U,N> const & other) {
@@ -267,7 +267,7 @@ struct Vector {
         for (Iterator i = begin(); i != end(); ++i, ++j) (*i) *= (*j);
         return *this;
     }
-    /// \brief Augmented *= assignment from a scalar.
+    /// @brief Augmented *= assignment from a scalar.
     template <typename U>
     typename boost::enable_if<boost::is_convertible<U,T>,Vector&>::type
     operator *= (U scalar) {
@@ -275,7 +275,7 @@ struct Vector {
         return *this;
     }
     
-    /// \brief Augmented /= assignment from another vector.
+    /// @brief Augmented /= assignment from another vector.
     template <typename U>
     typename boost::enable_if<boost::is_convertible<U,T>,Vector&>::type
     operator /= (Vector<U,N> const & other) {
@@ -283,7 +283,7 @@ struct Vector {
         for (Iterator i = begin(); i != end(); ++i, ++j) (*i) /= (*j);
         return *this;
     }
-    /// \brief Augmented /= assignment from a scalar.
+    /// @brief Augmented /= assignment from a scalar.
     template <typename U>
     typename boost::enable_if<boost::is_convertible<U,T>,Vector&>::type
     operator /= (U scalar) {
@@ -291,7 +291,7 @@ struct Vector {
         return *this;
     }
     
-    /// \brief Augmented %= assignment from another vector.
+    /// @brief Augmented %= assignment from another vector.
     template <typename U>
     typename boost::enable_if<boost::is_convertible<U,T>,Vector&>::type
     operator %= (Vector<U,N> const & other) {
@@ -299,7 +299,7 @@ struct Vector {
         for (Iterator i = begin(); i != end(); ++i, ++j) (*i) %= (*j);
         return *this;
     }
-    /// \brief Augmented %= assignment from a scalar.
+    /// @brief Augmented %= assignment from a scalar.
     template <typename U>
     typename boost::enable_if<boost::is_convertible<U,T>,Vector&>::type
     operator %= (U scalar) {
@@ -307,7 +307,7 @@ struct Vector {
         return *this;
     }
     
-    /// \brief Augmented &= assignment from another vector.
+    /// @brief Augmented &= assignment from another vector.
     template <typename U>
     typename boost::enable_if<boost::is_convertible<U,T>,Vector&>::type
     operator &= (Vector<U,N> const & other) {
@@ -315,7 +315,7 @@ struct Vector {
         for (Iterator i = begin(); i != end(); ++i, ++j) (*i) &= (*j);
         return *this;
     }
-    /// \brief Augmented &= assignment from a scalar.
+    /// @brief Augmented &= assignment from a scalar.
     template <typename U>
     typename boost::enable_if<boost::is_convertible<U,T>,Vector&>::type
     operator &= (U scalar) {
@@ -323,7 +323,7 @@ struct Vector {
         return *this;
     }
     
-    /// \brief Augmented ^= assignment from another vector.
+    /// @brief Augmented ^= assignment from another vector.
     template <typename U>
     typename boost::enable_if<boost::is_convertible<U,T>,Vector&>::type
     operator ^= (Vector<U,N> const & other) {
@@ -331,7 +331,7 @@ struct Vector {
         for (Iterator i = begin(); i != end(); ++i, ++j) (*i) ^= (*j);
         return *this;
     }
-    /// \brief Augmented ^= assignment from a scalar.
+    /// @brief Augmented ^= assignment from a scalar.
     template <typename U>
     typename boost::enable_if<boost::is_convertible<U,T>,Vector&>::type
     operator ^= (U scalar) {
@@ -339,7 +339,7 @@ struct Vector {
         return *this;
     }
     
-    /// \brief Augmented |= assignment from another vector.
+    /// @brief Augmented |= assignment from another vector.
     template <typename U>
     typename boost::enable_if<boost::is_convertible<U,T>,Vector&>::type
     operator |= (Vector<U,N> const & other) {
@@ -347,7 +347,7 @@ struct Vector {
         for (Iterator i = begin(); i != end(); ++i, ++j) (*i) |= (*j);
         return *this;
     }
-    /// \brief Augmented |= assignment from a scalar.
+    /// @brief Augmented |= assignment from a scalar.
     template <typename U>
     typename boost::enable_if<boost::is_convertible<U,T>,Vector&>::type
     operator |= (U scalar) {
@@ -355,7 +355,7 @@ struct Vector {
         return *this;
     }
     
-    /// \brief Augmented <<= assignment from another vector.
+    /// @brief Augmented <<= assignment from another vector.
     template <typename U>
     typename boost::enable_if<boost::is_convertible<U,T>,Vector&>::type
     operator <<= (Vector<U,N> const & other) {
@@ -363,7 +363,7 @@ struct Vector {
         for (Iterator i = begin(); i != end(); ++i, ++j) (*i) <<= (*j);
         return *this;
     }
-    /// \brief Augmented <<= assignment from a scalar.
+    /// @brief Augmented <<= assignment from a scalar.
     template <typename U>
     typename boost::enable_if<boost::is_convertible<U,T>,Vector&>::type
     operator <<= (U scalar) {
@@ -371,7 +371,7 @@ struct Vector {
         return *this;
     }
     
-    /// \brief Augmented >>= assignment from another vector.
+    /// @brief Augmented >>= assignment from another vector.
     template <typename U>
     typename boost::enable_if<boost::is_convertible<U,T>,Vector&>::type
     operator >>= (Vector<U,N> const & other) {
@@ -379,7 +379,7 @@ struct Vector {
         for (Iterator i = begin(); i != end(); ++i, ++j) (*i) >>= (*j);
         return *this;
     }
-    /// \brief Augmented >>= assignment from a scalar.
+    /// @brief Augmented >>= assignment from a scalar.
     template <typename U>
     typename boost::enable_if<boost::is_convertible<U,T>,Vector&>::type
     operator >>= (U scalar) {
@@ -415,95 +415,95 @@ struct Vector<T,0> {
 
     typedef boost::mpl::int_<0> ND;
 
-    size_type size() const { return 0; }           ///< \brief Return the size of the Vector.
-    size_type max_size() const { return 0; }       ///< \brief Return the size of the Vector.
-    bool empty() const { return true; }            ///< \brief Return true if size() == 0.
-    /// \brief Return an iterator to the beginning of the Vector.
+    size_type size() const { return 0; }           ///< @brief Return the size of the Vector.
+    size_type max_size() const { return 0; }       ///< @brief Return the size of the Vector.
+    bool empty() const { return true; }            ///< @brief Return true if size() == 0.
+    /// @brief Return an iterator to the beginning of the Vector.
     iterator begin() { return 0; }
-    /// \brief Return a const_iterator to the beginning of the Vector.
+    /// @brief Return a const_iterator to the beginning of the Vector.
     const_iterator begin() const { return 0; }
-    /// \brief Return an iterator to the end of the Vector.
+    /// @brief Return an iterator to the end of the Vector.
     iterator end() { return 0; }
-    /// \brief Return a const_iterator to the end of the Vector.
+    /// @brief Return a const_iterator to the end of the Vector.
     const_iterator end() const { return 0; }
-    /// \brief Return a reverse_iterator to the beginning of the reversed Vector.
+    /// @brief Return a reverse_iterator to the beginning of the reversed Vector.
     reverse_iterator rbegin() { return reverse_iterator(); }
-    /// \brief Return a const_reverse_iterator to the beginning of the reversed Vector.
+    /// @brief Return a const_reverse_iterator to the beginning of the reversed Vector.
     const_reverse_iterator rbegin() const { return const_reverse_iterator(); }
-    /// \brief Return a reverse_iterator to the end of the reversed Vector.
+    /// @brief Return a reverse_iterator to the end of the reversed Vector.
     reverse_iterator rend() { return reverse_iterator(); }
-    /// \brief Return a const_reverse_iterator to the end of the reversed Vector.
+    /// @brief Return a const_reverse_iterator to the end of the reversed Vector.
     const_reverse_iterator rend() const { return const_reverse_iterator(); }
 
-    /// \brief Return a reference to the first element.
+    /// @brief Return a reference to the first element.
     reference front() { LSST_NDARRAY_ASSERT(false); return 0; }
-    /// \brief Return a reference to the last element.
+    /// @brief Return a reference to the last element.
     reference back() { return LSST_NDARRAY_ASSERT(false); return 0; }
-    /// \brief Return a const_reference to the first element.
+    /// @brief Return a const_reference to the first element.
     const_reference front() const { LSST_NDARRAY_ASSERT(false); return 0; }
-    /// \brief Return a const_reference to the last element.
+    /// @brief Return a const_reference to the last element.
     const_reference back() const { LSST_NDARRAY_ASSERT(false); return 0; }
 
-    /// \brief Return a reference to the element with the given index.
+    /// @brief Return a reference to the element with the given index.
     reference operator[](int i) { LSST_NDARRAY_ASSERT(false); return 0; }
-    /// \brief Return a const_reference to the element with the given index.
+    /// @brief Return a const_reference to the element with the given index.
     const_reference operator[](int i) const { LSST_NDARRAY_ASSERT(false); return 0; }
 
-    /// \brief Create a new Vector that is a subset of this.
+    /// @brief Create a new Vector that is a subset of this.
     template <int Start, int Stop>
     Vector<T,Stop-Start> getRange() const {
         return Vector<T,Stop-Start>();
     }
 
-    /// \brief Create a new Vector from the first M elements of this.
+    /// @brief Create a new Vector from the first M elements of this.
     template <int M> Vector<T,M> first() const {
         return Vector<T,M>();
     }
 
-    /// \brief Create a new Vector from the last M elements of this.
+    /// @brief Create a new Vector from the last M elements of this.
     template <int M> Vector<T,M> last() const {
         return Vector<T,M>();
     }
 
-    /** \brief Stream output. */
+    /** @brief Stream output. */
     friend std::ostream& operator<<(std::ostream& os, Vector<T,0> const & obj) {
         return os << "()";
     }
 
     /**
-     *  \brief Default constructor.
+     *  @brief Default constructor.
      *
      *  Initializes the elements to zero.
      */
     Vector() {}
 
-    /// \brief Construct with copies of a scalar.
+    /// @brief Construct with copies of a scalar.
     template <typename U>
     explicit Vector(U scalar) {}
 
-    /// \brief Converting copy constructor.
+    /// @brief Converting copy constructor.
     template <typename U>
     explicit Vector(Vector<U,0> const & other) {}
 
-    /// \brief Return true if elements of other are equal to the elements of this.
+    /// @brief Return true if elements of other are equal to the elements of this.
     bool operator==(Vector const & other) const { return true; }
 
-    /// \brief Return false if any elements of other are not equal to the elements of this.
+    /// @brief Return false if any elements of other are not equal to the elements of this.
     bool operator!=(Vector const & other) const { return false; }
 
-    /// \brief Return the sum of all elements.
+    /// @brief Return the sum of all elements.
     T sum() const { return 0; }
 
-    /// \brief Return the product of all elements.
+    /// @brief Return the product of all elements.
     T product() const { return 1; }
 
-    /// \brief Return a Vector with the elements reversed.
+    /// @brief Return a Vector with the elements reversed.
     Vector reverse() const { return Vector(); }
 
 };
 
 
-/// \brief Concatenate two Vectors into a single long Vector.
+/// @brief Concatenate two Vectors into a single long Vector.
 template <typename T, int N, int M>
 inline Vector<T,N+M> concatenate(Vector<T,N> const & a, Vector<T,M> const & b) {
     Vector<T,N+M> r;
@@ -512,7 +512,7 @@ inline Vector<T,N+M> concatenate(Vector<T,N> const & a, Vector<T,M> const & b) {
     return r;
 }
 
-/// \brief Return a new Vector with the given scalar appended to the original.
+/// @brief Return a new Vector with the given scalar appended to the original.
 template <typename T, int N>
 inline Vector<T,N+1> concatenate(Vector<T,N> const & a, T const & b) {
     Vector<T,N+1> r;
@@ -521,7 +521,7 @@ inline Vector<T,N+1> concatenate(Vector<T,N> const & a, T const & b) {
     return r;
 }
 
-/// \brief Return a new Vector with the given scalar prepended to the original.
+/// @brief Return a new Vector with the given scalar prepended to the original.
 template <typename T, int N>
 inline Vector<T,N+1> concatenate(T const & a, Vector<T,N> const & b) {
     Vector<T,N+1> r;
@@ -534,7 +534,7 @@ inline Vector<T,N+1> concatenate(T const & a, Vector<T,N> const & b) {
 BOOST_PP_REPEAT_FROM_TO(1, NDARRAY_MAKE_VECTOR_MAX, NDARRAY_MAKE_VECTOR_SPEC, unused)
 #else
 /**
- *  \brief Variadic constructor for Vector. 
+ *  @brief Variadic constructor for Vector. 
  *
  *  Defined for N in [0 - NDARRAY_MAKE_VECTOR_MAX).
  */
@@ -542,7 +542,7 @@ template <typename T, int N>
 Vector<T,N> makeVector(T v1, T v2, ..., T vN);
 #endif
 
-/** \brief Unary bitwise NOT for Vector. */
+/** @brief Unary bitwise NOT for Vector. */
 template <typename T, int N>
 inline Vector<T,N> operator~(Vector<T,N> const & vector) {
     Vector<T,N> r(vector);
@@ -550,7 +550,7 @@ inline Vector<T,N> operator~(Vector<T,N> const & vector) {
     return r;    
 }
 
-/** \brief Unary negation for Vector. */
+/** @brief Unary negation for Vector. */
 template <typename T, int N>
 inline Vector<T,N> operator!(Vector<T,N> const & vector) {
     Vector<T,N> r(vector);
@@ -559,21 +559,21 @@ inline Vector<T,N> operator!(Vector<T,N> const & vector) {
 }
 
 
-    /// \brief Operator overload for Vector + Vector.
+    /// @brief Operator overload for Vector + Vector.
     template <typename T, typename U, int N>
     Vector<typename Promote<T,U>::Type,N>
     operator +(Vector<T,N> const & a, Vector<U,N> const & b) {
         Vector<typename Promote<T,U>::Type,N> r(a);
         return r += b;
     }
-    /** \brief Operator overload for Vector + Scalar. */
+    /** @brief Operator overload for Vector + Scalar. */
     template <typename T, typename U, int N>
     Vector<typename Promote<T,U>::Type,N>
     operator +(Vector<T,N> const & a, U b) {
         Vector<typename Promote<T,U>::Type,N> r(a);
         return r += b;
     }
-    /** \brief Operator overload for Scalar + Vector. */
+    /** @brief Operator overload for Scalar + Vector. */
     template <typename T, typename U, int N>
     Vector<typename Promote<T,U>::Type,N>
     operator +(U a, Vector<T,N> const & b) {
@@ -581,21 +581,21 @@ inline Vector<T,N> operator!(Vector<T,N> const & vector) {
         return r += b;
     }
 
-    /// \brief Operator overload for Vector - Vector.
+    /// @brief Operator overload for Vector - Vector.
     template <typename T, typename U, int N>
     Vector<typename Promote<T,U>::Type,N>
     operator -(Vector<T,N> const & a, Vector<U,N> const & b) {
         Vector<typename Promote<T,U>::Type,N> r(a);
         return r -= b;
     }
-    /** \brief Operator overload for Vector - Scalar. */
+    /** @brief Operator overload for Vector - Scalar. */
     template <typename T, typename U, int N>
     Vector<typename Promote<T,U>::Type,N>
     operator -(Vector<T,N> const & a, U b) {
         Vector<typename Promote<T,U>::Type,N> r(a);
         return r -= b;
     }
-    /** \brief Operator overload for Scalar - Vector. */
+    /** @brief Operator overload for Scalar - Vector. */
     template <typename T, typename U, int N>
     Vector<typename Promote<T,U>::Type,N>
     operator -(U a, Vector<T,N> const & b) {
@@ -603,21 +603,21 @@ inline Vector<T,N> operator!(Vector<T,N> const & vector) {
         return r -= b;
     }
 
-    /// \brief Operator overload for Vector * Vector.
+    /// @brief Operator overload for Vector * Vector.
     template <typename T, typename U, int N>
     Vector<typename Promote<T,U>::Type,N>
     operator *(Vector<T,N> const & a, Vector<U,N> const & b) {
         Vector<typename Promote<T,U>::Type,N> r(a);
         return r *= b;
     }
-    /** \brief Operator overload for Vector * Scalar. */
+    /** @brief Operator overload for Vector * Scalar. */
     template <typename T, typename U, int N>
     Vector<typename Promote<T,U>::Type,N>
     operator *(Vector<T,N> const & a, U b) {
         Vector<typename Promote<T,U>::Type,N> r(a);
         return r *= b;
     }
-    /** \brief Operator overload for Scalar * Vector. */
+    /** @brief Operator overload for Scalar * Vector. */
     template <typename T, typename U, int N>
     Vector<typename Promote<T,U>::Type,N>
     operator *(U a, Vector<T,N> const & b) {
@@ -625,21 +625,21 @@ inline Vector<T,N> operator!(Vector<T,N> const & vector) {
         return r *= b;
     }
 
-    /// \brief Operator overload for Vector / Vector.
+    /// @brief Operator overload for Vector / Vector.
     template <typename T, typename U, int N>
     Vector<typename Promote<T,U>::Type,N>
     operator /(Vector<T,N> const & a, Vector<U,N> const & b) {
         Vector<typename Promote<T,U>::Type,N> r(a);
         return r /= b;
     }
-    /** \brief Operator overload for Vector / Scalar. */
+    /** @brief Operator overload for Vector / Scalar. */
     template <typename T, typename U, int N>
     Vector<typename Promote<T,U>::Type,N>
     operator /(Vector<T,N> const & a, U b) {
         Vector<typename Promote<T,U>::Type,N> r(a);
         return r /= b;
     }
-    /** \brief Operator overload for Scalar / Vector. */
+    /** @brief Operator overload for Scalar / Vector. */
     template <typename T, typename U, int N>
     Vector<typename Promote<T,U>::Type,N>
     operator /(U a, Vector<T,N> const & b) {
@@ -647,21 +647,21 @@ inline Vector<T,N> operator!(Vector<T,N> const & vector) {
         return r /= b;
     }
 
-    /// \brief Operator overload for Vector % Vector.
+    /// @brief Operator overload for Vector % Vector.
     template <typename T, typename U, int N>
     Vector<typename Promote<T,U>::Type,N>
     operator %(Vector<T,N> const & a, Vector<U,N> const & b) {
         Vector<typename Promote<T,U>::Type,N> r(a);
         return r %= b;
     }
-    /** \brief Operator overload for Vector % Scalar. */
+    /** @brief Operator overload for Vector % Scalar. */
     template <typename T, typename U, int N>
     Vector<typename Promote<T,U>::Type,N>
     operator %(Vector<T,N> const & a, U b) {
         Vector<typename Promote<T,U>::Type,N> r(a);
         return r %= b;
     }
-    /** \brief Operator overload for Scalar % Vector. */
+    /** @brief Operator overload for Scalar % Vector. */
     template <typename T, typename U, int N>
     Vector<typename Promote<T,U>::Type,N>
     operator %(U a, Vector<T,N> const & b) {
@@ -669,21 +669,21 @@ inline Vector<T,N> operator!(Vector<T,N> const & vector) {
         return r %= b;
     }
 
-    /// \brief Operator overload for Vector & Vector.
+    /// @brief Operator overload for Vector & Vector.
     template <typename T, typename U, int N>
     Vector<typename Promote<T,U>::Type,N>
     operator &(Vector<T,N> const & a, Vector<U,N> const & b) {
         Vector<typename Promote<T,U>::Type,N> r(a);
         return r &= b;
     }
-    /** \brief Operator overload for Vector & Scalar. */
+    /** @brief Operator overload for Vector & Scalar. */
     template <typename T, typename U, int N>
     Vector<typename Promote<T,U>::Type,N>
     operator &(Vector<T,N> const & a, U b) {
         Vector<typename Promote<T,U>::Type,N> r(a);
         return r &= b;
     }
-    /** \brief Operator overload for Scalar & Vector. */
+    /** @brief Operator overload for Scalar & Vector. */
     template <typename T, typename U, int N>
     Vector<typename Promote<T,U>::Type,N>
     operator &(U a, Vector<T,N> const & b) {
@@ -691,21 +691,21 @@ inline Vector<T,N> operator!(Vector<T,N> const & vector) {
         return r &= b;
     }
 
-    /// \brief Operator overload for Vector ^ Vector.
+    /// @brief Operator overload for Vector ^ Vector.
     template <typename T, typename U, int N>
     Vector<typename Promote<T,U>::Type,N>
     operator ^(Vector<T,N> const & a, Vector<U,N> const & b) {
         Vector<typename Promote<T,U>::Type,N> r(a);
         return r ^= b;
     }
-    /** \brief Operator overload for Vector ^ Scalar. */
+    /** @brief Operator overload for Vector ^ Scalar. */
     template <typename T, typename U, int N>
     Vector<typename Promote<T,U>::Type,N>
     operator ^(Vector<T,N> const & a, U b) {
         Vector<typename Promote<T,U>::Type,N> r(a);
         return r ^= b;
     }
-    /** \brief Operator overload for Scalar ^ Vector. */
+    /** @brief Operator overload for Scalar ^ Vector. */
     template <typename T, typename U, int N>
     Vector<typename Promote<T,U>::Type,N>
     operator ^(U a, Vector<T,N> const & b) {
@@ -713,21 +713,21 @@ inline Vector<T,N> operator!(Vector<T,N> const & vector) {
         return r ^= b;
     }
 
-    /// \brief Operator overload for Vector | Vector.
+    /// @brief Operator overload for Vector | Vector.
     template <typename T, typename U, int N>
     Vector<typename Promote<T,U>::Type,N>
     operator |(Vector<T,N> const & a, Vector<U,N> const & b) {
         Vector<typename Promote<T,U>::Type,N> r(a);
         return r |= b;
     }
-    /** \brief Operator overload for Vector | Scalar. */
+    /** @brief Operator overload for Vector | Scalar. */
     template <typename T, typename U, int N>
     Vector<typename Promote<T,U>::Type,N>
     operator |(Vector<T,N> const & a, U b) {
         Vector<typename Promote<T,U>::Type,N> r(a);
         return r |= b;
     }
-    /** \brief Operator overload for Scalar | Vector. */
+    /** @brief Operator overload for Scalar | Vector. */
     template <typename T, typename U, int N>
     Vector<typename Promote<T,U>::Type,N>
     operator |(U a, Vector<T,N> const & b) {
@@ -735,21 +735,21 @@ inline Vector<T,N> operator!(Vector<T,N> const & vector) {
         return r |= b;
     }
 
-    /// \brief Operator overload for Vector << Vector.
+    /// @brief Operator overload for Vector << Vector.
     template <typename T, typename U, int N>
     Vector<typename Promote<T,U>::Type,N>
     operator <<(Vector<T,N> const & a, Vector<U,N> const & b) {
         Vector<typename Promote<T,U>::Type,N> r(a);
         return r <<= b;
     }
-    /** \brief Operator overload for Vector << Scalar. */
+    /** @brief Operator overload for Vector << Scalar. */
     template <typename T, typename U, int N>
     Vector<typename Promote<T,U>::Type,N>
     operator <<(Vector<T,N> const & a, U b) {
         Vector<typename Promote<T,U>::Type,N> r(a);
         return r <<= b;
     }
-    /** \brief Operator overload for Scalar << Vector. */
+    /** @brief Operator overload for Scalar << Vector. */
     template <typename T, typename U, int N>
     Vector<typename Promote<T,U>::Type,N>
     operator <<(U a, Vector<T,N> const & b) {
@@ -757,21 +757,21 @@ inline Vector<T,N> operator!(Vector<T,N> const & vector) {
         return r <<= b;
     }
 
-    /// \brief Operator overload for Vector >> Vector.
+    /// @brief Operator overload for Vector >> Vector.
     template <typename T, typename U, int N>
     Vector<typename Promote<T,U>::Type,N>
     operator >>(Vector<T,N> const & a, Vector<U,N> const & b) {
         Vector<typename Promote<T,U>::Type,N> r(a);
         return r >>= b;
     }
-    /** \brief Operator overload for Vector >> Scalar. */
+    /** @brief Operator overload for Vector >> Scalar. */
     template <typename T, typename U, int N>
     Vector<typename Promote<T,U>::Type,N>
     operator >>(Vector<T,N> const & a, U b) {
         Vector<typename Promote<T,U>::Type,N> r(a);
         return r >>= b;
     }
-    /** \brief Operator overload for Scalar >> Vector. */
+    /** @brief Operator overload for Scalar >> Vector. */
     template <typename T, typename U, int N>
     Vector<typename Promote<T,U>::Type,N>
     operator >>(U a, Vector<T,N> const & b) {

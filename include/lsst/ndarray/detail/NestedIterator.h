@@ -46,7 +46,7 @@ namespace detail {
  *  <b><tt>pointer</tt></b> types associated with the iterator,
  *  not the types themselves.
  *
- *  @ingroup InternalGroup
+ *  @ingroup ndarrayInternalGroup
  */
 template <typename T, int N, int C>
 class NestedIterator : public boost::iterator_facade<

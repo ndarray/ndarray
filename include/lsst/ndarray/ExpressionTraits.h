@@ -48,7 +48,7 @@ template <typename Expression_> struct ExpressionTraits {
 /**
  *  @internal @brief ExpressionTraits specialization for UnaryOpExpression.
  *
- *  @ingroup InternalGroup
+ *  @ingroup ndarrayInternalGroup
  */
 template <typename Operand, typename UnaryFunction, int N>
 struct ExpressionTraits< detail::UnaryOpExpression<Operand,UnaryFunction,N> > {
@@ -65,7 +65,7 @@ struct ExpressionTraits< detail::UnaryOpExpression<Operand,UnaryFunction,N> > {
 /**
  *  @internal @brief ExpressionTraits specialization for 1D UnaryOpExpression.
  *
- *  @ingroup InternalGroup
+ *  @ingroup ndarrayInternalGroup
  */
 template <typename Operand, typename UnaryFunction>
 struct ExpressionTraits< detail::UnaryOpExpression<Operand,UnaryFunction,1> > {
@@ -80,7 +80,7 @@ struct ExpressionTraits< detail::UnaryOpExpression<Operand,UnaryFunction,1> > {
 /**
  *  @internal @brief ExpressionTraits specialization for BinaryOpExpression.
  *
- *  @ingroup InternalGroup
+ *  @ingroup ndarrayInternalGroup
  */
 template <typename Operand1, typename Operand2, typename BinaryFunction, int N>
 struct ExpressionTraits< detail::BinaryOpExpression<Operand1,Operand2,BinaryFunction,N> > {
@@ -99,7 +99,7 @@ struct ExpressionTraits< detail::BinaryOpExpression<Operand1,Operand2,BinaryFunc
 /**
  *  @internal @brief ExpressionTraits specialization for 1D BinaryOpExpression.
  *
- *  @ingroup InternalGroup
+ *  @ingroup ndarrayInternalGroup
  */
 template <typename Operand1, typename Operand2, typename BinaryFunction>
 struct ExpressionTraits< detail::BinaryOpExpression<Operand1,Operand2,BinaryFunction,1> > {

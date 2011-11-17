@@ -41,7 +41,7 @@ namespace detail {
  *  @internal
  *  @brief Internal data class for Array.
  *
- *  @ingroup InternalGroup
+ *  @ingroup ndarrayInternalGroup
  *
  *  Core holds the shape, stride, and ownership data for an Array.
  *  A Core maintains its own reference count and can be shared
@@ -70,17 +70,22 @@ public:
         Vector<int,M> const & strides, 
         Manager::Ptr const & manager = Manager::Ptr()
     ) {
-        return Ptr(new Core(shape, strides, manager),false);
+        return Ptr(new Core(shape, strides, manager), false);
     }        
 
-    /// @brief Create a Core::Ptr with the given shape and manager with RMC strides.
+    /// @brief Create a Core::Ptr with the given shape and manager with contiguous strides.
     template <int M>
     static Ptr create(
         Vector<int,M> const & shape,
+        DataOrderEnum order,
         Manager::Ptr const & manager = Manager::Ptr()
     ) {
-        return Ptr(new Core(shape, manager),false);
-    }        
+        if (order == ROW_MAJOR) {
+            return Ptr(new Core(shape, manager), false);
+        } else {
+            return Ptr(new Core(shape, 1, manager), false);
+        }
+    }
 
     /// @brief Create a Core::Ptr with the given manager and zero shape and strides.
     static Ptr create(
@@ -130,6 +135,7 @@ public:
     
 protected:
 
+    // Explicit strides
     template <int M>
     Core (
         Vector<int,M> const & shape,
@@ -137,12 +143,22 @@ protected:
         Manager::Ptr const & manager
     ) : Super(shape, strides, manager), _size(shape[M-N]), _stride(strides[M-N]) {}
 
+    // Row-major strides
     template <int M>
     Core (
         Vector<int,M> const & shape,
         Manager::Ptr const & manager
     ) : Super(shape, manager), _size(shape[M-N]), _stride(Super::getStride() * Super::getSize()) {}
 
+    // Column-major strides
+    template <int M>
+    Core (
+        Vector<int,M> const & shape,
+        int stride,
+        Manager::Ptr const & manager
+    ) : Super(shape, stride * shape[M-N], manager), _size(shape[M-N]), _stride(stride) {}
+
+    // Zero shape and strides
     Core (
         Manager::Ptr const & manager
     ) : Super(manager), _size(0), _stride(0) {}
@@ -158,7 +174,7 @@ private:
  *  @internal
  *  @brief Internal data class for Array, 0-D specialization.
  *
- *  @ingroup InternalGroup
+ *  @ingroup ndarrayInternalGroup
  *
  *  The 0-D Core has size and stride == 1 and holds the reference
  *  count and manager; it is the base class for all other Cores.
@@ -227,6 +243,13 @@ protected:
         Manager::Ptr const & manager
     ) : _manager(manager), _rc(1) {}
 
+    template <int M>
+    Core(
+        Vector<int,M> const & shape,
+        int stride,
+        Manager::Ptr const & manager
+    ) : _manager(manager), _rc(1) {}
+
     Core(
         Manager::Ptr const & manager
     ) : _manager(manager), _rc(1) {}
@@ -242,7 +265,7 @@ private:
 /**
  *  @internal @brief Cast a Core reference to a particular dimension.
  *
- *  @ingroup InternalGroup
+ *  @ingroup ndarrayInternalGroup
  */
 template <int P, int N>
 inline Core<N-P> const & 
@@ -251,7 +274,7 @@ getDimension(Core<N> const & core) { return core; }
 /**
  *  @internal @brief Cast a Core smart pointer to a particular dimension.
  *
- *  @ingroup InternalGroup
+ *  @ingroup ndarrayInternalGroup
  */
 template <int P, int N>
 inline typename Core<N-P>::Ptr 

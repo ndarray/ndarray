@@ -349,7 +349,7 @@ struct BitwiseNot {
 } // namespace detail
 /// \endcond
 
-/// \addtogroup OpGroup
+/// \addtogroup ndarrayOpGroup
 /// @{
 
     template <typename Operand, typename Scalar>

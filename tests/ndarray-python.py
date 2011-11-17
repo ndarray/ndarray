@@ -17,7 +17,6 @@ class TestNDArray(unittest.TestCase):
         self.assertEqual(a1.shape,b1.shape)
         self.assertEqual(a1.strides,b1.strides)
 
-
         c1 = ndarray_python_test.passIntArray30(a1)
         self.assert_(c1.flags["WRITEABLE"])
         self.assertEqual(a1.shape,c1.shape)
@@ -35,16 +34,12 @@ class TestNDArray(unittest.TestCase):
         self.assertEqual(a2.shape,c2.shape)
         self.assertEqual(a2.strides,c2.strides)
 
-        d2 = ndarray_python_test.passConstIntArray33(a2)
-        self.assertEqual(a2.shape,d2.shape)
-        self.assertNotEqual(a2.strides,d2.strides)
-        self.assert_(not d2.flags.writeable)
-
         # test to be sure a tuple of tuples does not work
-        self.assertRaises(ValueError, ndarray_python_test.passIntArray30, ((1,1,1),(2,2,2),(3,3,3)))
+        self.assertRaises(TypeError, ndarray_python_test.passIntArray30, ((1,1,1),(2,2,2),(3,3,3)))
 
         # test to be sure an array of the wrong type does not work
-        self.assertRaises(ValueError, ndarray_python_test.passIntArray30, numpy.zeros((4,3,4),dtype=numpy.float))
+        self.assertRaises(ValueError, ndarray_python_test.passIntArray30, 
+                          numpy.zeros((4,3,4),dtype=numpy.float))
 
     def testVectorConversion(self):
         a = (3.5,6.7,1.2)
@@ -80,16 +75,21 @@ class TestNDArray(unittest.TestCase):
         self.assertEqual(a2.shape,c2.shape)
         self.assertEqual(a2.strides,c2.strides)
 
-        d2 = ndarray_python_test.passConstFloatArray33(a2)
-        self.assertEqual(a2.shape,d2.shape)
-        self.assertNotEqual(a2.strides,d2.strides)
-        self.assert_(not d2.flags.writeable)
-
         # test to be sure a tuple of tuples does not work
-        self.assertRaises(ValueError, ndarray_python_test.passFloatArray30, ((1.0,1.0,1.0),(2.0,2.0,2.0),(3.0,3.0,3.0)))
+        self.assertRaises(TypeError, ndarray_python_test.passFloatArray30, 
+                          ((1.0,1.0,1.0),(2.0,2.0,2.0),(3.0,3.0,3.0)))
 
         # test to be sure an array of the wrong type does not work
-        self.assertRaises(ValueError, ndarray_python_test.passFloatArray30, numpy.zeros((4,3,4),dtype=numpy.int32))
+        self.assertRaises(ValueError, ndarray_python_test.passFloatArray30,
+                          numpy.zeros((4,3,4),dtype=numpy.int32))
+
+        # test to be sure a tuple of tuples does not work
+        self.assertRaises(TypeError, ndarray_python_test.passFloatArray30,
+                          ((1.0,1.0,1.0),(2.0,2.0,2.0),(3.0,3.0,3.0)))
+
+        # test to be sure an array of the wrong type does not work
+        self.assertRaises(ValueError, ndarray_python_test.passFloatArray30,
+                          numpy.zeros((4,3,4),dtype=numpy.int32))
 
     def testFloatArrayCreation(self):
         a = ndarray_python_test.makeFloatArray3((3,4,5))

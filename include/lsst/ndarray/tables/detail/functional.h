@@ -39,28 +39,28 @@ struct SetOffsets {
     template <typename T, int N>
     void operator()(Field<T,N> & field) const {
         int element_size = sizeof(T);
-        alignment = std::max(element_size, alignment);
+        *alignment = std::max(element_size, *alignment);
         if (field.offset < 0) {
-            if (!pack) bytes += bytes % element_size;
-            field.offset = bytes;
+            if (!pack) (*bytes) += (*bytes) % element_size;
+            field.offset = (*bytes);
         } else {
-            if (field.offset < bytes) {
+            if (field.offset < (*bytes)) {
                 throw std::logic_error("Field offsets are not compatible.");
             }
         }
-        bytes = field.offset + element_size * ((N == 0) ? 1 : field.shape.product());
+        *bytes = field.offset + element_size * ((N == 0) ? 1 : field.shape.product());
     }
 
     explicit SetOffsets(bool pack_, int & bytes_, int & alignment_) :
-        pack(pack_), bytes(bytes_), alignment(alignment_)
+        pack(pack_), bytes(&bytes_), alignment(&alignment_)
     {
-        bytes = 0;
-        alignment = 1;
+        *bytes = 0;
+        *alignment = 1;
     }
 
     bool const pack;
-    mutable int & bytes;
-    mutable int & alignment;
+    int * bytes;
+    int * alignment;
 };
 
 struct MakeColumns {
@@ -80,6 +80,7 @@ struct MakeColumns {
         typedef typename lsst::ndarray::detail::ArrayAccess< typename FieldInfo<U>::ColumnValue > Access;
         typename Access::Core::Ptr core = Access::Core::create(
             lsst::ndarray::concatenate(size, field.shape),
+            ROW_MAJOR,
             manager
         );
         core->setStride(stride / sizeof(typename Access::Element));
@@ -130,6 +131,6 @@ ViewColumns<Dim> makeViewColumns(Dim const & dim) {
     return ViewColumns<Dim>(dim);
 }
 
-}}} // namespace lsst::ndarray::tables::detail
+}}}} // namespace lsst::ndarray::tables::detail
 
 #endif // !LSST_NDARRAY_TABLES_DETAIL_functional_h_INCLUDED

@@ -41,12 +41,12 @@
 namespace lsst { namespace ndarray {
 
 /** 
- * @mainpage Overview
+ * @mainpage Multidimensional Arrays in C++
  *
- * %ndarray is a template library that provide multidimensional array objects in C++, with
+ * %ndarray is a template library that provides multidimensional array objects in C++, with
  * an interface and features designed to mimic the Python 'numpy' package as much as possible.
  *
- * A tutorial can be found \ref tutorial "here".
+ * A tutorial can be found \ref ndarrayTutorial "here".
  *
  * @section comparisons Other Multidimensional Array Libraries
  * A number of other public C++ multidimensional array libraries already exist, most notably
@@ -95,7 +95,7 @@ namespace lsst { namespace ndarray {
  * arrays with M<N RMC dimensions (dynamic_dimension_cast returns an empty Array if the
  * strides are not appropriately RMC, while static_dimension_cast does no checking).
  *
- * @section views Indexing and Views
+ * @section ndarrayViews Indexing and Views
  * An Array with dimension N>1 behaves like largely like 
  * an STL container of Array of dimension N-1.  An Array with dimension 1 behaves like a
  * simple container of elements.  Iterators over an Array with N>1 thus dereference
@@ -128,7 +128,7 @@ namespace lsst { namespace ndarray {
  */
 
 /** 
- * @page tutorial Tutorial
+ * @page ndarrayTutorial Tutorial
  *
  * @section environment Environment
  * @subsection dependencies Dependencies
@@ -291,7 +291,7 @@ namespace lsst { namespace ndarray {
  * a[makeVector(3,2,1)] == a[3][2][1];
  * @endcode
  *
- * @section views Views
+ * @section ndarrayTutorialViews Views
  * General views into a an Array are created by passing a ViewDef object to the [] operators
  * of Array, returning a new Array that shares data and owns a reference to the original.
  *

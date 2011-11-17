@@ -1,3 +1,4 @@
+// -*- lsst-c++ -*-
 /* 
  * LSST Data Management System
  * Copyright 2008, 2009, 2010 LSST Corporation.
@@ -20,11 +21,11 @@
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
 
-#ifndef LSST_NDARRAY_PYTHON_Vector_hpp_INCLUDED
-#define LSST_NDARRAY_PYTHON_Vector_hpp_INCLUDED
+#ifndef LSST_NDARRAY_PYTHON_Vector_h_INCLUDED
+#define LSST_NDARRAY_PYTHON_Vector_h_INCLUDED
 
 /** 
- *  @file lsst/ndarray/python/Vector.hpp 
+ *  @file lsst/ndarray/python/Vector.h
  *  @brief Python C-API conversions for Vector.
 */
 
@@ -33,7 +34,7 @@
 namespace lsst { namespace ndarray {
 
 /**
- *  @ingroup PythonGroup
+ *  @ingroup ndarrayndarrayPythonGroup
  *  @brief A traits class providing Python conversion functions for Vector.
  */
 template <typename T, int N>
@@ -114,4 +115,4 @@ struct PyConverter< Vector<T,N> > : public detail::PyConverterBase< Vector<T,N> 
 
 }} // namespace lsst::ndarray
 
-#endif // !LSST_NDARRAY_PYTHON_Vector_hpp_INCLUDED
+#endif // !LSST_NDARRAY_PYTHON_Vector_h_INCLUDED
