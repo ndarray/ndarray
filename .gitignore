@@ -1,0 +1,16 @@
+.sconf_temp
+.sconsign.dblite
+config.log
+doc/htmlDir
+tests/*.o
+tests/*.os
+tests/*.pyc
+tests/*.so
+tests/.tests
+tests/ndarray
+tests/ndarray-eigen
+tests/ndarray-fft
+tests/ndarray-tables
+tests/swig_test_mod.py
+tests/swig_test_mod_wrap.cc
+ups/ndarray.cfgc
