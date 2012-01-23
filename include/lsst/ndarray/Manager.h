@@ -55,9 +55,9 @@ public:
 
 protected:
 
-    explicit Manager() : _rc(1) {}
-
     virtual ~Manager() {}
+
+    explicit Manager() : _rc(0) {}
 
 private:
     mutable int _rc;
@@ -69,7 +69,7 @@ class SimpleManager : public Manager {
 public:
     
     static std::pair<Manager::Ptr,T*> allocate(int size) {
-        boost::intrusive_ptr<SimpleManager> r(new SimpleManager(size), false);
+        boost::intrusive_ptr<SimpleManager> r(new SimpleManager(size));
         return std::pair<Manager::Ptr,T*>(r, r->_p.get());
     }
 
@@ -88,7 +88,7 @@ public:
     typedef U Owner;
 
     static Manager::Ptr make(Owner const & owner) {
-        return Manager::Ptr(new ExternalManager(owner), false);
+        return Manager::Ptr(new ExternalManager(owner));
     }
 
     Owner const & getOwner() const { return *static_cast<Owner const *>(this); }
