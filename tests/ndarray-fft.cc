@@ -20,7 +20,7 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-#include <lsst/ndarray/fft.h>
+#include <ndarray/fft.h>
 
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE ndarray-fft

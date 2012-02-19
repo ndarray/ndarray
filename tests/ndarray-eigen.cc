@@ -20,7 +20,7 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-#include "lsst/ndarray/eigen.h"
+#include "ndarray/eigen.h"
 #include "Eigen/SVD"
 
 #define BOOST_TEST_DYN_LINK

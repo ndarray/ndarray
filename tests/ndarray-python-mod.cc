@@ -22,7 +22,7 @@
 
 #include "Python.h"
 #include "numpy/arrayobject.h"
-#include "lsst/ndarray/python.h"
+#include "ndarray/python.h"
 
 template <typename T, int N>
 static PyObject * passVector(PyObject * self, PyObject * args) {
