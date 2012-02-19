@@ -571,3 +571,10 @@ BOOST_AUTO_TEST_CASE(zeroSize) {
     BOOST_CHECK_EQUAL(c.getSize<0>(), 5);
     BOOST_CHECK_EQUAL(c.getSize<1>(), 0);
 }
+
+BOOST_AUTO_TEST_CASE(manager) {
+    lsst::ndarray::Array<double,1,1> a = lsst::ndarray::allocate(5);
+    lsst::ndarray::Array<double,1,1> b 
+        = lsst::ndarray::external(a.getData(), a.getShape(), a.getStrides(), a.getManager());
+    BOOST_CHECK_EQUAL(a.getManager(), b.getManager()); // no extra indirection in makeManager
+}
