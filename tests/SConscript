@@ -1,7 +1,7 @@
 # -*- python -*-
 from lsst.sconsUtils import scripts, env
 
-ccList = ["ndarray.cc", "ndarray-tables.cc", "ndarray-eigen.cc"]
+ccList = ["ndarray.cc", "ndarray-eigen.cc"]
 if env.dependencies.get("fftw"):
     ccList.append("ndarray-fft.cc")
 else:

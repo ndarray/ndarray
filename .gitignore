@@ -18,5 +18,4 @@ version.py
 tests/ndarray
 tests/ndarray-eigen
 tests/ndarray-fft
-tests/ndarray-tables
 tests/swig_test_mod.py

@@ -55,9 +55,9 @@ public:
 
 protected:
 
-    explicit Manager() : _rc(1) {}
-
     virtual ~Manager() {}
+
+    explicit Manager() : _rc(0) {}
 
 private:
     mutable int _rc;
@@ -69,7 +69,7 @@ class SimpleManager : public Manager {
 public:
     
     static std::pair<Manager::Ptr,T*> allocate(int size) {
-        boost::intrusive_ptr<SimpleManager> r(new SimpleManager(size), false);
+        boost::intrusive_ptr<SimpleManager> r(new SimpleManager(size));
         return std::pair<Manager::Ptr,T*>(r, r->_p.get());
     }
 
@@ -82,20 +82,30 @@ private:
     boost::scoped_array<U> _p;
 };
 
+template <typename T> Manager::Ptr makeManager(T const & owner);
+
 template <typename U>
 class ExternalManager : public Manager, private U {
 public:
     typedef U Owner;
 
-    static Manager::Ptr make(Owner const & owner) {
-        return Manager::Ptr(new ExternalManager(owner), false);
-    }
+    template <typename T> friend Manager::Ptr makeManager(T const & owner);
 
     Owner const & getOwner() const { return *static_cast<Owner const *>(this); }
 
 private:
     explicit ExternalManager(Owner const & owner) : Owner(owner) {}
 };
+
+template <typename T>
+inline Manager::Ptr makeManager(T const & owner) {
+    return Manager::Ptr(new ExternalManager<T>(owner));
+}
+
+// A no-op overload for makeManager to avoid unnecessary levels of indirection.
+inline Manager::Ptr makeManager(Manager::Ptr const & owner) {
+    return owner;
+}
 
 }} // namespace lsst::ndarray
 
