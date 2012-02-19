@@ -1,24 +1,21 @@
 // -*- c++ -*-
-/* 
- * LSST Data Management System
- * Copyright 2008, 2009, 2010, 2011 LSST Corporation.
+/*
+ * Copyright 2012, Jim Bosch and the LSST Corporation
  * 
- * This product includes software developed by the
- * LSST Project (http://www.lsst.org/).
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * ndarray is available under two licenses, both of which are described
+ * more fully in other files that should be distributed along with
+ * the code:
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *  - A simple BSD-style license (ndarray-bsd-license.txt); under this
+ *    license ndarray is broadly compatible with essentially any other
+ *    code.
  * 
- * You should have received a copy of the LSST License Statement and 
- * the GNU General Public License along with this program.  If not, 
- * see <http://www.lsstcorp.org/LegalNotices/>.
+ *  - As a part of the LSST data management software system, ndarray is
+ *    licensed with under the GPL v3 (LsstLicenseStatement.txt).
+ * 
+ * These files can also be found in the source distribution at:
+ * 
+ * https://github.com/ndarray/ndarray
  */
 #ifndef NDARRAY_FFT_fft_fwd_h_INCLUDED
 #define NDARRAY_FFT_fft_fwd_h_INCLUDED
