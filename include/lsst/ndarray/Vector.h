@@ -20,8 +20,8 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-#ifndef LSST_NDARRAY_Vector_h_INCLUDED
-#define LSST_NDARRAY_Vector_h_INCLUDED
+#ifndef NDARRAY_Vector_h_INCLUDED
+#define NDARRAY_Vector_h_INCLUDED
 
 /// @file lsst/ndarray/Vector.h Definition for Vector.
 
@@ -54,7 +54,7 @@
 
 /// \endcond
 
-namespace lsst { namespace ndarray {
+namespace ndarray {
 
 /// \addtogroup ndarrayVectorGroup
 /// @{
@@ -436,18 +436,18 @@ struct Vector<T,0> {
     const_reverse_iterator rend() const { return const_reverse_iterator(); }
 
     /// @brief Return a reference to the first element.
-    reference front() { LSST_NDARRAY_ASSERT(false); return 0; }
+    reference front() { NDARRAY_ASSERT(false); return 0; }
     /// @brief Return a reference to the last element.
-    reference back() { return LSST_NDARRAY_ASSERT(false); return 0; }
+    reference back() { return NDARRAY_ASSERT(false); return 0; }
     /// @brief Return a const_reference to the first element.
-    const_reference front() const { LSST_NDARRAY_ASSERT(false); return 0; }
+    const_reference front() const { NDARRAY_ASSERT(false); return 0; }
     /// @brief Return a const_reference to the last element.
-    const_reference back() const { LSST_NDARRAY_ASSERT(false); return 0; }
+    const_reference back() const { NDARRAY_ASSERT(false); return 0; }
 
     /// @brief Return a reference to the element with the given index.
-    reference operator[](int i) { LSST_NDARRAY_ASSERT(false); return 0; }
+    reference operator[](int i) { NDARRAY_ASSERT(false); return 0; }
     /// @brief Return a const_reference to the element with the given index.
-    const_reference operator[](int i) const { LSST_NDARRAY_ASSERT(false); return 0; }
+    const_reference operator[](int i) const { NDARRAY_ASSERT(false); return 0; }
 
     /// @brief Create a new Vector that is a subset of this.
     template <int Start, int Stop>
@@ -781,6 +781,6 @@ inline Vector<T,N> operator!(Vector<T,N> const & vector) {
 
 /// @}
 
-}} // namespace lsst::ndarray
+} // namespace ndarray
 
-#endif // !LSST_NDARRAY_Vector_h_INCLUDED
+#endif // !NDARRAY_Vector_h_INCLUDED

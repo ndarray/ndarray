@@ -20,8 +20,8 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-#ifndef LSST_NDARRAY_ndarray_h_INCLUDED
-#define LSST_NDARRAY_ndarray_h_INCLUDED
+#ifndef NDARRAY_ndarray_h_INCLUDED
+#define NDARRAY_ndarray_h_INCLUDED
 
 /** 
  *  @file lsst/ndarray.h
@@ -38,7 +38,7 @@
 #include "lsst/ndarray/casts.h"
 #include "lsst/ndarray/formatting.h"
 
-namespace lsst { namespace ndarray {
+namespace ndarray {
 
 /** 
  * @mainpage Multidimensional Arrays in C++
@@ -286,7 +286,7 @@ namespace lsst { namespace ndarray {
  * are also provided, though the const variants are not actually const (because Array provides
  * smart-pointer const-correctness rather than container const-correctness).
  *
- * Single elements can be extracted from multidimensional arrays by indexing with lsst::ndarray::Vector:
+ * Single elements can be extracted from multidimensional arrays by indexing with ndarray::Vector:
  * @code
  * a[makeVector(3,2,1)] == a[3][2][1];
  * @endcode
@@ -371,6 +371,6 @@ namespace lsst { namespace ndarray {
  * @endcode
  */
 
-}} // namespace lsst::ndarray
+} // namespace ndarray
 
-#endif // !LSST_NDARRAY_ndarray_h_INCLUDED
+#endif // !NDARRAY_ndarray_h_INCLUDED

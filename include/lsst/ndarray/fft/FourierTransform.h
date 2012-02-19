@@ -20,8 +20,8 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-#ifndef LSST_NDARRAY_FFT_FourierTransform_h_INCLUDED
-#define LSST_NDARRAY_FFT_FourierTransform_h_INCLUDED
+#ifndef NDARRAY_FFT_FourierTransform_h_INCLUDED
+#define NDARRAY_FFT_FourierTransform_h_INCLUDED
 
 /** 
  *  @file lsst/ndarray/fft/FourierTransform.h
@@ -34,7 +34,7 @@
 #include "lsst/ndarray.h"
 #include "lsst/ndarray/fft/FourierTraits.h"
 
-namespace lsst { namespace ndarray {
+namespace ndarray {
 
 /**
  *  @ingroup FFTGroup
@@ -148,6 +148,6 @@ private:
     Manager::Ptr _k;
 };
 
-}} // namespace lsst::ndarray
+} // namespace ndarray
 
-#endif // !LSST_NDARRAY_FFT_FourierTransform_h_INCLUDED
+#endif // !NDARRAY_FFT_FourierTransform_h_INCLUDED

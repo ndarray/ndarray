@@ -20,8 +20,8 @@
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
 
-#ifndef LSST_NDARRAY_python_h_INCLUDED
-#define LSST_NDARRAY_python_h_INCLUDED
+#ifndef NDARRAY_python_h_INCLUDED
+#define NDARRAY_python_h_INCLUDED
 
 /**
  *  @file lsst/ndarray/python.h
@@ -50,4 +50,4 @@
 #include "lsst/ndarray/python/ufunctors.h"
 #include "lsst/ndarray/python/Vector.h"
 
-#endif // !LSST_NDARRAY_python_h_INCLUDED
+#endif // !NDARRAY_python_h_INCLUDED

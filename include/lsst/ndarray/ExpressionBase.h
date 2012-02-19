@@ -20,8 +20,8 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-#ifndef LSST_NDARRAY_ExpressionBase_h_INCLUDED
-#define LSST_NDARRAY_ExpressionBase_h_INCLUDED
+#ifndef NDARRAY_ExpressionBase_h_INCLUDED
+#define NDARRAY_ExpressionBase_h_INCLUDED
 
 /** 
  *  @file lsst/ndarray/ExpressionBase.h
@@ -32,7 +32,7 @@
 #include "lsst/ndarray/ExpressionTraits.h"
 #include "lsst/ndarray/Vector.h"
 
-namespace lsst { namespace ndarray {
+namespace ndarray {
 
 /**
  *  @class ExpressionBase
@@ -114,6 +114,6 @@ protected:
     Self const & getSelf() const { return *static_cast<Self const *>(this); }
 };
 
-}} // namespace lsst::ndarray
+} // namespace ndarray
 
-#endif // !LSST_NDARRAY_ExpressionBase_h_INCLUDED
+#endif // !NDARRAY_ExpressionBase_h_INCLUDED

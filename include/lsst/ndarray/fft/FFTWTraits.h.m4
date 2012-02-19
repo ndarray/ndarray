@@ -116,8 +116,8 @@ define(`FFTW_TRAITS',
             );
         }
     }')dnl
-#ifndef LSST_NDARRAY_FFT_FFTWTraits_h_INCLUDED
-#define LSST_NDARRAY_FFT_FFTWTraits_h_INCLUDED
+#ifndef NDARRAY_FFT_FFTWTraits_h_INCLUDED
+#define NDARRAY_FFT_FFTWTraits_h_INCLUDED
 
 /** 
  *  @file lsst/ndarray/fft/FFTWTraits.h
@@ -129,7 +129,7 @@ define(`FFTW_TRAITS',
 #include <fftw3.h>
 #include "lsst/ndarray/fft/FourierTraits.h"
 
-namespace lsst { namespace ndarray {
+namespace ndarray {
 /// \cond INTERNAL
 namespace detail {
 
@@ -149,6 +149,6 @@ FFTW_TRAITS(long double, fftwl);
 
 } // namespace detail
 /// \endcond
-}} // namespace lsst::ndarray
+} // namespace ndarray
 
-#endif // !LSST_NDARRAY_FFT_FFTWTraits_h_INCLUDED
+#endif // !NDARRAY_FFT_FFTWTraits_h_INCLUDED

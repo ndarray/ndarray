@@ -20,8 +20,8 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-#ifndef LSST_NDARRAY_ArrayRef_h_INCLUDED
-#define LSST_NDARRAY_ArrayRef_h_INCLUDED
+#ifndef NDARRAY_ArrayRef_h_INCLUDED
+#define NDARRAY_ArrayRef_h_INCLUDED
 
 /** 
  *  @file lsst/ndarray/ArrayRef.h
@@ -37,7 +37,7 @@
 #include "lsst/ndarray/detail/Core.h"
 #include "lsst/ndarray/views.h"
 
-namespace lsst { namespace ndarray {
+namespace ndarray {
 
 /**
  *  @brief A proxy class for Array with deep assignment operators.
@@ -93,13 +93,13 @@ public:
      */
     /// @{
     ArrayRef const & operator=(Array<T,N,C> const & other) const {
-        LSST_NDARRAY_ASSERT(other.getShape() == this->getShape());
+        NDARRAY_ASSERT(other.getShape() == this->getShape());
         std::copy(other.begin(), other.end(), this->begin());
         return *this;
     }
 
     ArrayRef const & operator=(ArrayRef const & other) const {
-        LSST_NDARRAY_ASSERT(other.getShape() == this->getShape());
+        NDARRAY_ASSERT(other.getShape() == this->getShape());
         std::copy(other.begin(), other.end(), this->begin());
         return *this;
     }
@@ -109,7 +109,7 @@ public:
     template <typename Other>
     ArrayRef const &
     operator =(ExpressionBase<Other> const & expr) const {
-        LSST_NDARRAY_ASSERT(expr.getShape() 
+        NDARRAY_ASSERT(expr.getShape() 
                          == this->getShape().template first<ExpressionBase<Other>::ND::value>());
         std::copy(expr.begin(),expr.end(),this->begin());
         return *this;
@@ -131,7 +131,7 @@ public:
     template <typename Other>
     ArrayRef const &
     operator +=(ExpressionBase<Other> const & expr) const {
-        LSST_NDARRAY_ASSERT(expr.getShape() 
+        NDARRAY_ASSERT(expr.getShape() 
                          == this->getShape().template first<ExpressionBase<Other>::ND::value>());
         Iterator const i_end = this->end();
         typename Other::Iterator j = expr.begin();
@@ -156,7 +156,7 @@ public:
     template <typename Other>
     ArrayRef const &
     operator -=(ExpressionBase<Other> const & expr) const {
-        LSST_NDARRAY_ASSERT(expr.getShape() 
+        NDARRAY_ASSERT(expr.getShape() 
                          == this->getShape().template first<ExpressionBase<Other>::ND::value>());
         Iterator const i_end = this->end();
         typename Other::Iterator j = expr.begin();
@@ -181,7 +181,7 @@ public:
     template <typename Other>
     ArrayRef const &
     operator *=(ExpressionBase<Other> const & expr) const {
-        LSST_NDARRAY_ASSERT(expr.getShape() 
+        NDARRAY_ASSERT(expr.getShape() 
                          == this->getShape().template first<ExpressionBase<Other>::ND::value>());
         Iterator const i_end = this->end();
         typename Other::Iterator j = expr.begin();
@@ -206,7 +206,7 @@ public:
     template <typename Other>
     ArrayRef const &
     operator /=(ExpressionBase<Other> const & expr) const {
-        LSST_NDARRAY_ASSERT(expr.getShape() 
+        NDARRAY_ASSERT(expr.getShape() 
                          == this->getShape().template first<ExpressionBase<Other>::ND::value>());
         Iterator const i_end = this->end();
         typename Other::Iterator j = expr.begin();
@@ -231,7 +231,7 @@ public:
     template <typename Other>
     ArrayRef const &
     operator %=(ExpressionBase<Other> const & expr) const {
-        LSST_NDARRAY_ASSERT(expr.getShape() 
+        NDARRAY_ASSERT(expr.getShape() 
                          == this->getShape().template first<ExpressionBase<Other>::ND::value>());
         Iterator const i_end = this->end();
         typename Other::Iterator j = expr.begin();
@@ -256,7 +256,7 @@ public:
     template <typename Other>
     ArrayRef const &
     operator ^=(ExpressionBase<Other> const & expr) const {
-        LSST_NDARRAY_ASSERT(expr.getShape() 
+        NDARRAY_ASSERT(expr.getShape() 
                          == this->getShape().template first<ExpressionBase<Other>::ND::value>());
         Iterator const i_end = this->end();
         typename Other::Iterator j = expr.begin();
@@ -281,7 +281,7 @@ public:
     template <typename Other>
     ArrayRef const &
     operator &=(ExpressionBase<Other> const & expr) const {
-        LSST_NDARRAY_ASSERT(expr.getShape() 
+        NDARRAY_ASSERT(expr.getShape() 
                          == this->getShape().template first<ExpressionBase<Other>::ND::value>());
         Iterator const i_end = this->end();
         typename Other::Iterator j = expr.begin();
@@ -306,7 +306,7 @@ public:
     template <typename Other>
     ArrayRef const &
     operator |=(ExpressionBase<Other> const & expr) const {
-        LSST_NDARRAY_ASSERT(expr.getShape() 
+        NDARRAY_ASSERT(expr.getShape() 
                          == this->getShape().template first<ExpressionBase<Other>::ND::value>());
         Iterator const i_end = this->end();
         typename Other::Iterator j = expr.begin();
@@ -331,7 +331,7 @@ public:
     template <typename Other>
     ArrayRef const &
     operator <<=(ExpressionBase<Other> const & expr) const {
-        LSST_NDARRAY_ASSERT(expr.getShape() 
+        NDARRAY_ASSERT(expr.getShape() 
                          == this->getShape().template first<ExpressionBase<Other>::ND::value>());
         Iterator const i_end = this->end();
         typename Other::Iterator j = expr.begin();
@@ -356,7 +356,7 @@ public:
     template <typename Other>
     ArrayRef const &
     operator >>=(ExpressionBase<Other> const & expr) const {
-        LSST_NDARRAY_ASSERT(expr.getShape() 
+        NDARRAY_ASSERT(expr.getShape() 
                          == this->getShape().template first<ExpressionBase<Other>::ND::value>());
         Iterator const i_end = this->end();
         typename Other::Iterator j = expr.begin();
@@ -390,6 +390,6 @@ private:
 
 };
 
-}} // namespace lsst::ndarray
+} // namespace ndarray
 
-#endif // !LSST_NDARRAY_ArrayRef_h_INCLUDED
+#endif // !NDARRAY_ArrayRef_h_INCLUDED

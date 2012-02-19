@@ -21,8 +21,8 @@
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
 
-#ifndef LSST_NDARRAY_PYTHON_eigen_h_INCLUDED
-#define LSST_NDARRAY_PYTHON_eigen_h_INCLUDED
+#ifndef NDARRAY_PYTHON_eigen_h_INCLUDED
+#define NDARRAY_PYTHON_eigen_h_INCLUDED
 
 /**
  *  @file lsst/ndarray/python/eigen.h
@@ -34,7 +34,7 @@
 #include "lsst/ndarray/python.h"
 #include "lsst/ndarray/eigen.h"
 
-namespace lsst { namespace ndarray {
+namespace ndarray {
 
 /**
  *  @ingroup ndarrayPythonGroup
@@ -157,6 +157,6 @@ struct PyConverter< Eigen::Array<Scalar,Rows,Cols,Options,MaxRows,MaxCols> >
     : public detail::EigenPyConverter< Eigen::Array<Scalar,Rows,Cols,Options,MaxRows,MaxCols> > 
 {};
 
-}} // namespace lsst::ndarray
+} // namespace ndarray
 
-#endif // !LSST_NDARRAY_PYTHON_eigen_h_INCLUDED
+#endif // !NDARRAY_PYTHON_eigen_h_INCLUDED

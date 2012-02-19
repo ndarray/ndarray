@@ -20,8 +20,8 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-#ifndef LSST_NDARRAY_DETAIL_UnaryOp_h_INCLUDED
-#define LSST_NDARRAY_DETAIL_UnaryOp_h_INCLUDED
+#ifndef NDARRAY_DETAIL_UnaryOp_h_INCLUDED
+#define NDARRAY_DETAIL_UnaryOp_h_INCLUDED
 
 /** 
  *  @file lsst/ndarray/detail/UnaryOp.h
@@ -33,7 +33,7 @@
 #include "lsst/ndarray/vectorize.h"
 #include <boost/iterator/iterator_adaptor.hpp>
 
-namespace lsst { namespace ndarray {
+namespace ndarray {
 namespace detail {
 
 /**
@@ -121,6 +121,6 @@ public:
 };
 
 } // namespace detail
-}} // namespace lsst::ndarray
+} // namespace ndarray
 
-#endif // !LSST_NDARRAY_DETAIL_UnaryOp_h_INCLUDED
+#endif // !NDARRAY_DETAIL_UnaryOp_h_INCLUDED

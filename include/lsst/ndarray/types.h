@@ -20,8 +20,8 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-#ifndef LSST_NDARRAY_types_h_INCLUDED
-#define LSST_NDARRAY_types_h_INCLUDED
+#ifndef NDARRAY_types_h_INCLUDED
+#define NDARRAY_types_h_INCLUDED
 
 /// @file lsst/ndarray/types.h @brief Numeric type traits.
 
@@ -30,7 +30,7 @@
 
 #include <boost/type_traits/is_complex.hpp>
 
-namespace lsst { namespace ndarray {
+namespace ndarray {
 
 /// @addtogroup MainGroup
 /// @{
@@ -193,6 +193,6 @@ private:
 
 /// @}
 
-}} // namespace lsst::ndarray
+} // namespace ndarray
 
-#endif // !LSST_NDARRAY_types_h_INCLUDED
+#endif // !NDARRAY_types_h_INCLUDED

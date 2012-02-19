@@ -20,8 +20,8 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-#ifndef LSST_NDARRAY_FFT_FourierOps_h_INCLUDED
-#define LSST_NDARRAY_FFT_FourierOps_h_INCLUDED
+#ifndef NDARRAY_FFT_FourierOps_h_INCLUDED
+#define NDARRAY_FFT_FourierOps_h_INCLUDED
 
 /** 
  *  @file lsst/ndarray/fft/FourierOps.h
@@ -33,7 +33,7 @@
 
 #include "lsst/ndarray.h"
 
-namespace lsst { namespace ndarray {
+namespace ndarray {
 /// \cond INTERNAL
 namespace detail {
 
@@ -170,6 +170,6 @@ void differentiate(
     detail::FourierOps<T,N>::differentiate(N-n, array.deep(), real_last_dim);
 }
 
-}} // namespace lsst::ndarray
+} // namespace ndarray
 
-#endif // !LSST_NDARRAY_FFT_FourierOps_h_INCLUDED
+#endif // !NDARRAY_FFT_FourierOps_h_INCLUDED

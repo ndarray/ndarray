@@ -20,8 +20,8 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-#ifndef LSST_NDARRAY_ndarray_fwd_h_INCLUDED
-#define LSST_NDARRAY_ndarray_fwd_h_INCLUDED
+#ifndef NDARRAY_ndarray_fwd_h_INCLUDED
+#define NDARRAY_ndarray_fwd_h_INCLUDED
 
 /**
  * @file lsst/ndarray_fwd.h 
@@ -48,9 +48,9 @@
 #endif
 #endif
 
-#define LSST_NDARRAY_ASSERT(ARG) assert(ARG)
+#define NDARRAY_ASSERT(ARG) assert(ARG)
 
-namespace lsst { namespace ndarray {
+namespace ndarray {
 
 template <typename T, int N, int C> struct ArrayTraits;
 template <typename Expression_> struct ExpressionTraits;
@@ -111,6 +111,6 @@ template <typename T, int N, int C=0> class ArrayRef;
 template <typename T, int N, int C=0> class Array;
 template <typename T, int N> struct Vector;
 
-}} // namespace lsst::ndarray
+} // namespace ndarray
 
-#endif // !LSST_NDARRAY_ndarray_fwd_h_INCLUDED
+#endif // !NDARRAY_ndarray_fwd_h_INCLUDED

@@ -20,8 +20,8 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-#ifndef LSST_NDARRAY_operators_h_INCLUDED
-#define LSST_NDARRAY_operators_h_INCLUDED
+#ifndef NDARRAY_operators_h_INCLUDED
+#define NDARRAY_operators_h_INCLUDED
 
 /** 
  *  \file lsst/ndarray/operators.h \brief Arithmetic and logical operators for Array.
@@ -35,7 +35,7 @@
 #include "lsst/ndarray/detail/BinaryOp.h"
 #include "lsst/ndarray/types.h"
 
-namespace lsst { namespace ndarray {
+namespace ndarray {
 
 /// \cond INTERNAL
 namespace detail {
@@ -1266,6 +1266,6 @@ sum(ExpressionBase<Derived> const & expr) {
 }
 
 
-}} // namespace lsst::ndarray
+} // namespace ndarray
 
-#endif // !LSST_NDARRAY_operators_h_INCLUDED
+#endif // !NDARRAY_operators_h_INCLUDED

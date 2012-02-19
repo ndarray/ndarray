@@ -20,8 +20,8 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-#ifndef LSST_NDARRAY_ExpressionTraits_h_INCLUDED
-#define LSST_NDARRAY_ExpressionTraits_h_INCLUDED
+#ifndef NDARRAY_ExpressionTraits_h_INCLUDED
+#define NDARRAY_ExpressionTraits_h_INCLUDED
 
 /** 
  *  @file lsst/ndarray/ExpressionTraits.h
@@ -32,7 +32,7 @@
 #include "lsst/ndarray_fwd.h"
 #include <boost/static_assert.hpp>
 
-namespace lsst { namespace ndarray {
+namespace ndarray {
 
 /**
  *  @brief Traits for expressions.
@@ -114,6 +114,6 @@ struct ExpressionTraits< detail::BinaryOpExpression<Operand1,Operand2,BinaryFunc
 
 #endif // GCC_45
 
-}} // namespace lsst::ndarray
+} // namespace ndarray
 
-#endif // !LSST_NDARRAY_ExpressionTraits_h_INCLUDED
+#endif // !NDARRAY_ExpressionTraits_h_INCLUDED

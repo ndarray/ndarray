@@ -23,7 +23,7 @@
 #include "lsst/ndarray/fft/FFTWTraits.h"
 #include "lsst/ndarray/fft/FourierTransform.h"
 
-namespace lsst { namespace ndarray {
+namespace ndarray {
 
 template <typename T, int N> 
 template <int M>
@@ -53,8 +53,8 @@ FourierTransform<T,N>::initialize(
 ) {
     if (x.empty()) x = initializeX(shape);
     if (k.empty()) k = initializeK(shape);
-    LSST_NDARRAY_ASSERT(x.getShape() == shape);
-    LSST_NDARRAY_ASSERT(std::equal(shape.begin(), shape.end()-1, k.getShape().begin()));
+    NDARRAY_ASSERT(x.getShape() == shape);
+    NDARRAY_ASSERT(std::equal(shape.begin(), shape.end()-1, k.getShape().begin()));
 }
 
 template <typename T, int N> 
@@ -159,4 +159,4 @@ FourierTransform<T,N>::~FourierTransform() {
     );
 }
 
-}} // namespace lsst::ndarray
+} // namespace ndarray

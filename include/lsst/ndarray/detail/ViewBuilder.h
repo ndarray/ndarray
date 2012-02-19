@@ -20,8 +20,8 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-#ifndef LSST_NDARRAY_DETAIL_ViewBuilder_h_INCLUDED
-#define LSST_NDARRAY_DETAIL_ViewBuilder_h_INCLUDED
+#ifndef NDARRAY_DETAIL_ViewBuilder_h_INCLUDED
+#define NDARRAY_DETAIL_ViewBuilder_h_INCLUDED
 
 /** 
  *  \file lsst/ndarray/detail/ViewBuilder.h @brief Implementation of arbitrary views into arrays.
@@ -42,7 +42,7 @@
 #include <boost/mpl/size.hpp>
 #include <boost/mpl/fold.hpp>
 
-namespace lsst { namespace ndarray {
+namespace ndarray {
 namespace detail {
 
 /** 
@@ -77,7 +77,7 @@ struct Dimensions {
 template <typename Index> struct IndexTraits;
 
 template <>
-struct IndexTraits<lsst::ndarray::index::Slice> {
+struct IndexTraits<ndarray::index::Slice> {
 
     template <typename D> 
     struct Append {
@@ -96,12 +96,12 @@ struct IndexTraits<lsst::ndarray::index::Slice> {
     /// @brief Apply a slice index.
     template <typename T, int M, int N>
     static CoreTransformer<T,M-1,N-1> transformCore(
-        lsst::ndarray::index::Slice const & index, CoreTransformer<T,M,N> & t
+        ndarray::index::Slice const & index, CoreTransformer<T,M,N> & t
     ) {
-        LSST_NDARRAY_ASSERT(index.step > 0);
-        LSST_NDARRAY_ASSERT(index.start <= index.stop);
-        LSST_NDARRAY_ASSERT(index.start >= 0);
-        LSST_NDARRAY_ASSERT(index.stop <= t._input->getSize());
+        NDARRAY_ASSERT(index.step > 0);
+        NDARRAY_ASSERT(index.start <= index.stop);
+        NDARRAY_ASSERT(index.start >= 0);
+        NDARRAY_ASSERT(index.stop <= t._input->getSize());
         t._data += index.start * t._input->getStride();
         t._output->setSize(index.computeSize());
         t._output->setStride(t._input->getStride() * index.step);
@@ -111,7 +111,7 @@ struct IndexTraits<lsst::ndarray::index::Slice> {
 };
 
 template <>
-struct IndexTraits<lsst::ndarray::index::Range> {
+struct IndexTraits<ndarray::index::Range> {
 
     template <typename D> 
     struct Append {
@@ -130,11 +130,11 @@ struct IndexTraits<lsst::ndarray::index::Range> {
     /// @brief Apply a range index.
     template <typename T, int M, int N>
     static CoreTransformer<T,M-1,N-1> transformCore(
-        lsst::ndarray::index::Range const & index, CoreTransformer<T,M,N> & t
+        ndarray::index::Range const & index, CoreTransformer<T,M,N> & t
     ) {
-        LSST_NDARRAY_ASSERT(index.start <= index.stop);
-        LSST_NDARRAY_ASSERT(index.start >= 0);
-        LSST_NDARRAY_ASSERT(index.stop <= t._input->getSize());
+        NDARRAY_ASSERT(index.start <= index.stop);
+        NDARRAY_ASSERT(index.start >= 0);
+        NDARRAY_ASSERT(index.stop <= t._input->getSize());
         t._data += index.start * t._input->getStride();
         t._output->setSize(index.stop - index.start);
         t._output->setStride(t._input->getStride());
@@ -143,7 +143,7 @@ struct IndexTraits<lsst::ndarray::index::Range> {
 };
 
 template <>
-struct IndexTraits<lsst::ndarray::index::Full> {
+struct IndexTraits<ndarray::index::Full> {
 
     template <typename D> 
     struct Append {
@@ -162,7 +162,7 @@ struct IndexTraits<lsst::ndarray::index::Full> {
     /// @brief Apply a full dimension index.
     template <typename T, int M, int N>
     static CoreTransformer<T,M-1,N-1> transformCore(
-        lsst::ndarray::index::Full const &, CoreTransformer<T,M,N> & t
+        ndarray::index::Full const &, CoreTransformer<T,M,N> & t
     ) {
         t._output->setSize(t._input->getSize());
         t._output->setStride(t._input->getStride());
@@ -171,7 +171,7 @@ struct IndexTraits<lsst::ndarray::index::Full> {
 };
 
 template <>
-struct IndexTraits<lsst::ndarray::index::Scalar> {
+struct IndexTraits<ndarray::index::Scalar> {
 
     template <typename D> 
     struct Append {
@@ -190,10 +190,10 @@ struct IndexTraits<lsst::ndarray::index::Scalar> {
     /// @brief Apply a scalar dimension index.
     template <typename T, int M, int N>
     static CoreTransformer<T,M-1,N> transformCore(
-        lsst::ndarray::index::Scalar const & index, CoreTransformer<T,M,N> & t
+        ndarray::index::Scalar const & index, CoreTransformer<T,M,N> & t
     ) {
-        LSST_NDARRAY_ASSERT(index.n >= 0);
-        LSST_NDARRAY_ASSERT(index.n < t._input->getSize());
+        NDARRAY_ASSERT(index.n >= 0);
+        NDARRAY_ASSERT(index.n < t._input->getSize());
         t._data += index.n * t._input->getStride();
         return t;
     }
@@ -323,6 +323,6 @@ buildView(Array_ const & array, Seq_ const & seq) {
 
 } // namespace detail
 
-}} // namespace lsst::ndarray
+} // namespace ndarray
 
-#endif // !LSST_NDARRAY_DETAIL_ViewBuilder_h_INCLUDED
+#endif // !NDARRAY_DETAIL_ViewBuilder_h_INCLUDED

@@ -20,8 +20,8 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-#ifndef LSST_NDARRAY_ArrayTraits_h_INCLUDED
-#define LSST_NDARRAY_ArrayTraits_h_INCLUDED
+#ifndef NDARRAY_ArrayTraits_h_INCLUDED
+#define NDARRAY_ArrayTraits_h_INCLUDED
 
 /** 
  *  @file lsst/ndarray/ArrayTraits.h
@@ -35,7 +35,7 @@
 #include <boost/mpl/int.hpp>
 #include <boost/mpl/bool.hpp>
 
-namespace lsst { namespace ndarray {
+namespace ndarray {
 namespace detail {
 
 template <int N, typename T2, int C2, typename T1, int C1>
@@ -140,6 +140,6 @@ struct ExpressionTraits< ArrayRef<T,N,C> > : public ArrayTraits<T,N,C> {
     typedef boost::mpl::false_ IsScalar;
 };
 
-}} // namespace lsst::ndarray
+} // namespace ndarray
 
-#endif // !LSST_NDARRAY_ArrayTraits_h_INCLUDED
+#endif // !NDARRAY_ArrayTraits_h_INCLUDED

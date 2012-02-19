@@ -21,8 +21,8 @@
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
 
-#ifndef LSST_NDARRAY_PYTHON_numpy_h_INCLUDED
-#define LSST_NDARRAY_PYTHON_numpy_h_INCLUDED
+#ifndef NDARRAY_PYTHON_numpy_h_INCLUDED
+#define NDARRAY_PYTHON_numpy_h_INCLUDED
 
 /** 
  *  @file lsst/ndarray/python/numpy.h
@@ -32,7 +32,7 @@
 #include "lsst/ndarray.h"
 #include "lsst/ndarray/python/PyConverter.h"
 
-namespace lsst { namespace ndarray {
+namespace ndarray {
 namespace detail {
 
 /** 
@@ -95,11 +95,11 @@ template <> struct NumpyTraits<std::complex<long double> > {
  *  @brief A destructor for a Python CObject that owns a shared_ptr.
  */
 inline void destroyCObject(void * p) {
-    lsst::ndarray::Manager::Ptr * b = reinterpret_cast<lsst::ndarray::Manager::Ptr*>(p);
+    ndarray::Manager::Ptr * b = reinterpret_cast<ndarray::Manager::Ptr*>(p);
     delete b;
 }
 
-} // namespace lsst::ndarray::detail
+} // namespace ndarray::detail
 
 /**
  *  @ingroup ndarrayPythonGroup
@@ -262,6 +262,6 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
     static PyTypeObject const * getPyType() { return &PyArray_Type; }
 };
 
-}} // namespace lsst::ndarray
+} // namespace ndarray
 
-#endif // !LSST_NDARRAY_PYTHON_numpy_h_INCLUDED
+#endif // !NDARRAY_PYTHON_numpy_h_INCLUDED

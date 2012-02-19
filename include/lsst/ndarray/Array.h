@@ -20,8 +20,8 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-#ifndef LSST_NDARRAY_Array_h_INCLUDED
-#define LSST_NDARRAY_Array_h_INCLUDED
+#ifndef NDARRAY_Array_h_INCLUDED
+#define NDARRAY_Array_h_INCLUDED
 
 /** 
  *  @file lsst/ndarray/Array.h
@@ -36,7 +36,7 @@
 #include "lsst/ndarray/detail/Core.h"
 #include "lsst/ndarray/views.h"
 
-namespace lsst { namespace ndarray {
+namespace ndarray {
 
 /**
  *  @brief A multidimensional strided array.
@@ -166,7 +166,7 @@ public:
      *  @brief Return true if the Array is definitely unique.
      *
      *  This will only return true if the manager overrides Manager::isUnique();
-     *  this is true for the SimpleManager used by lsst::ndarray::allocate, but it is
+     *  this is true for the SimpleManager used by ndarray::allocate, but it is
      *  not true for ExternalManager.
      */
     bool isUnique() const { return this->_core->isUnique(); }
@@ -182,6 +182,6 @@ private:
     Array(T * data, CorePtr const & core) : Super(data, core) {}
 };
 
-}} // namespace lsst::ndarray
+} // namespace ndarray
 
-#endif // !LSST_NDARRAY_Array_h_INCLUDED
+#endif // !NDARRAY_Array_h_INCLUDED

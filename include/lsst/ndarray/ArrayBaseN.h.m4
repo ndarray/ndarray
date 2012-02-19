@@ -48,8 +48,8 @@ private:
     /// @internal @brief Construct an ArrayRef from a pointer and Core.
     ArrayBaseN(Element * data, CorePtr const & core) : Super(data, core) {}
 };')dnl
-#ifndef LSST_NDARRAY_ArrayBaseN_h_INCLUDED
-#define LSST_NDARRAY_ArrayBaseN_h_INCLUDED
+#ifndef NDARRAY_ArrayBaseN_h_INCLUDED
+#define NDARRAY_ArrayBaseN_h_INCLUDED
 
 /** 
  *  @file lsst/ndarray/ArrayBaseN.h
@@ -59,7 +59,7 @@ private:
 
 #include "lsst/ndarray/ArrayBase.h"
 
-namespace lsst { namespace ndarray {
+namespace ndarray {
 
 /**
  *  @brief An intermediate CRTP base class for Array and ArrayRef.
@@ -89,6 +89,6 @@ SPECIALIZE(4, `int n0, int n1, int n2, int n3', `n0, n1, n2, n3')
 SPECIALIZE(5, `int n0, int n1, int n2, int n3, int n4', `n0, n1, n2, n3, n4')
 SPECIALIZE(6, `int n0, int n1, int n2, int n3, int n4, int n5', `n0, n1, n2, n3, n4, n5')
 
-}} // namespace lsst::ndarray
+} // namespace ndarray
 
-#endif // !LSST_NDARRAY_ArrayBaseN_h_INCLUDED
+#endif // !NDARRAY_ArrayBaseN_h_INCLUDED

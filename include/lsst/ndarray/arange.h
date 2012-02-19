@@ -20,8 +20,8 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-#ifndef LSST_NDARRAY_arange_h_INCLUDED
-#define LSST_NDARRAY_arange_h_INCLUDED
+#ifndef NDARRAY_arange_h_INCLUDED
+#define NDARRAY_arange_h_INCLUDED
 
 /** 
  *  @file lsst/ndarray/arange.h
@@ -33,7 +33,7 @@
 
 #include <boost/iterator/counting_iterator.hpp>
 
-namespace lsst { namespace ndarray {
+namespace ndarray {
 
 /**
  *  @internal @brief ExpressionTraits specialization for CountingExpression.
@@ -66,7 +66,7 @@ public:
     typedef ExpressionTraits<CountingExpression>::Reference Reference;
     typedef Vector<int,1> Index;
     
-    CountingExpression(int stop=0) : _stop(stop) { LSST_NDARRAY_ASSERT(stop >= 0); }
+    CountingExpression(int stop=0) : _stop(stop) { NDARRAY_ASSERT(stop >= 0); }
 
     Reference operator[](int n) const {
         return n;
@@ -116,7 +116,7 @@ inline detail::CountingExpression arange(int stop) {
 /// @brief Create 1D Expression that contains integer values in the range [start,stop) with increment step.
 inline detail::UnaryOpExpression< detail::CountingExpression, detail::RangeTransformer<int> >
 arange(int start, int stop, int step = 1) {
-    LSST_NDARRAY_ASSERT(step != 0);
+    NDARRAY_ASSERT(step != 0);
     int size = stop - start;
     if (step < -1) ++size;
     if (step > 1) --size;
@@ -127,6 +127,6 @@ arange(int start, int stop, int step = 1) {
     );
 }
 
-}} // namespace lsst::ndarray
+} // namespace ndarray
 
-#endif // !LSST_NDARRAY_arange_h_INCLUDED
+#endif // !NDARRAY_arange_h_INCLUDED

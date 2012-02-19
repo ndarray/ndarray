@@ -20,8 +20,8 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-#ifndef LSST_NDARRAY_ArrayBase_h_INCLUDED
-#define LSST_NDARRAY_ArrayBase_h_INCLUDED
+#ifndef NDARRAY_ArrayBase_h_INCLUDED
+#define NDARRAY_ArrayBase_h_INCLUDED
 
 /** 
  *  @file lsst/ndarray/ArrayBase.h
@@ -42,7 +42,7 @@
 #include "lsst/ndarray/ArrayTraits.h"
 #include "lsst/ndarray/eigen_fwd.h"
 
-namespace lsst { namespace ndarray {
+namespace ndarray {
 
 /**
  *  @class ArrayBase
@@ -235,6 +235,6 @@ protected:
     ArrayBase(Element * data, CorePtr const & core) : _data(data), _core(core) {}
 };
 
-}} // namespace lsst::ndarray
+} // namespace ndarray
 
-#endif // !LSST_NDARRAY_ArrayBase_h_INCLUDED
+#endif // !NDARRAY_ArrayBase_h_INCLUDED

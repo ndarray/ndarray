@@ -20,8 +20,8 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-#ifndef LSST_NDARRAY_fft_h_INCLUDED
-#define LSST_NDARRAY_fft_h_INCLUDED
+#ifndef NDARRAY_fft_h_INCLUDED
+#define NDARRAY_fft_h_INCLUDED
 
 /**
  * @file lsst/ndarray/fft.h 
@@ -38,4 +38,4 @@
 #include "lsst/ndarray/fft/FourierTransform.cc"
 #endif
 
-#endif // !LSST_NDARRAY_fft_h_INCLUDED
+#endif // !NDARRAY_fft_h_INCLUDED

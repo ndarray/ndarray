@@ -20,8 +20,8 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-#ifndef LSST_NDARRAY_formatting_h_INCLUDED
-#define LSST_NDARRAY_formatting_h_INCLUDED
+#ifndef NDARRAY_formatting_h_INCLUDED
+#define NDARRAY_formatting_h_INCLUDED
 
 /** 
  *  @file lsst/ndarray/formatting.h
@@ -33,7 +33,7 @@
 
 #include <iostream>
 
-namespace lsst { namespace ndarray {
+namespace ndarray {
 namespace detail {
 template <typename Derived, int N = Derived::ND::value> struct Formatter;
 } // namespace detail
@@ -147,6 +147,6 @@ struct Formatter<Derived,1> {
 };
 
 } // namespace detail
-}} // namespace lsst::ndarray
+} // namespace ndarray
 
-#endif // !LSST_NDARRAY_formatting_h_INCLUDED
+#endif // !NDARRAY_formatting_h_INCLUDED

@@ -31,25 +31,25 @@
 
 %define %declareNumPyConverters(TYPE...)
 %typemap(out) TYPE {
-    $result = lsst::ndarray::PyConverter< TYPE >::toPython($1);
+    $result = ndarray::PyConverter< TYPE >::toPython($1);
 }
 %typemap(out) TYPE const &, TYPE &, TYPE const *, TYPE * {
-    $result = lsst::ndarray::PyConverter< TYPE >::toPython(*$1);
+    $result = ndarray::PyConverter< TYPE >::toPython(*$1);
 }
 %typemap(typecheck) TYPE, TYPE const *, TYPE const & {
-    lsst::ndarray::PyPtr tmp($input,true);
-    $1 = lsst::ndarray::PyConverter< TYPE >::fromPythonStage1(tmp);
+    ndarray::PyPtr tmp($input,true);
+    $1 = ndarray::PyConverter< TYPE >::fromPythonStage1(tmp);
     if (!($1)) PyErr_Clear();
 }
 %typemap(in) TYPE const & (TYPE val) {
-    lsst::ndarray::PyPtr tmp($input,true);
-    if (!lsst::ndarray::PyConverter< TYPE >::fromPythonStage1(tmp)) return NULL;
-    if (!lsst::ndarray::PyConverter< TYPE >::fromPythonStage2(tmp, val)) return NULL;
+    ndarray::PyPtr tmp($input,true);
+    if (!ndarray::PyConverter< TYPE >::fromPythonStage1(tmp)) return NULL;
+    if (!ndarray::PyConverter< TYPE >::fromPythonStage2(tmp, val)) return NULL;
     $1 = &val;
 }
 %typemap(in) TYPE {
-    lsst::ndarray::PyPtr tmp($input,true);
-    if (!lsst::ndarray::PyConverter< TYPE >::fromPythonStage1(tmp)) return NULL;
-    if (!lsst::ndarray::PyConverter< TYPE >::fromPythonStage2(tmp, $1)) return NULL;
+    ndarray::PyPtr tmp($input,true);
+    if (!ndarray::PyConverter< TYPE >::fromPythonStage1(tmp)) return NULL;
+    if (!ndarray::PyConverter< TYPE >::fromPythonStage2(tmp, $1)) return NULL;
 }
 %enddef

@@ -21,8 +21,8 @@
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
 
-#ifndef LSST_NDARRAY_PYTHON_Vector_h_INCLUDED
-#define LSST_NDARRAY_PYTHON_Vector_h_INCLUDED
+#ifndef NDARRAY_PYTHON_Vector_h_INCLUDED
+#define NDARRAY_PYTHON_Vector_h_INCLUDED
 
 /** 
  *  @file lsst/ndarray/python/Vector.h
@@ -31,7 +31,7 @@
 
 #include "lsst/ndarray/python/PyConverter.h"
 
-namespace lsst { namespace ndarray {
+namespace ndarray {
 
 /**
  *  @ingroup ndarrayndarrayPythonGroup
@@ -98,8 +98,8 @@ struct PyConverter< Vector<T,N> > : public detail::PyConverterBase< Vector<T,N> 
         PyPtr const & p,           ///< A Python object processed by fromPythonStage1().
         Vector<T,N> & output       ///< The output C++ object.
     ) {
-        LSST_NDARRAY_ASSERT(p);
-        LSST_NDARRAY_ASSERT(PySequence_Check(p.get()));
+        NDARRAY_ASSERT(p);
+        NDARRAY_ASSERT(PySequence_Check(p.get()));
         Vector<T,N> tmp;
         for (int n=0; n<N; ++n) {
             PyPtr item(PySequence_ITEM(p.get(),n),false);
@@ -113,6 +113,6 @@ struct PyConverter< Vector<T,N> > : public detail::PyConverterBase< Vector<T,N> 
 
 };
 
-}} // namespace lsst::ndarray
+} // namespace ndarray
 
-#endif // !LSST_NDARRAY_PYTHON_Vector_h_INCLUDED
+#endif // !NDARRAY_PYTHON_Vector_h_INCLUDED

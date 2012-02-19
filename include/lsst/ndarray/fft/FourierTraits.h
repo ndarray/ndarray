@@ -20,8 +20,8 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-#ifndef LSST_NDARRAY_FFT_FourierTraits_h_INCLUDED
-#define LSST_NDARRAY_FFT_FourierTraits_h_INCLUDED
+#ifndef NDARRAY_FFT_FourierTraits_h_INCLUDED
+#define NDARRAY_FFT_FourierTraits_h_INCLUDED
 
 /** 
  *  @file lsst/ndarray/fft/FourierTraits.h
@@ -34,7 +34,7 @@
 
 #include "lsst/ndarray/fft_fwd.h"
 
-namespace lsst { namespace ndarray {
+namespace ndarray {
 /// \cond INTERNAL
 namespace detail {
 
@@ -93,6 +93,6 @@ struct FourierTraits<std::complex<U> const,true> {
 
 } // namespace detail
 /// \endcond
-}} // namespace lsst::ndarray
+} // namespace ndarray
 
-#endif // !LSST_NDARRAY_FFT_FourierTraits_h_INCLUDED
+#endif // !NDARRAY_FFT_FourierTraits_h_INCLUDED

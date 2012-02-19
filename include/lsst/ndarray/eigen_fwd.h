@@ -20,8 +20,8 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-#ifndef LSST_NDARRAY_eigen_fwd_h_INCLUDED
-#define LSST_NDARRAY_eigen_fwd_h_INCLUDED
+#ifndef NDARRAY_eigen_fwd_h_INCLUDED
+#define NDARRAY_eigen_fwd_h_INCLUDED
 
 /**
  *  @file lsst/ndarray/eigen_fwd.h
@@ -39,7 +39,7 @@ struct MatrixXpr;
 
 } // namespace Eigen
 
-namespace lsst { namespace ndarray {
+namespace ndarray {
 namespace detail {
 
 template <int N, int C, int Rows, int Cols> struct EigenStrideTraits;
@@ -54,6 +54,6 @@ template <
     >
 class EigenView;
 
-}} // namespace lsst::ndarray
+} // namespace ndarray
 
-#endif // !LSST_NDARRAY_eigen_fwd_h_INCLUDED
+#endif // !NDARRAY_eigen_fwd_h_INCLUDED

@@ -20,8 +20,8 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-#ifndef LSST_NDARRAY_ArrayBaseN_h_INCLUDED
-#define LSST_NDARRAY_ArrayBaseN_h_INCLUDED
+#ifndef NDARRAY_ArrayBaseN_h_INCLUDED
+#define NDARRAY_ArrayBaseN_h_INCLUDED
 
 /** 
  *  @file lsst/ndarray/ArrayBaseN.h
@@ -31,7 +31,7 @@
 
 #include "lsst/ndarray/ArrayBase.h"
 
-namespace lsst { namespace ndarray {
+namespace ndarray {
 
 /**
  *  @brief An intermediate CRTP base class for Array and ArrayRef.
@@ -211,6 +211,6 @@ private:
     ArrayBaseN(Element * data, CorePtr const & core) : Super(data, core) {}
 };
 
-}} // namespace lsst::ndarray
+} // namespace ndarray
 
-#endif // !LSST_NDARRAY_ArrayBaseN_h_INCLUDED
+#endif // !NDARRAY_ArrayBaseN_h_INCLUDED

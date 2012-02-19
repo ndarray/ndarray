@@ -20,12 +20,12 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-#ifndef LSST_NDARRAY_eigen_h_INCLUDED
-#define LSST_NDARRAY_eigen_h_INCLUDED
+#ifndef NDARRAY_eigen_h_INCLUDED
+#define NDARRAY_eigen_h_INCLUDED
 
 /**
  *  @file lsst/ndarray/eigen.h
- *  @brief Eigen matrix objects that present a view into an lsst::ndarray::Array.
+ *  @brief Eigen matrix objects that present a view into an ndarray::Array.
  *
  *  \note This file is not included by the main "lsst/ndarray.h" header file.
  */
@@ -34,7 +34,7 @@
 #include "lsst/ndarray.h"
 #include "lsst/ndarray/eigen_fwd.h"
 
-namespace lsst { namespace ndarray {
+namespace ndarray {
 namespace detail {
 
 template <int Rows>
@@ -180,14 +180,14 @@ template <int Rows, int Cols>
 struct EigenStrideTraits<2,-2,Rows,Cols> : public EigenStrideTraits<2,-1,Rows,Cols> {};
 
 } // namespace detail
-}} // namespace lsst::ndarray
+} // namespace ndarray
 
 
 namespace Eigen {
 namespace internal {
 
 template <typename T, int N, int C, typename XprKind_, int Rows, int Cols>
-struct traits< lsst::ndarray::EigenView<T,N,C,XprKind_,Rows,Cols> > {
+struct traits< ndarray::EigenView<T,N,C,XprKind_,Rows,Cols> > {
     typedef DenseIndex Index;
     typedef Dense StorageKind;
     typedef XprKind_ XprKind;
@@ -197,10 +197,10 @@ struct traits< lsst::ndarray::EigenView<T,N,C,XprKind_,Rows,Cols> > {
         ColsAtCompileTime = Cols,
         MaxRowsAtCompileTime = Rows,
         MaxColsAtCompileTime = Cols,
-        InnerStrideAtCompileTime = lsst::ndarray::detail::EigenStrideTraits<N,C,Rows,Cols>::InnerStride,
-        OuterStrideAtCompileTime = lsst::ndarray::detail::EigenStrideTraits<N,C,Rows,Cols>::OuterStride,
-        IsVectorAtCompileTime = lsst::ndarray::detail::EigenStrideTraits<N,C,Rows,Cols>::IsVector,
-        Flags = lsst::ndarray::detail::EigenStrideTraits<N,C,Rows,Cols>::Flags
+        InnerStrideAtCompileTime = ndarray::detail::EigenStrideTraits<N,C,Rows,Cols>::InnerStride,
+        OuterStrideAtCompileTime = ndarray::detail::EigenStrideTraits<N,C,Rows,Cols>::OuterStride,
+        IsVectorAtCompileTime = ndarray::detail::EigenStrideTraits<N,C,Rows,Cols>::IsVector,
+        Flags = ndarray::detail::EigenStrideTraits<N,C,Rows,Cols>::Flags
             | Eigen::NestByRefBit | Eigen::DirectAccessBit
             | (boost::is_const<T>::value ? 0 : Eigen::LvalueBit),
         CoeffReadCost = NumTraits<Scalar>::ReadCost
@@ -210,16 +210,16 @@ struct traits< lsst::ndarray::EigenView<T,N,C,XprKind_,Rows,Cols> > {
 } // namespace internal
 } // namespace Eigen
 
-namespace lsst { namespace ndarray {
+namespace ndarray {
 
 /**
- *  @brief Eigen3 view into an lsst::ndarray::Array.
+ *  @brief Eigen3 view into an ndarray::Array.
  *
- *  EigenView provides an Eigen DenseBase-derived object based on an lsst::ndarray::Array internally.
+ *  EigenView provides an Eigen DenseBase-derived object based on an ndarray::Array internally.
  *  Any one or two dimensional Array can be viewed as an Eigen object.
  *
  *  Assignment to an EigenView is deep, and uses the Eigen assignment operators, but construction
- *  from an lsst::ndarray::Array or ArrayRef is shallow with reference counting.  Block and transpose
+ *  from an ndarray::Array or ArrayRef is shallow with reference counting.  Block and transpose
  *  operations use the standard Eigen Block and Transpose classes, and do not do reference counting
  *  (in fact, they hold a plain C++ reference to the EigenView, so they should be considered extremely
  *  temporary).
@@ -236,8 +236,8 @@ class EigenView
     typedef detail::ArrayAccess< Array<T,N,C> > Access;
 
     void checkDimensions() {
-        LSST_NDARRAY_ASSERT( Rows_ == Eigen::Dynamic || Rows_ == rows() );
-        LSST_NDARRAY_ASSERT( Cols_ == Eigen::Dynamic || Cols_ == cols() );
+        NDARRAY_ASSERT( Rows_ == Eigen::Dynamic || Rows_ == rows() );
+        NDARRAY_ASSERT( Cols_ == Eigen::Dynamic || Cols_ == cols() );
     }
 
 public:
@@ -418,6 +418,6 @@ ArrayBase<Derived>::asEigen() const {
         ArrayBase<Derived>::RMC::value>(this->getSelf());
 }
 
-}} // namespace lsst::ndarray
+} // namespace ndarray
 
-#endif // !LSST_NDARRAY_eigen_h_INCLUDED
+#endif // !NDARRAY_eigen_h_INCLUDED

@@ -21,8 +21,8 @@
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
 
-#ifndef LSST_NDARRAY_PYTHON_PyConverter_h_INCLUDED
-#define LSST_NDARRAY_PYTHON_PyConverter_h_INCLUDED
+#ifndef NDARRAY_PYTHON_PyConverter_h_INCLUDED
+#define NDARRAY_PYTHON_PyConverter_h_INCLUDED
 
 /**
  *  @file lsst/ndarray/python/PyConverter.h
@@ -40,7 +40,7 @@ inline void intrusive_ptr_release(PyObject * obj) { Py_DECREF(obj); }
 //}
 #endif
 
-namespace lsst { namespace ndarray {
+namespace ndarray {
 
 /**
  *  @brief A reference-counting smart pointer for PyObject.
@@ -106,7 +106,7 @@ struct PyConverterBase {
     
 };
 
-} // namespace lsst::ndarray::detail
+} // namespace ndarray::detail
 
 /**
  *  @ingroup ndarrayndarrayPythonGroup
@@ -180,7 +180,7 @@ struct PyConverter<bool> : public detail::PyConverterBase<bool> {
     }
 
     static bool fromPythonStage2(PyPtr const & input, bool & output) {
-        LSST_NDARRAY_ASSERT(input);
+        NDARRAY_ASSERT(input);
         output = (input.get() == Py_True);
         return true;
     }
@@ -208,7 +208,7 @@ struct PyConverter<int> : public detail::PyConverterBase<int> {
     }
 
     static bool fromPythonStage2(PyPtr const & input, int & output) {
-        LSST_NDARRAY_ASSERT(input);
+        NDARRAY_ASSERT(input);
         output = PyInt_AsLong(input.get());
         return true;
     }
@@ -235,7 +235,7 @@ struct PyConverter<long> : public detail::PyConverterBase<long> {
     }
 
     static bool fromPythonStage2(PyPtr const & input, long & output) {
-        LSST_NDARRAY_ASSERT(input);
+        NDARRAY_ASSERT(input);
         output = PyLong_AsLong(input.get());
         return true;
     }
@@ -262,7 +262,7 @@ struct PyConverter<float> : public detail::PyConverterBase<float> {
     }
 
     static bool fromPythonStage2(PyPtr const & input, float & output) {
-        LSST_NDARRAY_ASSERT(input);
+        NDARRAY_ASSERT(input);
         output = PyFloat_AsDouble(input.get());
         return true;
     }
@@ -289,7 +289,7 @@ struct PyConverter<double> : public detail::PyConverterBase<double> {
     }
 
     static bool fromPythonStage2(PyPtr const & input, double & output) {
-        LSST_NDARRAY_ASSERT(input);
+        NDARRAY_ASSERT(input);
         output = PyFloat_AsDouble(input.get());
         return true;
     }
@@ -316,7 +316,7 @@ struct PyConverter< std::complex<U> > : public detail::PyConverterBase< std::com
     }
 
     static bool fromPythonStage2(PyPtr const & input, std::complex<U> & output) {
-        LSST_NDARRAY_ASSERT(input);
+        NDARRAY_ASSERT(input);
         output.real() = PyComplex_RealAsDouble(input.get());
         output.imag() = PyComplex_ImagAsDouble(input.get());
         return true;
@@ -344,7 +344,7 @@ struct PyConverter< std::string > : public detail::PyConverterBase<std::string> 
     }
 
     static bool fromPythonStage2(PyPtr const & input, std::string & output) {
-        LSST_NDARRAY_ASSERT(input);
+        NDARRAY_ASSERT(input);
         char * buf = 0;
         Py_ssize_t size = 0;
         if (PyString_AsStringAndSize(input.get(),&buf,&size) == -1) return false;
@@ -361,6 +361,6 @@ struct PyConverter< std::string > : public detail::PyConverterBase<std::string> 
 
 /// \endcond
 
-}} // namespace lsst::ndarray
+} // namespace ndarray
 
-#endif // !LSST_NDARRAY_PYTHON_PyConverter_h_INCLUDED
+#endif // !NDARRAY_PYTHON_PyConverter_h_INCLUDED

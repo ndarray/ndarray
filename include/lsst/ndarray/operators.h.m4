@@ -89,8 +89,8 @@ define(`UNARY_OP',
     $2(ExpressionBase<Operand> const & operand) {
         return vectorize($1<typename ExpressionTraits<Operand>::Element>(),operand);
     }')dnl
-#ifndef LSST_NDARRAY_operators_h_INCLUDED
-#define LSST_NDARRAY_operators_h_INCLUDED
+#ifndef NDARRAY_operators_h_INCLUDED
+#define NDARRAY_operators_h_INCLUDED
 
 /** 
  *  \file lsst/ndarray/operators.h \brief Arithmetic and logical operators for Array.
@@ -104,7 +104,7 @@ define(`UNARY_OP',
 #include "lsst/ndarray/detail/BinaryOp.h"
 #include "lsst/ndarray/types.h"
 
-namespace lsst { namespace ndarray {
+namespace ndarray {
 
 /// \cond INTERNAL
 namespace detail {
@@ -354,6 +354,6 @@ sum(ExpressionBase<Derived> const & expr) {
 }
 
 
-}} // namespace lsst::ndarray
+} // namespace ndarray
 
-#endif // !LSST_NDARRAY_operators_h_INCLUDED
+#endif // !NDARRAY_operators_h_INCLUDED

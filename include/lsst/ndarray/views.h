@@ -20,8 +20,8 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-#ifndef LSST_NDARRAY_views_h_INCLUDED
-#define LSST_NDARRAY_views_h_INCLUDED
+#ifndef NDARRAY_views_h_INCLUDED
+#define NDARRAY_views_h_INCLUDED
 
 /** 
  *  \file lsst/ndarray/views.h @brief Public interface for arbitrary views into arrays.
@@ -32,7 +32,7 @@
 #include <boost/fusion/include/make_vector.hpp>
 #include <boost/fusion/include/mpl.hpp>
 
-namespace lsst { namespace ndarray {
+namespace ndarray {
 namespace index {
 
 /** 
@@ -163,6 +163,6 @@ inline View<Sequence> view(Sequence const & sequence) {
 
 /// @}
 
-}} // namespace lsst::ndarray
+} // namespace ndarray
 
-#endif // !LSST_NDARRAY_views_h_INCLUDED
+#endif // !NDARRAY_views_h_INCLUDED

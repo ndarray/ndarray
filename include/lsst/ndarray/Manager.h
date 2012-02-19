@@ -20,8 +20,8 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-#ifndef LSST_NDARRAY_Manager_h_INCLUDED
-#define LSST_NDARRAY_Manager_h_INCLUDED
+#ifndef NDARRAY_Manager_h_INCLUDED
+#define NDARRAY_Manager_h_INCLUDED
 
 /** 
  *  @file lsst/ndarray/Manager.h
@@ -34,7 +34,7 @@
 #include <boost/intrusive_ptr.hpp>
 #include <boost/scoped_array.hpp>
 
-namespace lsst { namespace ndarray {
+namespace ndarray {
 
 class Manager : private boost::noncopyable {
 public:
@@ -107,6 +107,6 @@ inline Manager::Ptr makeManager(Manager::Ptr const & owner) {
     return owner;
 }
 
-}} // namespace lsst::ndarray
+} // namespace ndarray
 
-#endif // !LSST_NDARRAY_Manager_h_INCLUDED
+#endif // !NDARRAY_Manager_h_INCLUDED

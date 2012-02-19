@@ -20,8 +20,8 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-#ifndef LSST_NDARRAY_DETAIL_BinaryOp_h_INCLUDED
-#define LSST_NDARRAY_DETAIL_BinaryOp_h_INCLUDED
+#ifndef NDARRAY_DETAIL_BinaryOp_h_INCLUDED
+#define NDARRAY_DETAIL_BinaryOp_h_INCLUDED
 
 /** 
  *  @file lsst/ndarray/detail/BinaryOp.h
@@ -35,7 +35,7 @@
 #include <boost/iterator/zip_iterator.hpp>
 #include <boost/tuple/tuple.hpp>
 
-namespace lsst { namespace ndarray {
+namespace ndarray {
 namespace detail {
 
 /**
@@ -116,7 +116,7 @@ public:
         BinaryFunction const & functor
     ) :
         _operand1(operand1), _operand2(operand2), _functor(functor) {
-        LSST_NDARRAY_ASSERT(_operand1.getShape() == _operand2.getShape());
+        NDARRAY_ASSERT(_operand1.getShape() == _operand2.getShape());
     }
 
     Reference operator[](int n) const {
@@ -145,6 +145,6 @@ public:
 };
 
 } // namespace detail
-}} // namespace lsst::ndarray
+} // namespace ndarray
 
-#endif // !LSST_NDARRAY_DETAIL_BinaryOp_h_INCLUDED
+#endif // !NDARRAY_DETAIL_BinaryOp_h_INCLUDED

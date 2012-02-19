@@ -20,8 +20,8 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-#ifndef LSST_NDARRAY_initialization_h_INCLUDED
-#define LSST_NDARRAY_initialization_h_INCLUDED
+#ifndef NDARRAY_initialization_h_INCLUDED
+#define NDARRAY_initialization_h_INCLUDED
 
 /** 
  *  \file lsst/ndarray/initialization.h @brief Construction functions for array.
@@ -30,7 +30,7 @@
 #include "lsst/ndarray/Array.h"
 #include "lsst/ndarray/Manager.h"
 
-namespace lsst { namespace ndarray {
+namespace ndarray {
 namespace detail {
 
 struct NullOwner {};
@@ -123,7 +123,7 @@ inline detail::SimpleInitializer<N> allocate(Vector<int,N> const & shape) {
  *  @returns A temporary object convertible to an Array with fully contiguous row-major strides.
  */
 inline detail::SimpleInitializer<1> allocate(int n) {
-    return detail::SimpleInitializer<1>(lsst::ndarray::makeVector(n)); 
+    return detail::SimpleInitializer<1>(ndarray::makeVector(n)); 
 }
 
 /** 
@@ -132,7 +132,7 @@ inline detail::SimpleInitializer<1> allocate(int n) {
  *  @returns A temporary object convertible to an Array with fully contiguous row-major strides.
  */
 inline detail::SimpleInitializer<2> allocate(int n1, int n2) {
-    return detail::SimpleInitializer<2>(lsst::ndarray::makeVector(n1, n2)); 
+    return detail::SimpleInitializer<2>(ndarray::makeVector(n1, n2)); 
 }
 
 /** 
@@ -141,7 +141,7 @@ inline detail::SimpleInitializer<2> allocate(int n1, int n2) {
  *  @returns A temporary object convertible to an Array with fully contiguous row-major strides.
  */
 inline detail::SimpleInitializer<3> allocate(int n1, int n2, int n3) {
-    return detail::SimpleInitializer<3>(lsst::ndarray::makeVector(n1, n2, n3)); 
+    return detail::SimpleInitializer<3>(ndarray::makeVector(n1, n2, n3)); 
 }
 
 /** 
@@ -263,6 +263,6 @@ inline detail::ExternalInitializer<T,N,detail::NullOwner> external(
 
 /// @}
 
-}} // namespace lsst::ndarray
+} // namespace ndarray
 
-#endif // !LSST_NDARRAY_initialization_h_INCLUDED
+#endif // !NDARRAY_initialization_h_INCLUDED

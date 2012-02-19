@@ -21,8 +21,8 @@
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
 
-#ifndef LSST_NDARRAY_PYTHON_ufunctors_h_INCLUDED
-#define LSST_NDARRAY_PYTHON_ufunctors_h_INCLUDED
+#ifndef NDARRAY_PYTHON_ufunctors_h_INCLUDED
+#define NDARRAY_PYTHON_ufunctors_h_INCLUDED
 
 /** 
  *  \file ndarray/python/ufunctors.h
@@ -31,7 +31,7 @@
 
 #include "lsst/ndarray/python/numpy.h"
 
-namespace lsst { namespace ndarray {
+namespace ndarray {
 
 template <typename TUnaryFunctor, 
           typename TArgument=typename TUnaryFunctor::argument_type,
@@ -137,6 +137,6 @@ struct PyBinaryUFunctor {
     
 };
 
-}} // namespace lsst::ndarray
+} // namespace ndarray
 
-#endif // !LSST_NDARRAY_PYTHON_ufunctors_h_INCLUDED
+#endif // !NDARRAY_PYTHON_ufunctors_h_INCLUDED

@@ -27,7 +27,7 @@ define(`GENERAL_ASSIGN',
     template <typename Other>
     ArrayRef const &
     operator $1(ExpressionBase<Other> const & expr) const {
-        LSST_NDARRAY_ASSERT(expr.getShape() 
+        NDARRAY_ASSERT(expr.getShape() 
                          == this->getShape().template first<ExpressionBase<Other>::ND::value>());
         indir(`$3',$1)
         return *this;
@@ -55,8 +55,8 @@ define(`AUGMENTED_ASSIGN_EXPR',
         for (Iterator i = this->begin(); i != i_end; ++i, ++j) (*i) $1 (*j);')dnl
 define(`BASIC_ASSIGN',`GENERAL_ASSIGN(`=',`BASIC_ASSIGN_SCALAR',`BASIC_ASSIGN_EXPR')')dnl
 define(`AUGMENTED_ASSIGN',`GENERAL_ASSIGN($1,`AUGMENTED_ASSIGN_SCALAR',`AUGMENTED_ASSIGN_EXPR')')dnl
-#ifndef LSST_NDARRAY_ArrayRef_h_INCLUDED
-#define LSST_NDARRAY_ArrayRef_h_INCLUDED
+#ifndef NDARRAY_ArrayRef_h_INCLUDED
+#define NDARRAY_ArrayRef_h_INCLUDED
 
 /** 
  *  @file lsst/ndarray/ArrayRef.h
@@ -72,7 +72,7 @@ define(`AUGMENTED_ASSIGN',`GENERAL_ASSIGN($1,`AUGMENTED_ASSIGN_SCALAR',`AUGMENTE
 #include "lsst/ndarray/detail/Core.h"
 #include "lsst/ndarray/views.h"
 
-namespace lsst { namespace ndarray {
+namespace ndarray {
 
 /**
  *  @brief A proxy class for Array with deep assignment operators.
@@ -128,13 +128,13 @@ public:
      */
     /// @{
     ArrayRef const & operator=(Array<T,N,C> const & other) const {
-        LSST_NDARRAY_ASSERT(other.getShape() == this->getShape());
+        NDARRAY_ASSERT(other.getShape() == this->getShape());
         std::copy(other.begin(), other.end(), this->begin());
         return *this;
     }
 
     ArrayRef const & operator=(ArrayRef const & other) const {
-        LSST_NDARRAY_ASSERT(other.getShape() == this->getShape());
+        NDARRAY_ASSERT(other.getShape() == this->getShape());
         std::copy(other.begin(), other.end(), this->begin());
         return *this;
     }
@@ -164,6 +164,6 @@ private:
 
 };
 
-}} // namespace lsst::ndarray
+} // namespace ndarray
 
-#endif // !LSST_NDARRAY_ArrayRef_h_INCLUDED
+#endif // !NDARRAY_ArrayRef_h_INCLUDED

@@ -20,8 +20,8 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-#ifndef LSST_NDARRAY_FFT_fft_fwd_h_INCLUDED
-#define LSST_NDARRAY_FFT_fft_fwd_h_INCLUDED
+#ifndef NDARRAY_FFT_fft_fwd_h_INCLUDED
+#define NDARRAY_FFT_fft_fwd_h_INCLUDED
 
 /**
  * @file lsst/ndarray/fft_fwd.h 
@@ -41,7 +41,7 @@
 
 #include "lsst/ndarray_fwd.h"
 
-namespace lsst { namespace ndarray {
+namespace ndarray {
 namespace detail {
 
 template <typename T, bool IsConst=boost::is_const<T>::value> struct FourierTraits;
@@ -51,6 +51,6 @@ template <typename T> struct FFTWTraits;
 
 template <typename T, int N> class FourierTransform;
 
-}} // namespace lsst::ndarray
+} // namespace ndarray
 
-#endif // !LSST_NDARRAY_FFT_fft_fwd_h_INCLUDED
+#endif // !NDARRAY_FFT_fft_fwd_h_INCLUDED
