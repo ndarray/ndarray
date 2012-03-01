@@ -1,6 +1,0 @@
-Import("bp_eigen_env")
-
-test_mod = bp_eigen_env.SharedLibrary("eigen_mod", "eigen_mod.cpp", SHLIBPREFIX="")
-test = bp_eigen_env.PythonUnitTest("eigen.py", test_mod)
-
-Return("test")
