@@ -1,0 +1,4 @@
+Import("bp_ndarray_env")
+lib = bp_ndarray_env.SharedLibrary("boost_python_ndarray", Glob("*.cpp"))
+
+Return("lib")
