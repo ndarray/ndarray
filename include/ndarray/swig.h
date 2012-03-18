@@ -16,34 +16,31 @@
  * 
  * https://github.com/ndarray/ndarray
  */
-#ifndef NDARRAY_python_h_INCLUDED
-#define NDARRAY_python_h_INCLUDED
+#ifndef NDARRAY_swig_h_INCLUDED
+#define NDARRAY_swig_h_INCLUDED
 
 /**
- *  @file ndarray/python.h
- *  @brief Public header file for ndarray Python support.
+ *  @file ndarray/swig.h
+ *  @brief Public header file for SWIG-based Python support.
  *
- *  \warning Both the main Python C-API header, "Python.h", and the
- *  Numpy C-API headers "arrayobject.h" and "ufuncobject.h" must
- *  be included before ndarray/python.hpp or any of the files in
- *  ndarray/python.
+ *  \warning Both the Numpy C-API headers "arrayobject.h" and
+ *  "ufuncobject.h" must be included before ndarray/python.hpp
+ *  or any of the files in ndarray/python.
  *
  *  \note This file is not included by the main "ndarray.h" header file.
  */
 
-/** \defgroup ndarrayndarrayPythonGroup Python Support
+/** \defgroup ndarrayPythonGroup Python Support
  *
  *  The ndarray Python support module provides conversion
  *  functions between ndarray objects, notably Array and
  *  Vector, and Python Numpy objects.
  */
 
-/// @internal \defgroup ndarrayPythonInternalGroup Python Support Internals
-
 #include "Python.h"
 #include "ndarray.h"
-#include "ndarray/python/numpy.h"
-#include "ndarray/python/ufunctors.h"
-#include "ndarray/python/Vector.h"
+#include "ndarray/swig/numpy.h"
+#include "ndarray/swig/ufunctors.h"
+#include "ndarray/swig/Vector.h"
 
-#endif // !NDARRAY_python_h_INCLUDED
+#endif // !NDARRAY_swig_h_INCLUDED

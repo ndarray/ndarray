@@ -2,14 +2,15 @@
 %{
 #define PY_ARRAY_UNIQUE_SYMBOL LSST_SWIG_TEST_NUMPY_ARRAY_API
 #include "numpy/arrayobject.h"
-#include "lsst/ndarray/python.h"
-#include "lsst/ndarray/python/eigen.h"
+#include "ndarray/swig.h"
+#include "ndarray/swig/eigen.h"
+#pragma GCC diagnostic ignored "-Wuninitialized"
 %}
 %init %{
     import_array();
 %}
 
-%include "lsst/ndarray/ndarray.i"
+%include "ndarray.i"
 
 %declareNumPyConverters(Eigen::MatrixXd);
 %declareNumPyConverters(Eigen::Matrix2d);

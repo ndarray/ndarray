@@ -1,8 +1,8 @@
-#ifndef BOOST_PYTHON_NDARRAY_VECTOR_HPP_INCLUDED
-#define BOOST_PYTHON_NDARRAY_VECTOR_HPP_INCLUDED
+#ifndef NDARRAY_BP_Vector_h_INCLUDED
+#define NDARRAY_BP_Vector_h_INCLUDED
 
-#include <boost/python/numpy.hpp>
-#include <ndarray/Vector.hpp>
+#include "boost/numpy.hpp"
+#include "ndarray/Vector.h"
 
 namespace boost { namespace python {
 
@@ -91,7 +91,6 @@ private:
     arg_rvalue_from_python< result_type const & > m_converter;
 };
 
-} // namespace boost::python::converter
-}} // namespace boost::python
+}}} // namespace boost::python::converter
 
-#endif // !BOOST_PYTHON_NDARRAY_VECTOR_HPP_INCLUDED
+#endif // !NDARRAY_BP_Vector_h_INCLUDED

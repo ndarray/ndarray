@@ -17,11 +17,11 @@
  * 
  * https://github.com/ndarray/ndarray
  */
-#ifndef NDARRAY_PYTHON_PyConverter_h_INCLUDED
-#define NDARRAY_PYTHON_PyConverter_h_INCLUDED
+#ifndef NDARRAY_SWIG_PyConverter_h_INCLUDED
+#define NDARRAY_SWIG_PyConverter_h_INCLUDED
 
 /**
- *  @file ndarray/python/PyConverter.h
+ *  @file ndarray/swig/PyConverter.h
  *  @brief Python C-API conversions for standard numeric types.
  */
 #include <Python.h>
@@ -359,4 +359,4 @@ struct PyConverter< std::string > : public detail::PyConverterBase<std::string> 
 
 } // namespace ndarray
 
-#endif // !NDARRAY_PYTHON_PyConverter_h_INCLUDED
+#endif // !NDARRAY_SWIG_PyConverter_h_INCLUDED

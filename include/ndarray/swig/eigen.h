@@ -17,18 +17,17 @@
  * 
  * https://github.com/ndarray/ndarray
  */
-#ifndef NDARRAY_PYTHON_eigen_h_INCLUDED
-#define NDARRAY_PYTHON_eigen_h_INCLUDED
+#ifndef NDARRAY_SWIG_eigen_h_INCLUDED
+#define NDARRAY_SWIG_eigen_h_INCLUDED
 
 /**
- *  @file ndarray/python/eigen.h
+ *  @file ndarray/swig/eigen.h
  *  @brief Python C-API conversions for Eigen matrices.
- *
- *  \note This file is not included by the main "ndarray/python.h" header file.
  */
 
-#include "ndarray/python.h"
 #include "ndarray/eigen.h"
+#include "ndarray/swig.h"
+#include "ndarray/swig/eigen.h"
 
 namespace ndarray {
 
@@ -155,4 +154,4 @@ struct PyConverter< Eigen::Array<Scalar,Rows,Cols,Options,MaxRows,MaxCols> >
 
 } // namespace ndarray
 
-#endif // !NDARRAY_PYTHON_eigen_h_INCLUDED
+#endif // !NDARRAY_SWIG_eigen_h_INCLUDED

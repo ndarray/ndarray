@@ -17,15 +17,15 @@
  * 
  * https://github.com/ndarray/ndarray
  */
-#ifndef NDARRAY_PYTHON_Vector_h_INCLUDED
-#define NDARRAY_PYTHON_Vector_h_INCLUDED
+#ifndef NDARRAY_SWIG_Vector_h_INCLUDED
+#define NDARRAY_SWIG_Vector_h_INCLUDED
 
 /** 
- *  @file ndarray/python/Vector.h
+ *  @file ndarray/swig/Vector.h
  *  @brief Python C-API conversions for Vector.
 */
 
-#include "ndarray/python/PyConverter.h"
+#include "ndarray/swig/PyConverter.h"
 
 namespace ndarray {
 
@@ -111,4 +111,4 @@ struct PyConverter< Vector<T,N> > : public detail::PyConverterBase< Vector<T,N> 
 
 } // namespace ndarray
 
-#endif // !NDARRAY_PYTHON_Vector_h_INCLUDED
+#endif // !NDARRAY_SWIG_Vector_h_INCLUDED

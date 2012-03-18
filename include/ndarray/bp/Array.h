@@ -1,12 +1,25 @@
-#ifndef BOOST_PYTHON_NDARRAY_ARRAY_HPP_INCLUDED
-#define BOOST_PYTHON_NDARRAY_ARRAY_HPP_INCLUDED
+#ifndef NDARRAY_BP_Array_h_INCLUDED
+#define NDARRAY_BP_Array_h_INCLUDED
 
 #include <boost/python/numpy.hpp>
 #include <ndarray.hpp>
 
 namespace ndarray {
 
-boost::python::object makePyObject(Manager::Ptr const & x);
+inline void destroyManagerCObject(void * p) {
+    Manager::Ptr * b = reinterpret_cast<Manager::Ptr*>(p);
+    delete b;
+}
+
+inline boost::python::object makePyObject(Manager::Ptr const & x) {
+    boost::intrusive_ptr< ExternalManager<boost::python::object> > y 
+        = boost::dynamic_pointer_cast< ExternalManager<boost::python::object> >(x);
+    if (y) {
+        return y->getOwner();
+    }
+    boost::python::handle<> h(::PyCObject_FromVoidPtr(new Manager::Ptr(x), &destroyManagerCObject));
+    return boost::python::object(h);
+}
 
 } // namespace ndarray
 
@@ -149,7 +162,7 @@ private:
     arg_rvalue_from_python< result_type const & > m_converter;
 };
 
-} // namespace converter
+}} // namespace python::converter
 
 namespace numpy {
 
@@ -160,9 +173,6 @@ numpy::ndarray array(::ndarray::Array<T,N,C> const & arg) {
     return result;
 }
 
-} // namespace numpy
+}} // namespace boost::numpy
 
-
-}} // namespace boost::python
-
-#endif // !BOOST_PYTHON_NDARRAY_ARRAY_HPP_INCLUDED
+#endif // !NDARRAY_BP_Array_h_INCLUDED

@@ -17,15 +17,15 @@
  * 
  * https://github.com/ndarray/ndarray
  */
-#ifndef NDARRAY_PYTHON_ufunctors_h_INCLUDED
-#define NDARRAY_PYTHON_ufunctors_h_INCLUDED
+#ifndef NDARRAY_SWIG_ufunctors_h_INCLUDED
+#define NDARRAY_SWIG_ufunctors_h_INCLUDED
 
 /** 
- *  \file ndarray/python/ufunctors.h
+ *  \file ndarray/swig/ufunctors.h
  *  @brief Python wrappers to create numpy ufunc objects from C++ function objects.
  */
 
-#include "ndarray/python/numpy.h"
+#include "ndarray/swig/numpy.h"
 
 namespace ndarray {
 
@@ -135,4 +135,4 @@ struct PyBinaryUFunctor {
 
 } // namespace ndarray
 
-#endif // !NDARRAY_PYTHON_ufunctors_h_INCLUDED
+#endif // !NDARRAY_SWIG_ufunctors_h_INCLUDED

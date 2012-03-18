@@ -18,16 +18,16 @@
  * https://github.com/ndarray/ndarray
  */
 
-#ifndef NDARRAY_PYTHON_numpy_h_INCLUDED
-#define NDARRAY_PYTHON_numpy_h_INCLUDED
+#ifndef NDARRAY_SWIG_numpy_h_INCLUDED
+#define NDARRAY_SWIG_numpy_h_INCLUDED
 
 /** 
- *  @file ndarray/python/numpy.h
+ *  @file ndarray/swig/numpy.h
  *  @brief Python C-API conversions between ndarray and numpy.
  */
 
 #include "ndarray.h"
-#include "ndarray/python/PyConverter.h"
+#include "ndarray/swig/PyConverter.h"
 
 namespace ndarray {
 namespace detail {
@@ -261,4 +261,4 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
 
 } // namespace ndarray
 
-#endif // !NDARRAY_PYTHON_numpy_h_INCLUDED
+#endif // !NDARRAY_SWIG_numpy_h_INCLUDED

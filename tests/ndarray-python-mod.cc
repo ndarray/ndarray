@@ -22,7 +22,8 @@
 
 #include "Python.h"
 #include "numpy/arrayobject.h"
-#include "ndarray/python.h"
+#include "ndarray/swig.h"
+#pragma GCC diagnostic ignored "-Wuninitialized"
 
 template <typename T, int N>
 static PyObject * passVector(PyObject * self, PyObject * args) {

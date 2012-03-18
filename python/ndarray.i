@@ -20,10 +20,19 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
+
+/**
+ *  @file ndarray.i
+ *  @brief Header file for ndarray SWIG/Python support.
+ *
+ *  \warning Both the Numpy C-API headers "arrayobject.h" and "ufuncobject.h" must
+ *  be included before ndarray.i or any of the files in swig/ndarray/*
+ */
  
 %{
-#include "lsst/ndarray/python.h"
-#include "lsst/ndarray/python/eigen.h"
+#include "ndarray.h"
+#include "ndarray/swig.h"
+#include "ndarray/swig/eigen.h"
 #include <boost/scoped_ptr.hpp>
 %}
 
