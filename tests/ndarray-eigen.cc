@@ -1,4 +1,4 @@
-// -*- lsst-c++ -*-
+// -*- c++ -*-
 /* 
  * LSST Data Management System
  * Copyright 2008, 2009, 2010, 2011 LSST Corporation.
@@ -20,7 +20,7 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-#include "lsst/ndarray/eigen.h"
+#include "ndarray/eigen.h"
 #include "Eigen/SVD"
 
 #define BOOST_TEST_DYN_LINK
@@ -50,8 +50,8 @@ void testElements1(T const & a, U const & b) {
 }
 
 template <int C, int Rows, int Cols>
-void testEigenView(lsst::ndarray::EigenView<double,2,C,Eigen::ArrayXpr,Rows,Cols> b) {
-    lsst::ndarray::Array<double,2,C> a(b.shallow());
+void testEigenView(ndarray::EigenView<double,2,C,Eigen::ArrayXpr,Rows,Cols> b) {
+    ndarray::Array<double,2,C> a(b.shallow());
     b.setRandom();
     testElements2(a, b);
     Eigen::Matrix<double,Rows,Eigen::Dynamic> m1(b.rows(), 6);
@@ -73,8 +73,8 @@ void testEigenView(lsst::ndarray::EigenView<double,2,C,Eigen::ArrayXpr,Rows,Cols
 }
 
 template <int C, int Rows, int Cols>
-void testEigenView(lsst::ndarray::EigenView<double,1,C,Eigen::ArrayXpr,Rows,Cols> b) {
-    lsst::ndarray::Array<double,1,C> a(b.shallow());
+void testEigenView(ndarray::EigenView<double,1,C,Eigen::ArrayXpr,Rows,Cols> b) {
+    ndarray::Array<double,1,C> a(b.shallow());
     b.setRandom();
     testElements1(a, b);
     Eigen::Matrix<double,Rows,Eigen::Dynamic> m1(b.rows(), 6);
@@ -94,8 +94,8 @@ void testEigenView(lsst::ndarray::EigenView<double,1,C,Eigen::ArrayXpr,Rows,Cols
 }
 
 template <int C, int Rows, int Cols>
-void testEigenView(lsst::ndarray::EigenView<double,2,C,Eigen::MatrixXpr,Rows,Cols> b) {
-    lsst::ndarray::Array<double,2,C> a(b.shallow());
+void testEigenView(ndarray::EigenView<double,2,C,Eigen::MatrixXpr,Rows,Cols> b) {
+    ndarray::Array<double,2,C> a(b.shallow());
     b.setRandom();
     testElements2(a, b);
     Eigen::Matrix<double,Rows,Eigen::Dynamic> m1(b.rows(), 6);
@@ -117,8 +117,8 @@ void testEigenView(lsst::ndarray::EigenView<double,2,C,Eigen::MatrixXpr,Rows,Col
 }
 
 template <int C, int Rows, int Cols>
-void testEigenView(lsst::ndarray::EigenView<double,1,C,Eigen::MatrixXpr,Rows,Cols> b) {
-    lsst::ndarray::Array<double,1,C> a(b.shallow());
+void testEigenView(ndarray::EigenView<double,1,C,Eigen::MatrixXpr,Rows,Cols> b) {
+    ndarray::Array<double,1,C> a(b.shallow());
     b.setRandom();
     testElements1(a, b);
     Eigen::Matrix<double,Rows,Eigen::Dynamic> m1(b.rows(), 6);
@@ -139,29 +139,29 @@ void testEigenView(lsst::ndarray::EigenView<double,1,C,Eigen::MatrixXpr,Rows,Col
 
 template <typename XprKind>
 void invokeEigenViewTests() {
-    lsst::ndarray::Array<double,2,2> a22(lsst::ndarray::allocate(5,4));
+    ndarray::Array<double,2,2> a22(ndarray::allocate(5,4));
     testEigenView(a22.asEigen<XprKind>());
     testEigenView(a22.asEigen<XprKind,5,4>());
     testEigenView(a22.transpose().asEigen<XprKind>());
     testEigenView(a22.transpose().asEigen<XprKind,4,5>());
-    lsst::ndarray::Array<double,2,1> a21(a22[lsst::ndarray::view()(0,3)]);
+    ndarray::Array<double,2,1> a21(a22[ndarray::view()(0,3)]);
     testEigenView(a21.asEigen<XprKind>());
     testEigenView(a21.asEigen<XprKind,5,3>());
     testEigenView(a21.transpose().asEigen<XprKind>());
     testEigenView(a21.transpose().asEigen<XprKind,3,5>());
-    lsst::ndarray::Array<double,2,0> a20(a22[lsst::ndarray::view()(0,4,2)]);
+    ndarray::Array<double,2,0> a20(a22[ndarray::view()(0,4,2)]);
     testEigenView(a20.asEigen<XprKind>());
     testEigenView(a20.asEigen<XprKind,5,2>());
     testEigenView(a20.transpose().asEigen<XprKind>());
     testEigenView(a20.transpose().asEigen<XprKind,2,5>());
-    lsst::ndarray::Array<double,1,1> a11(lsst::ndarray::allocate(4));
+    ndarray::Array<double,1,1> a11(ndarray::allocate(4));
     testEigenView(a11.asEigen<XprKind>());
     testEigenView(a11.asEigen<XprKind,4,1>());
     testEigenView(a11.asEigen<XprKind,1,4>());
     testEigenView(a11.transpose().asEigen<XprKind>());
     testEigenView(a11.transpose().asEigen<XprKind,4,1>());
     testEigenView(a11.transpose().asEigen<XprKind,1,4>());
-    lsst::ndarray::Array<double,1,0> a10(a11[lsst::ndarray::view(0,4,2)]);
+    ndarray::Array<double,1,0> a10(a11[ndarray::view(0,4,2)]);
     testEigenView(a10.asEigen<XprKind>());
     testEigenView(a10.asEigen<XprKind,2,1>());
     testEigenView(a10.asEigen<XprKind,1,2>());
@@ -175,7 +175,7 @@ BOOST_AUTO_TEST_CASE(EigenView) {
     invokeEigenViewTests<Eigen::MatrixXpr>();
 
     Eigen::MatrixXd m(Eigen::MatrixXd::Random(5,6));
-    lsst::ndarray::SelectEigenView<Eigen::MatrixXd>::Type v(lsst::ndarray::copy(m));
+    ndarray::SelectEigenView<Eigen::MatrixXd>::Type v(ndarray::copy(m));
     BOOST_CHECK( (v.array() == m.array()).all() );
 }
 
@@ -187,11 +187,11 @@ void testSVD(Matrix const & a, Vector const & b, Vector & x) {
 }
 
 BOOST_AUTO_TEST_CASE(SVD) {
-    typedef lsst::ndarray::EigenView<double,2,2> Matrix;
-    typedef lsst::ndarray::EigenView<double,1,1> Vector;
-    Matrix a(lsst::ndarray::allocate(8,5));
-    Vector b(lsst::ndarray::allocate(8));
-    Vector x(lsst::ndarray::allocate(5));
+    typedef ndarray::EigenView<double,2,2> Matrix;
+    typedef ndarray::EigenView<double,1,1> Vector;
+    Matrix a(ndarray::allocate(8,5));
+    Vector b(ndarray::allocate(8));
+    Vector x(ndarray::allocate(5));
     a.setRandom();
     b.setRandom();
     testSVD< Eigen::JacobiSVD<Matrix::PlainEigenType> >(a, b, x);

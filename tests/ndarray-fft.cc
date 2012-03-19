@@ -1,4 +1,4 @@
-// -*- lsst-c++ -*-
+// -*- c++ -*-
 /* 
  * LSST Data Management System
  * Copyright 2008, 2009, 2010, 2011 LSST Corporation.
@@ -20,7 +20,7 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-#include <lsst/ndarray/fft.h>
+#include <ndarray/fft.h>
 
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE ndarray-fft
@@ -33,12 +33,12 @@
 template <typename Derived1, typename Derived2>
 static boost::test_tools::predicate_result
 compareRelative(
-    lsst::ndarray::ExpressionBase<Derived1> const & a, 
-    lsst::ndarray::ExpressionBase<Derived2> const & b,
+    ndarray::ExpressionBase<Derived1> const & a, 
+    ndarray::ExpressionBase<Derived2> const & b,
     double tolerance = 1E-4
 ) {
-    lsst::ndarray::ApproximatelyEqual<typename Derived1::Element, typename Derived2::Element> predicate(tolerance);
-    if (lsst::ndarray::all(lsst::ndarray::vectorize(predicate,a,b))) return true;
+    ndarray::ApproximatelyEqual<typename Derived1::Element, typename Derived2::Element> predicate(tolerance);
+    if (ndarray::all(ndarray::vectorize(predicate,a,b))) return true;
     boost::test_tools::predicate_result r(false);
     std::ostringstream oss;
     oss << "\n" << a << "\n != \n" << b << "\n";
@@ -49,11 +49,11 @@ compareRelative(
 template <typename Derived1, typename Derived2>
 static boost::test_tools::predicate_result
 compareAbsolute(
-    lsst::ndarray::ExpressionBase<Derived1> const & a,
-    lsst::ndarray::ExpressionBase<Derived2> const & b,
+    ndarray::ExpressionBase<Derived1> const & a,
+    ndarray::ExpressionBase<Derived2> const & b,
     double tolerance = 1E-4
 ) {
-    if (lsst::ndarray::all(less(a-b, tolerance)) && lsst::ndarray::all(less(b-a, tolerance))) return true;
+    if (ndarray::all(less(a-b, tolerance)) && ndarray::all(less(b-a, tolerance))) return true;
     boost::test_tools::predicate_result r(false);
     std::ostringstream oss;
     oss << "\n" << a << "\n != \n" << b << "\n";
@@ -63,7 +63,7 @@ compareAbsolute(
 
 template <typename T, int N>
 struct FourierTransformTester {
-    typedef lsst::ndarray::FourierTransform<T,N> FFT;
+    typedef ndarray::FourierTransform<T,N> FFT;
 
     static void testSingle(
         typename FFT::Index const & shape, 
@@ -117,7 +117,7 @@ BOOST_AUTO_TEST_CASE(real_1d) {
         std::complex<double>(-0.99838585,3.06854867),
         std::complex<double>(-0.97476025,-0.90303271)
     };
-    FourierTransformTester<double,1>::testSingle(lsst::ndarray::makeVector(5),xData1,kData1);
+    FourierTransformTester<double,1>::testSingle(ndarray::makeVector(5),xData1,kData1);
     double xData2[] = { -0.42299104, 0.12242535, 0.37497334, 0.47846245, 1.19236641, -1.54989674 };
     std::complex<double> kData2[] = {
         std::complex<double>(0.19533977,0.00000000),
@@ -125,7 +125,7 @@ BOOST_AUTO_TEST_CASE(real_1d) {
         std::complex<double>(-0.01446277,-2.15615658),
         std::complex<double>(2.09335764,0.00000000),
     };
-    FourierTransformTester<double,1>::testSingle(lsst::ndarray::makeVector(6),xData2,kData2);
+    FourierTransformTester<double,1>::testSingle(ndarray::makeVector(6),xData2,kData2);
     double xData3[] = {
         1.23233014,  0.80816934, -0.89026449,  0.64365113, -0.95490008,
         -2.31806551,  0.91599268,  0.48157162, -0.3389141 ,  1.3208367 ,
@@ -142,7 +142,7 @@ BOOST_AUTO_TEST_CASE(real_1d) {
         std::complex<double>(1.88429912,-1.97237400),
         std::complex<double>(-0.76453557,-0.09069146),
     };
-    FourierTransformTester<double,1>::testMultiplex(lsst::ndarray::makeVector(3,5),xData3,kData3);
+    FourierTransformTester<double,1>::testMultiplex(ndarray::makeVector(3,5),xData3,kData3);
     double xData4[] = {
         0.20943609, -0.70119705, -0.04658762, -0.31573777,  0.0884646 ,
         -0.53593713, -1.43900058, -0.60146942, -0.90063027, -1.85456039,
@@ -163,7 +163,7 @@ BOOST_AUTO_TEST_CASE(real_1d) {
         std::complex<double>(-1.57064806,-2.97686989),
         std::complex<double>(-1.70918113,0.00000000),
     };
-    FourierTransformTester<double,1>::testMultiplex(lsst::ndarray::makeVector(3,6),xData4,kData4);
+    FourierTransformTester<double,1>::testMultiplex(ndarray::makeVector(3,6),xData4,kData4);
 }
 
 BOOST_AUTO_TEST_CASE(complex_1d) {
@@ -181,7 +181,7 @@ BOOST_AUTO_TEST_CASE(complex_1d) {
         std::complex<double>(-4.75954620,1.77512198),
         std::complex<double>(0.56926906,-1.52257831),
     };
-    FourierTransformTester<std::complex<double>,1>::testSingle(lsst::ndarray::makeVector(5),xData1,kData1);
+    FourierTransformTester<std::complex<double>,1>::testSingle(ndarray::makeVector(5),xData1,kData1);
     std::complex<double> xData2[] = {
         std::complex<double>(1.11465199,0.04081224),
         std::complex<double>(-1.08053999,0.78927525),
@@ -216,7 +216,7 @@ BOOST_AUTO_TEST_CASE(complex_1d) {
         std::complex<double>(4.27447257,1.85030986),
         std::complex<double>(-0.74625074,-1.07986528),
     };
-    FourierTransformTester<std::complex<double>,1>::testMultiplex(lsst::ndarray::makeVector(3,5),xData2,kData2);
+    FourierTransformTester<std::complex<double>,1>::testMultiplex(ndarray::makeVector(3,5),xData2,kData2);
 }
 
 BOOST_AUTO_TEST_CASE(real_2d) {
@@ -236,7 +236,7 @@ BOOST_AUTO_TEST_CASE(real_2d) {
         std::complex<double>(1.39542736,-4.26784629),
         std::complex<double>(-0.37466977,1.23205340),
     };
-    FourierTransformTester<double,2>::testSingle(lsst::ndarray::makeVector(3,4),xData1,kData1);
+    FourierTransformTester<double,2>::testSingle(ndarray::makeVector(3,4),xData1,kData1);
     double xData2[] = {
         0.61726814,  1.02478783,  1.05838231, -0.54398019, -0.22777548,
         -0.52546761, -0.82971628,  1.95616799,  1.9787389 , -0.5170171 ,
@@ -253,7 +253,7 @@ BOOST_AUTO_TEST_CASE(real_2d) {
         std::complex<double>(4.10890818,-5.68718353),
         std::complex<double>(2.56065709,1.51657561),
     };
-    FourierTransformTester<double,2>::testSingle(lsst::ndarray::makeVector(3,5),xData2,kData2);
+    FourierTransformTester<double,2>::testSingle(ndarray::makeVector(3,5),xData2,kData2);
     double xData3[] = {
         -1.40706583, -0.10390223,  1.06058569, -0.31086132,  1.05681052,
         0.51060026,  0.94256284, -2.12855291, -0.44127652, -1.68077709,
@@ -293,7 +293,7 @@ BOOST_AUTO_TEST_CASE(real_2d) {
         std::complex<double>(2.40549637,0.26293493),
         std::complex<double>(3.09482501,2.74095257),
     };
-    FourierTransformTester<double,2>::testMultiplex(lsst::ndarray::makeVector(3,3,4),xData3,kData3);
+    FourierTransformTester<double,2>::testMultiplex(ndarray::makeVector(3,3,4),xData3,kData3);
     double xData4[] = {
         -2.02786312, -0.3539932 ,  0.55001132,  0.88336882,  0.43662574,
         2.01541172, -0.84654528,  0.01492169,  0.25803824, -0.94068415,
@@ -334,7 +334,7 @@ BOOST_AUTO_TEST_CASE(real_2d) {
         std::complex<double>(-1.21120542,2.39435110),
         std::complex<double>(-2.03462006,0.80292460),
     };
-    FourierTransformTester<double,2>::testMultiplex(lsst::ndarray::makeVector(3,3,5),xData4,kData4);
+    FourierTransformTester<double,2>::testMultiplex(ndarray::makeVector(3,3,5),xData4,kData4);
 }
 
 BOOST_AUTO_TEST_CASE(complex_2d) {
@@ -366,7 +366,7 @@ BOOST_AUTO_TEST_CASE(complex_2d) {
         std::complex<double>(-4.73536776,0.93369296),
         std::complex<double>(-2.82895659,-5.93210699),
     };
-    FourierTransformTester<std::complex<double>,2>::testSingle(lsst::ndarray::makeVector(3,4),xData1,kData1);
+    FourierTransformTester<std::complex<double>,2>::testSingle(ndarray::makeVector(3,4),xData1,kData1);
     std::complex<double> xData2[] = {
         std::complex<double>(0.19529047,1.20435172),
         std::complex<double>(1.45906066,-0.97965946),
@@ -443,12 +443,12 @@ BOOST_AUTO_TEST_CASE(complex_2d) {
         std::complex<double>(3.38827586,-3.57929124),
         std::complex<double>(-1.57540539,-1.99610520),
     };
-    FourierTransformTester<std::complex<double>,2>::testMultiplex(lsst::ndarray::makeVector(3,3,4),xData2,kData2);
+    FourierTransformTester<std::complex<double>,2>::testMultiplex(ndarray::makeVector(3,3,4),xData2,kData2);
 };
 
 template <typename T, int N>
 struct FourierOpsTester {
-    typedef lsst::ndarray::FourierTransform<T,N> FFT;
+    typedef ndarray::FourierTransform<T,N> FFT;
 
     static void makeGaussian(T const * mu, T sigma, typename FFT::ArrayX const & array, int m=0) {
         typename FFT::ArrayX::Iterator const iter_end = array.end();
@@ -463,7 +463,7 @@ struct FourierOpsTester {
 
     static void testShift(
         typename FFT::Index const & shape,
-        lsst::ndarray::Vector<T,N> const & offset,
+        ndarray::Vector<T,N> const & offset,
         T sigma
     ) {
         typename FFT::ArrayX x1;
@@ -472,10 +472,10 @@ struct FourierOpsTester {
         typename FFT::Ptr forward = FFT::planForward(shape,x1,k);
         typename FFT::Ptr inverse = FFT::planInverse(shape,k,x2);
         x1.deep() = 1.0;
-        lsst::ndarray::Vector<T,N> mu = (shape - offset) * 0.5;
+        ndarray::Vector<T,N> mu = (shape - offset) * 0.5;
         makeGaussian(mu.begin(), sigma, x1);
         forward->execute();
-        lsst::ndarray::shift(offset, k, shape[N-1]);
+        ndarray::shift(offset, k, shape[N-1]);
         inverse->execute();
         x2.deep() /= shape.product();
         x1.deep() = 1.0;
@@ -495,10 +495,10 @@ struct FourierOpsTester {
         typename FFT::Ptr forward = FFT::planForward(shape,x1,k);
         typename FFT::Ptr inverse = FFT::planInverse(shape,k,x2);
         x1.deep() = 1.0;
-        lsst::ndarray::Vector<T,N> mu = shape * 0.5;
+        ndarray::Vector<T,N> mu = shape * 0.5;
         makeGaussian(mu.begin(),sigma,x1,0);
         forward->execute();
-        lsst::ndarray::differentiate(n, k, shape[N-1]);
+        ndarray::differentiate(n, k, shape[N-1]);
         inverse->execute();
         x2.deep() /= shape.product();
         x1.deep() = 1.0;
@@ -516,19 +516,19 @@ struct FourierOpsTester<T,0> {
 };
 
 BOOST_AUTO_TEST_CASE(ops) {
-    FourierOpsTester<double,1>::testShift(lsst::ndarray::makeVector(256),lsst::ndarray::makeVector(7.25),10.0);
-    FourierOpsTester<double,1>::testShift(lsst::ndarray::makeVector(255),lsst::ndarray::makeVector(7.25),10.0);
-    FourierOpsTester<double,2>::testShift(lsst::ndarray::makeVector(256,256),lsst::ndarray::makeVector(7.25,6.4),10.0);
-    FourierOpsTester<double,2>::testShift(lsst::ndarray::makeVector(256,255),lsst::ndarray::makeVector(7.25,6.4),10.0);
+    FourierOpsTester<double,1>::testShift(ndarray::makeVector(256),ndarray::makeVector(7.25),10.0);
+    FourierOpsTester<double,1>::testShift(ndarray::makeVector(255),ndarray::makeVector(7.25),10.0);
+    FourierOpsTester<double,2>::testShift(ndarray::makeVector(256,256),ndarray::makeVector(7.25,6.4),10.0);
+    FourierOpsTester<double,2>::testShift(ndarray::makeVector(256,255),ndarray::makeVector(7.25,6.4),10.0);
 
-    FourierOpsTester<double,1>::testDifferentiate(lsst::ndarray::makeVector(256),10.0,0);
-    FourierOpsTester<double,1>::testDifferentiate(lsst::ndarray::makeVector(256),10.0,1);
-    FourierOpsTester<double,1>::testDifferentiate(lsst::ndarray::makeVector(255),10.0,0);
-    FourierOpsTester<double,1>::testDifferentiate(lsst::ndarray::makeVector(255),10.0,1);
-    FourierOpsTester<double,2>::testDifferentiate(lsst::ndarray::makeVector(256,256),10.0,0);
-    FourierOpsTester<double,2>::testDifferentiate(lsst::ndarray::makeVector(256,256),10.0,1);
-    FourierOpsTester<double,2>::testDifferentiate(lsst::ndarray::makeVector(256,255),10.0,0);
-    FourierOpsTester<double,2>::testDifferentiate(lsst::ndarray::makeVector(256,255),10.0,1);
+    FourierOpsTester<double,1>::testDifferentiate(ndarray::makeVector(256),10.0,0);
+    FourierOpsTester<double,1>::testDifferentiate(ndarray::makeVector(256),10.0,1);
+    FourierOpsTester<double,1>::testDifferentiate(ndarray::makeVector(255),10.0,0);
+    FourierOpsTester<double,1>::testDifferentiate(ndarray::makeVector(255),10.0,1);
+    FourierOpsTester<double,2>::testDifferentiate(ndarray::makeVector(256,256),10.0,0);
+    FourierOpsTester<double,2>::testDifferentiate(ndarray::makeVector(256,256),10.0,1);
+    FourierOpsTester<double,2>::testDifferentiate(ndarray::makeVector(256,255),10.0,0);
+    FourierOpsTester<double,2>::testDifferentiate(ndarray::makeVector(256,255),10.0,1);
 }
 
 #else

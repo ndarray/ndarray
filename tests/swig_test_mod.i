@@ -2,23 +2,24 @@
 %{
 #define PY_ARRAY_UNIQUE_SYMBOL LSST_SWIG_TEST_NUMPY_ARRAY_API
 #include "numpy/arrayobject.h"
-#include "lsst/ndarray/python.h"
-#include "lsst/ndarray/python/eigen.h"
+#include "ndarray/swig.h"
+#include "ndarray/swig/eigen.h"
+#pragma GCC diagnostic ignored "-Wuninitialized"
 %}
 %init %{
     import_array();
 %}
 
-%include "lsst/ndarray/ndarray.i"
+%include "ndarray.i"
 
 %declareNumPyConverters(Eigen::MatrixXd);
 %declareNumPyConverters(Eigen::Matrix2d);
 %declareNumPyConverters(Eigen::Matrix3d);
 %declareNumPyConverters(Eigen::Matrix<double,2,2,Eigen::DontAlign>);
-%declareNumPyConverters(lsst::ndarray::Array<double,1,1>);
-%declareNumPyConverters(lsst::ndarray::Array<double const,1,1>);
-%declareNumPyConverters(lsst::ndarray::Array<double,3>);
-%declareNumPyConverters(lsst::ndarray::Array<double const,3>);
+%declareNumPyConverters(ndarray::Array<double,1,1>);
+%declareNumPyConverters(ndarray::Array<double const,1,1>);
+%declareNumPyConverters(ndarray::Array<double,3>);
+%declareNumPyConverters(ndarray::Array<double const,3>);
 
 %inline %{
 
@@ -38,28 +39,28 @@ Eigen::Matrix2d returnMatrix2d() {
     return r;
 }
 
-lsst::ndarray::Array<double,1,1> returnArray1() {
-    lsst::ndarray::Array<double,1,1> r(lsst::ndarray::allocate(lsst::ndarray::makeVector(6)));
+ndarray::Array<double,1,1> returnArray1() {
+    ndarray::Array<double,1,1> r(ndarray::allocate(ndarray::makeVector(6)));
     for (int n = 0; n < r.getSize<0>(); ++n) {
         r[n] = n;
     }
     return r;
 }
 
-lsst::ndarray::Array<double const,1,1> returnConstArray1() {
+ndarray::Array<double const,1,1> returnConstArray1() {
     return returnArray1();
 }
 
-lsst::ndarray::Array<double,3> returnArray3() {
-    lsst::ndarray::Array<double,3,3> r(lsst::ndarray::allocate(lsst::ndarray::makeVector(4,3,2)));
-    lsst::ndarray::Array<double,1,1> f = lsst::ndarray::flatten<1>(r);
+ndarray::Array<double,3> returnArray3() {
+    ndarray::Array<double,3,3> r(ndarray::allocate(ndarray::makeVector(4,3,2)));
+    ndarray::Array<double,1,1> f = ndarray::flatten<1>(r);
     for (int n = 0; n < f.getSize<0>(); ++n) {
         f[n] = n;
     }
     return r;
 }
 
-lsst::ndarray::Array<double const,3> returnConstArray3() {
+ndarray::Array<double const,3> returnConstArray3() {
     return returnArray3();
 }
 
@@ -73,19 +74,19 @@ bool acceptMatrix2d(Eigen::Matrix2d const & m1) {
     return m1 == m2;
 }
 
-bool acceptArray1(lsst::ndarray::Array<double,1,1> const & a1) {
-    lsst::ndarray::Array<double,1,1> a2 = returnArray1();
+bool acceptArray1(ndarray::Array<double,1,1> const & a1) {
+    ndarray::Array<double,1,1> a2 = returnArray1();
 #ifndef GCC_45
-    return lsst::ndarray::all(lsst::ndarray::equal(a1, a2));
+    return ndarray::all(ndarray::equal(a1, a2));
 #else
     return std::equal(a1.begin(), a1.end(), a2.begin());
 #endif
 }
 
-bool acceptArray3(lsst::ndarray::Array<double,3> const & a1) {
-    lsst::ndarray::Array<double,3> a2 = returnArray3();
+bool acceptArray3(ndarray::Array<double,3> const & a1) {
+    ndarray::Array<double,3> a2 = returnArray3();
 #ifndef GCC_45
-    return lsst::ndarray::all(lsst::ndarray::equal(a1, a2));
+    return ndarray::all(ndarray::equal(a1, a2));
 #else
     for (int i = 0; i < a1.getSize<0>(); ++i) {
       for (int j = 0; j < a1.getSize<1>(); ++j) {
