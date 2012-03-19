@@ -20,22 +20,47 @@
  * the GNU General Public License along with this program.  If not, 
  * see <http://www.lsstcorp.org/LegalNotices/>.
  */
-#ifndef NDARRAY_fft_h_INCLUDED
-#define NDARRAY_fft_h_INCLUDED
+#ifndef NDARRAY_tables_fwd_h_INCLUDED
+#define NDARRAY_tables_fwd_h_INCLUDED
 
 /**
- * @file ndarray/fft.h 
+ * @file ndarray/tables_fwd.h 
  *
- * @brief Main public header file for ndarray FFT library.
+ * @brief Forward declarations for ndarray Tables library.
  *
  *  \note This file is not included by the main "ndarray.h" header file.
  */
 
-#include "ndarray.h"
-#include "ndarray/fft/FourierTransform.h"
-#include "ndarray/fft/FourierOps.h"
-#ifndef NDARRAY_FFT_MANUAL_INCLUDE
-#include "ndarray/fft/FourierTransform.cc"
-#endif
+#include "ndarray_fwd.h"
+#include <boost/type_traits/is_const.hpp>
+#include <boost/type_traits/remove_const.hpp>
 
-#endif // !NDARRAY_fft_h_INCLUDED
+namespace ndarray { namespace tables {
+
+template <int N> struct Index {};
+
+template <typename T, int N=0> struct Field;
+template <typename T> class Layout;
+
+template <typename T> class Row;
+template <typename T> class Table;
+
+namespace detail {
+
+template <typename T, bool isConst = boost::is_const<T>::value> struct TraitsAccess;
+template <typename Field_> struct FieldInfo;
+template <typename T> class Columns;
+template <typename T> class Iterator;
+
+} // namespace detail
+
+template <typename T>
+struct Traits {
+    typedef typename T::FieldSequence FieldSequence;
+    typedef Row<T> Record;
+    typedef Row<T> ConstRecord;
+};
+
+}} // namespace ndarray::tables
+
+#endif // !NDARRAY_tables_fwd_h_INCLUDED
