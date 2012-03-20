@@ -10,9 +10,9 @@
 #
 from lsst.sconsUtils import env
 
-generated = ["lsst/ndarray/ArrayRef.h",
-             "lsst/ndarray/operators.h",
-             "lsst/ndarray/Vector.h",
-             "lsst/ndarray/fft/FFTWTraits.h",
+generated = ["ndarray/ArrayRef.h",
+             "ndarray/operators.h",
+             "ndarray/Vector.h",
+             "ndarray/fft/FFTWTraits.h",
              ]
 headers = [env.M4(filename, "%s.m4" % filename) for filename in generated]
