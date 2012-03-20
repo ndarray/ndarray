@@ -2,6 +2,7 @@
 from lsst.sconsUtils import env
 
 generated = ["ndarray/ArrayRef.h",
+             "ndarray/ArrayBaseN.h",
              "ndarray/operators.h",
              "ndarray/Vector.h",
              "ndarray/fft/FFTWTraits.h",
