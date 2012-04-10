@@ -41,7 +41,7 @@
 namespace ndarray {
 
 /** 
- * @mainpage Multidimensional Arrays in C++
+ * @mainpage ndarray; Multidimensional Arrays in C++
  *
  * %ndarray is a template library that provides multidimensional array objects in C++, with
  * an interface and features designed to mimic the Python 'numpy' package as much as possible.
