@@ -159,6 +159,18 @@ flatten(Array<T,N,C> const & input) {
     return Access::construct(input.getData(), Core::create(newShape, newStrides, input.getManager()));
 }
 
+/**
+ *  @brief Create a view into an array with trailing contiguous dimensions merged.
+ *
+ *  The first template parameter sets the dimension of the output array and must
+ *  be specified directly.  Only row-major contiguous dimensions can be flattened.
+ */
+template <int Nf, typename T, int N, int C>
+inline typename boost::enable_if_c< ((C+Nf-N)>=1), ArrayRef<T,Nf,(C+Nf-N)> >::type
+flatten(ArrayRef<T,N,C> const & input) {
+    return flatten<Nf>(input.shallow());
+}
+
 /// @}
 
 } // namespace ndarray
