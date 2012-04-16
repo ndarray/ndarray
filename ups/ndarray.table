@@ -1,9 +1,0 @@
-setupRequired(boost >= 1.47.0)
-setupRequired(python >= 2.7)
-setupRequired(numpy >= 1.5)
-setupRequired(eigen >= 3.0.0)
-setupRequired(base >= 4.6.0.0)
-setupRequired(swig)
-setupRequired(fftw >= 3.1)
-
-envAppend(PYTHONPATH, ${PRODUCT_DIR}/python)
