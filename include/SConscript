@@ -8,7 +8,7 @@
 #  of the source distribution, or alternately available at:
 #  https://github.com/ndarray/ndarray
 #
-from lsst.sconsUtils import env
+Import("env")
 
 generated = ["ndarray/ArrayRef.h",
              "ndarray/ArrayBaseN.h",
@@ -17,3 +17,10 @@ generated = ["ndarray/ArrayRef.h",
              "ndarray/fft/FFTWTraits.h",
              ]
 headers = [env.M4(filename, "%s.m4" % filename) for filename in generated]
+
+headers += env.Glob("*.h")
+headers += env.Glob("*/*.h")
+headers += env.Glob("*/*/*.h")
+headers += env.Glob("*.i")
+
+Return("headers")
