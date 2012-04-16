@@ -1,0 +1,35 @@
+ndarray is a template library that provides multidimensional array
+objects in C++, with an interface and features designed to mimic the
+Python 'numpy' package as much as possible.
+
+More information can be found in the Doxygen-generated documentation
+(which is unhelpfully not built automatically at present...read
+ndarray.h instead).
+
+
+BUILDING FROM GIT
+
+ndarray includes the Boost.NumPy library using git's "submodules"
+feature.  When you clone the ndarray repository with git, you'll get
+an empty Boost.NumPy directory.  Even if you don't plan to use
+Boost.NumPy (which is required only if you want to build the
+Boost.Python bindings for ndarray), it *is* necessary to checkout the
+Boost.NumPy source (as parts of the build system is shared).  So,
+immediately after cloning ndarray, you'll need to run two commands:
+
+git submodule init
+git submodule update
+
+From there, you'll be able to build ndarray and (optionally)
+Boost.NumPy together just by running "scons" from the root of the
+ndarray clone.
+
+
+BUILDING FROM COMPRESSED SOURCE
+
+GitHub's automatically generated tarballs and zip files don't include
+the Boost.NumPy submodule or the git metadata needed to run "git
+submodule", so these features can't be used to download ndarray.
+
+When we post release downloads, however, we'll include the Boost.NumPy
+source so they can be built directly.
