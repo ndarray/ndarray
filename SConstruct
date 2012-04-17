@@ -13,7 +13,7 @@ import os
 
 setupOptions, makeEnvironment, setupTargets, checks = SConscript("Boost.NumPy/SConscript")
 
-setupOptions()
+variables = setupOptions()
 
 AddOption("--with-eigen", dest="eigen_prefix", type="string", nargs=1, action="store",
           metavar="DIR", default=os.environ.get("EIGEN_DIR"),
@@ -23,7 +23,7 @@ AddOption("--with-eigen-include", dest="eigen_include", type="string", nargs=1, 
 
 building = not GetOption("help") and not GetOption("clean")
 
-env = makeEnvironment()
+env = makeEnvironment(variables)
 env.AppendUnique(CPPPATH=["#include"])
 
 if building:
@@ -62,7 +62,7 @@ bpEnv.haveBoostPython = haveBoostPython
 bpEnv.AppendUnique(CPPPATH=["#Boost.NumPy"])
 if haveBoostPython:
    setupTargets(bpEnv, root="Boost.NumPy")
-else:
+elif building:
    print "Not building Boost.NumPy component."
 
 headers = SConscript(os.path.join("include", "SConscript"), exports="env")
