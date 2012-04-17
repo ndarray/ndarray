@@ -34,7 +34,7 @@ if building:
       if eigen_include is None:
          eigen_include = os.path.join(eigen_prefix, "include")
    if eigen_include:
-      context.env.AppendUnique(CPPPATH=[eigen_include])
+      config.env.AppendUnique(CPPPATH=[eigen_include])
    haveEigen = config.CheckCXXHeader("Eigen/Core")
    env = config.Finish()
 else:
