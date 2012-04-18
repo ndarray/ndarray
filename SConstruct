@@ -67,8 +67,11 @@ elif building:
 
 headers = SConscript(os.path.join("include", "SConscript"), exports="env")
 prefix = Dir(GetOption("prefix")).abspath
+install_headers = GetOption("install_headers")
+if not install_headers:
+   install_headers = os.path.join(prefix, "include")
 for header in Flatten(headers):
    relative = os.path.relpath(header.abspath, Dir("#include").abspath)
-   env.Alias("install", env.Install(os.path.join(prefix, "include", relative, relative), header))
+   env.Alias("install", env.Install(os.path.join(install_headers, relative), header))
 
 #tests = SConscript(os.path.join("tests", "SConscript"), exports=["env", "pyEnv", "bpEnv"])
