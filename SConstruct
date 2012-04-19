@@ -72,6 +72,6 @@ if not install_headers:
    install_headers = os.path.join(prefix, "include")
 for header in Flatten(headers):
    relative = os.path.relpath(header.abspath, Dir("#include").abspath)
-   env.Alias("install", env.Install(os.path.join(install_headers, relative), header))
+   env.Alias("install", env.InstallAs(os.path.join(install_headers, relative), header))
 
 #tests = SConscript(os.path.join("tests", "SConscript"), exports=["env", "pyEnv", "bpEnv"])
