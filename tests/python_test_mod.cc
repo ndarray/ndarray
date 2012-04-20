@@ -55,8 +55,8 @@ static PyMethodDef methods[] = {
 
 extern "C"
 PyMODINIT_FUNC
-initndarray_python_test(void) {
+initpython_test_mod(void) {
     import_array();
-    PyObject * module = Py_InitModule("ndarray_python_test",methods);
+    PyObject * module = Py_InitModule("python_test_mod",methods);
     if (module == NULL) return;
 }

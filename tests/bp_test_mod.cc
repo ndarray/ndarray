@@ -8,10 +8,11 @@
  * of the source distribution, or alternately available at:
  * https://github.com/ndarray/ndarray
  */
-#include <boost/python/ndarray.hpp>
-#include <boost/python/ndarray/eigen.hpp>
-#include <boost/random/mersenne_twister.hpp>
-#include <boost/random/uniform_int.hpp>
+
+#include "ndarray/bp.h"
+
+#include "boost/random/mersenne_twister.hpp"
+#include "boost/random/uniform_int.hpp"
 
 static boost::mt19937 engine;
 static boost::uniform_int<> random_int(2, 5);
@@ -105,28 +106,8 @@ bool extractVector(boost::python::object const & obj) {
     return true;
 }
 
-template <typename T, int N, int C>
-ndarray::EigenView<T,N,C> returnEigenView() {
-    ndarray::Array<typename boost::remove_const<T>::type,N,N> a = ndarray::allocate(makeShape<N>());
-    ndarray::Array<typename boost::remove_const<T>::type,1,1> flat = ndarray::flatten<1>(a);
-    for (int n=0; n < flat.template getSize<0>(); ++n) {
-        flat[n] = n;
-    }
-    return ndarray::EigenView<T,N,C>(a);
-}
-
-template <typename T, int N, int C>
-ndarray::TransposedEigenView<T,N,C> returnTransposedEigenView() {
-    ndarray::Array<typename boost::remove_const<T>::type,N,N> a = ndarray::allocate(makeShape<N>());
-    ndarray::Array<typename boost::remove_const<T>::type,1,1> flat = ndarray::flatten<1>(a);
-    for (int n=0; n < flat.template getSize<0>(); ++n) {
-        flat[n] = n;
-    }
-    return ndarray::TransposedEigenView<T,N,C>(a);
-}
-
-BOOST_PYTHON_MODULE(ndarray_mod) {
-    boost::python::numpy::initialize();
+BOOST_PYTHON_MODULE(bp_test_mod) {
+    boost::numpy::initialize();
     boost::python::def("makeArray_d33", makeArray<double,3,3>);
     boost::python::def("returnArray_d11", returnArray<double,1,1>);
     boost::python::def("returnArray_d10", returnArray<double,1,0>);
@@ -206,24 +187,4 @@ BOOST_PYTHON_MODULE(ndarray_mod) {
     boost::python::def("acceptVector_d2", acceptVector<double,2>);
     boost::python::def("extractVector_d3", extractVector<double,3>);
     boost::python::def("extractVector_d2", extractVector<double,2>);
-    boost::python::def("returnEigenView_d22", returnEigenView<double,2,2>);
-    boost::python::def("returnEigenView_d21", returnEigenView<double,2,1>);
-    boost::python::def("returnEigenView_d20", returnEigenView<double,2,0>);
-    boost::python::def("returnEigenView_d11", returnEigenView<double,1,1>);
-    boost::python::def("returnEigenView_d10", returnEigenView<double,1,0>);
-    boost::python::def("returnEigenView_dc22", returnEigenView<double const,2,2>);
-    boost::python::def("returnEigenView_dc21", returnEigenView<double const,2,1>);
-    boost::python::def("returnEigenView_dc20", returnEigenView<double const,2,0>);
-    boost::python::def("returnEigenView_dc11", returnEigenView<double const,1,1>);
-    boost::python::def("returnEigenView_dc10", returnEigenView<double const,1,0>);
-    boost::python::def("returnTransposedEigenView_d22", returnTransposedEigenView<double,2,2>);
-    boost::python::def("returnTransposedEigenView_d21", returnTransposedEigenView<double,2,1>);
-    boost::python::def("returnTransposedEigenView_d20", returnTransposedEigenView<double,2,0>);
-    boost::python::def("returnTransposedEigenView_d11", returnTransposedEigenView<double,1,1>);
-    boost::python::def("returnTransposedEigenView_d10", returnTransposedEigenView<double,1,0>);
-    boost::python::def("returnTransposedEigenView_dc22", returnTransposedEigenView<double const,2,2>);
-    boost::python::def("returnTransposedEigenView_dc21", returnTransposedEigenView<double const,2,1>);
-    boost::python::def("returnTransposedEigenView_dc20", returnTransposedEigenView<double const,2,0>);
-    boost::python::def("returnTransposedEigenView_dc11", returnTransposedEigenView<double const,1,1>);
-    boost::python::def("returnTransposedEigenView_dc10", returnTransposedEigenView<double const,1,0>);
 }
