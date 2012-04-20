@@ -35,7 +35,7 @@
 
 namespace ndarray {
 namespace detail {
-template <typename Derived, int N = Derived::ND::value> struct Formatter;
+template <typename Derived, int N = Derived::ND::value> class Formatter;
 } // namespace detail
 
 /**
@@ -93,7 +93,8 @@ namespace detail {
  *  @brief Recursive metafunction used in stream output.
  */
 template <typename Derived, int N>
-struct Formatter {
+class Formatter {
+public:
     static void apply(
         FormatOptions const & options,
         std::ostream & os, 
@@ -120,7 +121,8 @@ struct Formatter {
  *  @brief Recursive metafunction used in stream output (1d specialization).
  */
 template <typename Derived>
-struct Formatter<Derived,1> {
+class Formatter<Derived,1> {
+public:
     static void apply(
         FormatOptions const & options,
         std::ostream & os, 
