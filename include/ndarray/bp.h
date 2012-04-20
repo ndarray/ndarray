@@ -11,7 +11,7 @@
 #ifndef NDARRAY_bp_h_INCLUDED
 #define NDARRAY_bp_h_INCLUDED
 
-#include "ndarray/bp/Array.hpp"
-#include "ndarray/bp/Vector.hpp"
+#include "ndarray/bp/Array.h"
+#include "ndarray/bp/Vector.h"
 
 #endif // !NDARRAY_bp_h_INCLUDED

@@ -11,8 +11,8 @@
 #ifndef NDARRAY_BP_Array_h_INCLUDED
 #define NDARRAY_BP_Array_h_INCLUDED
 
-#include <boost/python/numpy.hpp>
-#include <ndarray.hpp>
+#include "boost/numpy.hpp"
+#include "ndarray.h"
 
 namespace ndarray {
 
@@ -178,7 +178,7 @@ namespace numpy {
 
 template <typename T, int N, int C>
 numpy::ndarray array(::ndarray::Array<T,N,C> const & arg) {
-    to_python_value< ::ndarray::Array<T,N,C> const & > converter;
+    python::to_python_value< ::ndarray::Array<T,N,C> const & > converter;
     numpy::ndarray result(python::detail::new_reference(converter(arg)));
     return result;
 }
