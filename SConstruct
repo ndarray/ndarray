@@ -25,22 +25,15 @@ BOOST_AUTO_TEST_CASE(ConfigTestCase) {
 }
 """
     context.Message("Checking for Boost.Test Library...")
-    boost_prefix = GetOption("boost_prefix")
-    boost_include = GetOption("boost_include")
-    boost_lib = GetOption("boost_lib")
-    if boost_prefix is not None:
-        if boost_include is None:
-            boost_include = os.path.join(boost_prefix, "include")
-        if boost_lib is None:
-            boost_lib = os.path.join(boost_prefix, "lib")
-    if boost_include:
-        context.env.PrependUnique(CPPPATH=[boost_include])
-    if boost_lib:
-        context.env.PrependUnique(LIBPATH=[boost_lib])
+    context.env.setupPaths(
+        prefix = GetOption("boost_prefix"),
+        include = GetOption("boost_include"),
+        lib = GetOption("boost_lib")
+        )
     result = (
-        CheckLibs(context, [''], source_file) or
-        CheckLibs(context, ['boost_unit_test_framework'], source_file) or
-        CheckLibs(context, ['boost_unit_test_framework-mt'], source_file)
+        context.checkLibs([''], source_file) or
+        context.checkLibs(['boost_unit_test_framework'], source_file) or
+        context.checkLibs(['boost_unit_test_framework-mt'], source_file)
         )
     if not result:
         context.Result(0)
@@ -54,7 +47,7 @@ BOOST_AUTO_TEST_CASE(ConfigTestCase) {
     context.Result(1)
     return True
 
-setupOptions, makeEnvironment, setupTargets, checks, CheckLibs = SConscript("Boost.NumPy/SConscript")
+setupOptions, makeEnvironment, setupTargets, checks = SConscript("Boost.NumPy/SConscript")
 
 checks["CheckBoostTest"] = CheckBoostTest
 
@@ -66,25 +59,39 @@ AddOption("--with-eigen", dest="eigen_prefix", type="string", nargs=1, action="s
 AddOption("--with-eigen-include", dest="eigen_include", type="string", nargs=1, action="store",
           metavar="DIR", help="location of Eigen header files")
 
+AddOption("--with-fftw", dest="fftw_prefix", type="string", nargs=1, action="store",
+          metavar="DIR", default=os.environ.get("FFTW_DIR"),
+          help="prefix for FFTW libraries; should have 'include' and 'lib' subdirectories")
+AddOption("--with-fftw-include", dest="fftw_include", type="string", nargs=1, action="store",
+          metavar="DIR", help="location of FFTW header files")
+AddOption("--with-fftw-lib", dest="fftw_lib", type="string", nargs=1, action="store",
+          metavar="DIR", help="location of FFTW library")
+
 building = not GetOption("help") and not GetOption("clean")
 
 env = makeEnvironment(variables)
 env.AppendUnique(CPPPATH=["#include"])
 
 if building:
-    config = env.Configure()
-    eigen_prefix = GetOption("eigen_prefix")
-    eigen_include = GetOption("eigen_include")
-    if eigen_prefix is not None:
-        if eigen_include is None:
-            eigen_include = os.path.join(eigen_prefix, "include")
-    if eigen_include:
-        config.env.AppendUnique(CPPPATH=[eigen_include])
+    config = env.Configure(custom_tests=checks)
+    config.env.setupPaths(
+        prefix = GetOption("eigen_prefix"),
+        include = GetOption("eigen_include"),
+        lib = None
+        )
+    config.env.setupPaths(
+        prefix = GetOption("fftw_prefix"),
+        include = GetOption("fftw_include"),
+        lib = GetOption("fftw_lib")
+        )
     haveEigen = config.CheckCXXHeader("Eigen/Core")
+    haveFFTW = config.CheckLibWithHeader("fftw3", "fftw3.h", "C", autoadd=False)
     env = config.Finish()
 else:
     haveEigen = False
+    haveFFTW = False
 env.haveEigen = haveEigen
+env.haveFFTW = haveFFTW
 
 testEnv = env.Clone()
 if building:

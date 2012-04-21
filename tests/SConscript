@@ -38,9 +38,15 @@ if testEnv.haveBoostTest:
     BinaryUnitTest(testEnv, "ndarray.cc")
     if testEnv.haveEigen:
         BinaryUnitTest(testEnv, "ndarray-eigen.cc")
+    if testEnv.haveFFTW:
+        fftwEnv = testEnv.Clone()
+        fftwEnv.Append(LIBS=["fftw3"])
+        BinaryUnitTest(fftwEnv, "ndarray-fft.cc")
+
 if pyEnv.havePython:
     mod = pyEnv.LoadableModule("python_test_mod", "python_test_mod.cc", SHLIBPREFIX="")
     PythonUnitTest(pyEnv, "python_test.py", mod)
+
 if bpEnv.haveBoostPython:
     libs = bpEnv.get("LIBS", []) + ["boost_numpy"]
     libpath = bpEnv.get("LIBPATH", []) + [Dir("#Boost.NumPy/libs/numpy/src").abspath]
@@ -49,6 +55,7 @@ if bpEnv.haveBoostPython:
     mod = bpEnv.LoadableModule("bp_test_mod", "bp_test_mod.cc", SHLIBPREFIX="",
                                LIBS=libs, LIBPATH=libpath, RPATH=rpath)
     PythonUnitTest(pyEnv, "bp_test.py", mod)
+
 env.Clean("tests", Glob("*.os"))
 env.Clean("tests", Glob("*.pyc"))
 env.Clean("tests", Glob("*.so"))
