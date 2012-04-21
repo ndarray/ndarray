@@ -47,9 +47,20 @@ BOOST_AUTO_TEST_CASE(ConfigTestCase) {
     context.Result(1)
     return True
 
+def CheckSwig(context):
+    context.Message("Checking for SWIG...")
+    context.env.PrependUnique(SWIGFLAGS = ["-python", "-c++"])
+    result, swig_cmd = config.TryAction("which swig > $TARGET")
+    context.Result(result)
+    if result:
+        context.env.AppendUnique(SWIGPATH = ["#include"])
+        print "Using SWIG at", swig_cmd.strip()
+    return result
+
 setupOptions, makeEnvironment, setupTargets, checks = SConscript("Boost.NumPy/SConscript")
 
 checks["CheckBoostTest"] = CheckBoostTest
+checks["CheckSwig"] = CheckSwig
 
 variables = setupOptions()
 
@@ -106,10 +117,13 @@ pyEnv = env.Clone()
 if building:
     config = pyEnv.Configure(custom_tests=checks)
     havePython = config.CheckPython() and config.CheckNumPy()
+    haveSwig = havePython and config.CheckSwig()
     pyEnv = config.Finish()
 else:
     havePython = False
+    haveSwig = False
 pyEnv.havePython = havePython
+pyEnv.haveSwig = haveSwig
 
 bpEnv = pyEnv.Clone()
 if building:

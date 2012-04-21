@@ -46,6 +46,9 @@ if testEnv.haveBoostTest:
 if pyEnv.havePython:
     mod = pyEnv.LoadableModule("python_test_mod", "python_test_mod.cc", SHLIBPREFIX="")
     PythonUnitTest(pyEnv, "python_test.py", mod)
+    if pyEnv.haveSwig:
+        mod = pyEnv.LoadableModule("_swig_test_mod", ["swig_test_mod.i"], SHLIBPREFIX="")
+        PythonUnitTest(pyEnv, "swig_test.py", mod)
 
 if bpEnv.haveBoostPython:
     libs = bpEnv.get("LIBS", []) + ["boost_numpy"]
@@ -54,7 +57,7 @@ if bpEnv.haveBoostPython:
     bpEnv.Append( LINKFLAGS = ["$__RPATH"] )  # workaround for SCons bug #1644
     mod = bpEnv.LoadableModule("bp_test_mod", "bp_test_mod.cc", SHLIBPREFIX="",
                                LIBS=libs, LIBPATH=libpath, RPATH=rpath)
-    PythonUnitTest(pyEnv, "bp_test.py", mod)
+    PythonUnitTest(bpEnv, "bp_test.py", mod)
 
 env.Clean("tests", Glob("*.os"))
 env.Clean("tests", Glob("*.pyc"))
