@@ -8,11 +8,11 @@
  * of the source distribution, or alternately available at:
  * https://github.com/ndarray/ndarray
  */
-#ifndef NDARRAY_bp_h_INCLUDED
-#define NDARRAY_bp_h_INCLUDED
+#ifndef NDARRAY_BP_auto_h_INCLUDED
+#define NDARRAY_BP_auto_h_INCLUDED
 
-#include "ndarray/bp/Array.h"
-#include "ndarray/bp/ArrayRef.h"
-#include "ndarray/bp/Vector.h"
+#include "ndarray/bp/auto/Array.h"
+#include "ndarray/bp/auto/ArrayRef.h"
+#include "ndarray/bp/auto/Vector.h"
 
-#endif // !NDARRAY_bp_h_INCLUDED
+#endif // !NDARRAY_BP_auto_h_INCLUDED

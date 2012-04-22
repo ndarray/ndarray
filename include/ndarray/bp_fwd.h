@@ -8,11 +8,14 @@
  * of the source distribution, or alternately available at:
  * https://github.com/ndarray/ndarray
  */
-#ifndef NDARRAY_bp_h_INCLUDED
-#define NDARRAY_bp_h_INCLUDED
+#ifndef NDARRAY_bp_fwd_h_INCLUDED
+#define NDARRAY_bp_fwd_h_INCLUDED
 
-#include "ndarray/bp/Array.h"
-#include "ndarray/bp/ArrayRef.h"
-#include "ndarray/bp/Vector.h"
+namespace ndarray {
 
-#endif // !NDARRAY_bp_h_INCLUDED
+template <typename Input> class ToBoostPython;
+template <typename Output> class FromBoostPython;
+
+} // namespace ndarray
+
+#endif // !NDARRAY_bp_fwd_h_INCLUDED

@@ -9,14 +9,23 @@
 #  https://github.com/ndarray/ndarray
 #
 Import("env")
+import os
 
 generated = ["ndarray/ArrayRef.h",
              "ndarray/ArrayBaseN.h",
              "ndarray/operators.h",
              "ndarray/Vector.h",
              "ndarray/fft/FFTWTraits.h",
+             "ndarray/bp/auto/Array.h",
+             "ndarray/bp/auto/ArrayRef.h",
+             "ndarray/bp/auto/Vector.h",
              ]
-headers = [env.M4(filename, "%s.m4" % filename) for filename in generated]
+m4include = Dir("#m4").abspath
+m4flags = "-I%s" % m4include
+headers = [env.M4(filename, "%s.m4" % filename, M4FLAGS=[m4flags]) for filename in generated]
+
+for header in headers:
+    env.Depends(header, Glob(os.path.join(m4include, "*.m4")))
 
 headers += env.Glob("*.h")
 headers += env.Glob("*/*.h")

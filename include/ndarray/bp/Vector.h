@@ -11,96 +11,65 @@
 #ifndef NDARRAY_BP_Vector_h_INCLUDED
 #define NDARRAY_BP_Vector_h_INCLUDED
 
-#include "boost/numpy.hpp"
+#include "boost/python.hpp"
 #include "ndarray/Vector.h"
+#include "ndarray/bp_fwd.h"
 
-namespace boost { namespace python {
+namespace ndarray {
 
 template <typename T, int N>
-struct to_python_value< ndarray::Vector<T,N> const & > : public detail::builtin_to_python {
-    inline PyObject * operator()(ndarray::Vector<T,N> const & x) const {
-        handle<> t(PyTuple_New(N));
-        try {
-            for (int n=0; n<N; ++n) {
-                object item(x[n]);
-                Py_INCREF(item.ptr());
-                PyTuple_SET_ITEM(t.get(), n, item.ptr());
-            }
-        } catch (error_already_set & err) {
-            handle_exception();
-            return NULL;
+class ToBoostPython< Vector<T,N> > {
+public:
+
+    typedef boost::python::tuple result_type;
+
+    static boost::python::tuple apply(Vector<T,N> const & x) {
+        boost::python::handle<> t(PyTuple_New(N));
+        for (int n=0; n<N; ++n) {
+            boost::python::object item(x[n]);
+            Py_INCREF(item.ptr());
+            PyTuple_SET_ITEM(t.get(), n, item.ptr());
         }
-        return t.release();
+        return boost::python::tuple(t);
     }
-    inline PyTypeObject const * get_pytype() const { return &PyTuple_Type; }
+
 };
 
 template <typename T, int N>
-struct to_python_value< ndarray::Vector<T,N> & > : public detail::builtin_to_python {
-    inline PyObject * operator()(ndarray::Vector<T,N> & x) const {
-        return to_python_value< ndarray::Vector<T,N> & >()(x);
-    }
-    inline PyTypeObject const * get_pytype() const { return &PyTuple_Type; }
-};
+class FromBoostPython< Vector<T,N> > {
+public:
 
-namespace converter {
+    explicit FromBoostPython(boost::python::object const & input_) : input(input_) {}
 
-template <typename T, int N>
-struct arg_to_python< ndarray::Vector<T,N> > : public handle<> {
-    inline arg_to_python(ndarray::Vector<T,N> const & v) :
-        handle<>(to_python_value<ndarray::Vector<T,N> const &>()(v)) {}
-};
-
-template <typename T, int N>
-struct arg_rvalue_from_python< ndarray::Vector<T,N> const & > {
-    typedef ndarray::Vector<T,N> result_type;
-
-    arg_rvalue_from_python(PyObject * p) : _p(python::detail::borrowed_reference(p)) {}
-
-    bool convertible() const {
+    bool convertible() {
         try {
-            tuple t(_p);
+            boost::python::tuple t(input);
             if (len(t) != N) return false;
-            _p = t;
-        } catch (error_already_set) {
-            handle_exception();
+            input = t;
+        } catch (boost::python::error_already_set) {
+            boost::python::handle_exception();
             PyErr_Clear();
             return false;
         }
         return true;
     }
 
-    result_type operator()() const {
-        tuple t = extract<tuple>(_p);
+    Vector<T,N> operator()() {
+        boost::python::tuple t = boost::python::extract<boost::python::tuple>(input);
         if (len(t) != N) {
             PyErr_SetString(PyExc_ValueError, "Incorrect size for ndarray::Vector.");
-            throw_error_already_set();
+            boost::python::throw_error_already_set();
         }
-        result_type r;
+        Vector<T,N> r;
         for (int n=0; n<N; ++n) {
-            r[n] = extract<T>(t[n]);
+            r[n] = boost::python::extract<T>(t[n]);
         }
         return r;
     }
 
-private:
-    mutable object _p;
+    boost::python::object input;
 };
 
-template <typename T, int N>
-struct extract_rvalue< ndarray::Vector<T,N> > : private noncopyable {
-    typedef ndarray::Vector<T,N> result_type;
-
-    extract_rvalue(PyObject * x) : m_converter(x) {}
-
-    bool check() const { return m_converter.convertible(); }
-    
-    result_type operator()() const { return m_converter(); }
-
-private:
-    arg_rvalue_from_python< result_type const & > m_converter;
-};
-
-}}} // namespace boost::python::converter
+} // namespace ndarray
 
 #endif // !NDARRAY_BP_Vector_h_INCLUDED

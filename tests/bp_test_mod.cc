@@ -9,7 +9,7 @@
  * https://github.com/ndarray/ndarray
  */
 
-#include "ndarray/bp.h"
+#include "ndarray/bp/auto.h"
 
 #include "boost/random/mersenne_twister.hpp"
 #include "boost/random/uniform_int.hpp"

@@ -13,8 +13,11 @@
 
 #include "boost/numpy.hpp"
 #include "ndarray.h"
+#include "ndarray/bp_fwd.h"
+#include <vector>
 
 namespace ndarray {
+namespace detail {
 
 inline void destroyManagerCObject(void * p) {
     Manager::Ptr * b = reinterpret_cast<Manager::Ptr*>(p);
@@ -22,7 +25,7 @@ inline void destroyManagerCObject(void * p) {
 }
 
 inline boost::python::object makePyObject(Manager::Ptr const & x) {
-    boost::intrusive_ptr< ExternalManager<boost::python::object> > y 
+    boost::intrusive_ptr< ExternalManager<boost::python::object> > y
         = boost::dynamic_pointer_cast< ExternalManager<boost::python::object> >(x);
     if (y) {
         return y->getOwner();
@@ -31,156 +34,104 @@ inline boost::python::object makePyObject(Manager::Ptr const & x) {
     return boost::python::object(h);
 }
 
-} // namespace ndarray
-
-namespace boost { namespace python {
+} // namespace detail
 
 template <typename T, int N, int C>
-struct to_python_value< ndarray::Array<T,N,C> const & > : public detail::builtin_to_python {
-    inline PyObject * operator()(ndarray::Array<T,N,C> const & x) const {
-        numpy::dtype dtype = numpy::dtype::get_builtin<typename boost::remove_const<T>::type>();
-        object owner = makePyObject(x.getManager());
+class ToBoostPython< Array<T,N,C> > {
+public:
+
+    typedef boost::numpy::ndarray result_type;
+
+    static boost::numpy::ndarray apply(Array<T,N,C> const & array) {
+        boost::numpy::dtype dtype
+            = boost::numpy::dtype::get_builtin<typename boost::remove_const<T>::type>();
+        boost::python::object owner = detail::makePyObject(array.getManager());
         int itemsize = dtype.get_itemsize();
-        ndarray::Vector<int,N> shape_T = x.getShape();
-        ndarray::Vector<int,N> strides_T = x.getStrides();
-        std::vector<Py_intptr_t> shape_char(N);
-        std::vector<Py_intptr_t> strides_char(N);
+        ndarray::Vector<int,N> shape_elements = array.getShape();
+        ndarray::Vector<int,N> strides_elements = array.getStrides();
+        std::vector<Py_intptr_t> shape_bytes(N);
+        std::vector<Py_intptr_t> strides_bytes(N);
         for (int n=0; n<N; ++n) {
-            shape_char[n] = shape_T[n];
-            strides_char[n] = strides_T[n] * itemsize;
+            shape_bytes[n] = shape_elements[n];
+            strides_bytes[n] = strides_elements[n] * itemsize;
         }
-        numpy::ndarray array = numpy::from_data(x.getData(), dtype, shape_char, strides_char, owner);
-        Py_INCREF(array.ptr());
-        return array.ptr();
+        return boost::numpy::from_data(array.getData(), dtype, shape_bytes, strides_bytes, owner);
     }
-    inline PyTypeObject const * get_pytype() const {
-        return converter::object_manager_traits<numpy::ndarray>::get_pytype();
-    }
+
 };
 
 template <typename T, int N, int C>
-struct to_python_value< ndarray::Array<T,N,C> & > : public detail::builtin_to_python {
-    inline PyObject * operator()(ndarray::Array<T,N,C> & x) const {
-        return to_python_value< ndarray::Array<T,N,C> const & >()(x);
-    }
-    inline PyTypeObject const * get_pytype() const {
-        return converter::object_manager_traits<numpy::ndarray>::get_pytype();
-    }
-};
+class FromBoostPython< Array<T,N,C> > {
+public:
 
-namespace converter {
+    explicit FromBoostPython(boost::python::object const & input_) : input(input_) {}
 
-template <typename T, int N, int C>
-struct arg_to_python< ndarray::Array<T,N,C> > : public handle<> {
-    inline arg_to_python(ndarray::Array<T,N,C> const & v) :
-        handle<>(to_python_value<ndarray::Array<T,N,C> const &>()(v)) {}
-};
-
-template <typename T, int N, int C>
-struct arg_rvalue_from_python< ndarray::Array<T,N,C> const & > {
-    typedef ndarray::Array<T,N,C> result_type;
-
-    static numpy::ndarray::bitflag const flags = 
-        numpy::ndarray::bitflag(
-            (boost::is_const<T>::value ? int(numpy::ndarray::WRITEABLE) : 0) |
-            ((N==C) ? int(numpy::ndarray::C_CONTIGUOUS) : 0) |
-            int(numpy::ndarray::ALIGNED)
-        );
-
-    arg_rvalue_from_python(PyObject * p) : arg(python::detail::borrowed_reference(p)) {}
-
-    bool convertible() const {
-        if (arg == object()) return true;
+    bool convertible() {
+        if (input.is_none()) return true;
         try {
-            numpy::ndarray array = extract<numpy::ndarray>(arg);
-            numpy::dtype dtype = numpy::dtype::get_builtin<typename boost::remove_const<T>::type>();
-            arg = numpy::from_object(array, dtype, N, flags);
-        } catch (error_already_set) {
-            handle_exception();
+            boost::numpy::ndarray array = boost::python::extract<boost::numpy::ndarray>(input);
+            boost::numpy::dtype dtype
+                = boost::numpy::dtype::get_builtin<typename boost::remove_const<T>::type>();
+            boost::numpy::ndarray::bitflag flags = array.get_flags();
+            if (dtype != array.get_dtype()) return false;
+            if (N != array.get_nd()) return false;
+            if (!boost::is_const<T>::value && !(flags & boost::numpy::ndarray::WRITEABLE)) return false;
+            if (C > 0) {
+                int requiredStride = sizeof(T);
+                for (int i = 0; i < C; ++i) {
+                    if (array.strides(N-i-1) != requiredStride) {
+                        return false;
+                    }
+                    requiredStride *= array.shape(N-i-1);
+                }
+            } else if (C < 0) {
+                int requiredStride = sizeof(T);
+                for (int i = 0; i < -C; ++i) {
+                    if (array.strides(i) != requiredStride) {
+                        return false;
+                    }
+                    requiredStride *= array.shape(i);
+                }
+            }
+        } catch (boost::python::error_already_set) {
+            boost::python::handle_exception();
             PyErr_Clear();
             return false;
         }
         return true;
     }
 
-    result_type operator()() const {
-        if (arg == object()) return result_type();
-        numpy::ndarray array = extract<numpy::ndarray>(arg);
-        numpy::dtype dtype = array.get_dtype();
+    Array<T,N,C> operator()() {
+        if (input.is_none()) return Array<T,N,C>();
+        boost::numpy::ndarray array = boost::python::extract<boost::numpy::ndarray>(input);
+        boost::numpy::dtype dtype = array.get_dtype();
         int itemsize = dtype.get_itemsize();
-        int total = itemsize;
-        for (int i=1; i<=C; ++i) {
-            if (array.strides(N-i) != total) {
-                array = numpy::from_object(
-                    array, dtype, N, 
-                    flags | numpy::ndarray::C_CONTIGUOUS
-                );
-                break;
-            }
-            total *= array.shape(N-i);
-        }
-        object obj_owner = array.get_base();
-        if (obj_owner == object()) {
+        boost::python::object obj_owner = array.get_base();
+        if (obj_owner.is_none()) {
             obj_owner = array;
         }
-        ndarray::Vector<int,N> shape;
-        ndarray::Vector<int,N> strides;
+        Vector<int,N> shape;
+        Vector<int,N> strides;
         for (int i=0; i<N; ++i) {
             shape[i] = array.shape(i);
             strides[i] = array.strides(i) / itemsize;
         }
-        ndarray::Array<T,N,C> r = ndarray::external(
+        Array<T,N,C> r = ndarray::external(
             reinterpret_cast<T*>(array.get_data()), shape, strides, obj_owner
         );
         return r;
     }
 
-    mutable object arg;
+    boost::python::object input;
 };
 
-template <typename T, int N, int C>
-struct arg_rvalue_from_python< ndarray::Array<T,N,C> > 
-    : public arg_rvalue_from_python< ndarray::Array<T,N,C> const &> 
-{
+} // namespace ndarray
 
-    arg_rvalue_from_python(PyObject * p) : 
-        arg_rvalue_from_python< ndarray::Array<T,N,C> const & >(p) {}
-
-};
-
-template <typename T, int N, int C>
-struct arg_rvalue_from_python< ndarray::Array<T,N,C> const > 
-    : public arg_rvalue_from_python< ndarray::Array<T,N,C> const &> 
-{
-
-    arg_rvalue_from_python(PyObject * p) : 
-        arg_rvalue_from_python< ndarray::Array<T,N,C> const & >(p) {}
-
-};
-
-template <typename T, int N, int C>
-struct extract_rvalue< ndarray::Array<T,N,C> > : private noncopyable {
-    typedef ndarray::Array<T,N,C> result_type;
-
-    extract_rvalue(PyObject * x) : m_converter(x) {}
-
-    bool check() const { return m_converter.convertible(); }
-    
-    result_type operator()() const { return m_converter(); }
-
-private:
-    arg_rvalue_from_python< result_type const & > m_converter;
-};
-
-}} // namespace python::converter
-
-namespace numpy {
+namespace boost { namespace numpy {
 
 template <typename T, int N, int C>
 numpy::ndarray array(::ndarray::Array<T,N,C> const & arg) {
-    python::to_python_value< ::ndarray::Array<T,N,C> const & > converter;
-    numpy::ndarray result(python::detail::new_reference(converter(arg)));
-    return result;
+    return ::ndarray::ToBoostPython< ::ndarray::Array<T,N,C> >::apply(arg);
 }
 
 }} // namespace boost::numpy
