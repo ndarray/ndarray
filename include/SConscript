@@ -19,6 +19,9 @@ generated = ["ndarray/ArrayRef.h",
              "ndarray/bp/auto/Array.h",
              "ndarray/bp/auto/ArrayRef.h",
              "ndarray/bp/auto/Vector.h",
+             "ndarray/eigen/bp/auto/EigenView.h",
+             "ndarray/eigen/bp/auto/Array.h",
+             "ndarray/eigen/bp/auto/Matrix.h",
              ]
 m4include = Dir("#m4").abspath
 m4flags = "-I%s" % m4include

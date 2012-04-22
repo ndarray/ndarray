@@ -58,6 +58,11 @@ if bpEnv.haveBoostPython:
     mod = bpEnv.LoadableModule("bp_test_mod", "bp_test_mod.cc", SHLIBPREFIX="",
                                LIBS=libs, LIBPATH=libpath, RPATH=rpath)
     PythonUnitTest(bpEnv, "bp_test.py", mod)
+    if bpEnv.haveEigen:
+        mod = bpEnv.LoadableModule("eigen_bp_test_mod", "eigen_bp_test_mod.cc", SHLIBPREFIX="",
+                                   LIBS=libs, LIBPATH=libpath, RPATH=rpath)
+        PythonUnitTest(bpEnv, "eigen_bp_test.py", mod)
+        
 
 env.Clean("tests", Glob("*.os"))
 env.Clean("tests", Glob("*.pyc"))
