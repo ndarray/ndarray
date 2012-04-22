@@ -24,6 +24,14 @@
 #include "ndarray/detail/Core.h"
 #include "ndarray/views.h"
 
+/// \cond MACROS
+#define NDARRAY_ARRAY_CTOR_ARG_SPEC(Z,I,DATA) T v ## I
+#define NDARRAY_ARRAY_CTOR_SPEC(Z,N,DATA)                       \
+    explicit Array(                                             \
+        BOOST_PP_ENUM(N,NDARRAY_ARRAY_CTOR_ARG_SPEC,unused)     \
+    );
+/// \endcond
+
 namespace ndarray {
 
 /**
@@ -77,6 +85,13 @@ public:
         , typename boost::enable_if<detail::Convertible<N,T_,C_,T,C>,void*>::type=0
 #endif
     ) : Super(other._data, other._core) {}
+
+    /**
+     *  @brief Construct an array with the given dimensions and allocated but uninitialized memory.
+     *
+     *  Unspecified dimensions will have unit size.
+     */
+    explicit Array(int n1, int n2=1, int n3=1, int n4=1, int n5=1, int n6=1, int n7=1, int n8=1);
 
     /**
      *  @brief Non-converting shallow assignment.

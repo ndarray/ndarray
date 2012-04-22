@@ -251,6 +251,22 @@ inline detail::ExternalInitializer<T,N,detail::NullOwner> external(
 
 /// @}
 
+template <typename T, int N, int C>
+Array<T,N,C>::Array(int n1, int n2, int n3, int n4, int n5, int n6, int n7, int n8)
+    : Super(0, CorePtr())
+{
+    typename Super::Index shape;
+    if (N > 0) shape[0] = n1;
+    if (N > 1) shape[1] = n2;
+    if (N > 2) shape[2] = n3;
+    if (N > 3) shape[3] = n4;
+    if (N > 4) shape[4] = n5;
+    if (N > 5) shape[5] = n6;
+    if (N > 6) shape[6] = n7;
+    if (N > 7) shape[7] = n8;
+    this->operator=(ndarray::allocate(shape));
+}
+
 } // namespace ndarray
 
 #endif // !NDARRAY_initialization_h_INCLUDED
