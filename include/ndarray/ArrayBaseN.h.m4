@@ -31,10 +31,14 @@ public:
 private:
     template <typename T_, int N_, int C_> friend class Array;
     template <typename T_, int N_, int C_> friend class ArrayRef;
+
     void operator=(ArrayBaseN const & other) {
         Super::operator=(other);
     }
-    /// @internal @brief Construct an ArrayRef from a pointer and Core.
+
+    template <typename Other>
+    ArrayBaseN(ArrayBaseN<Other,$1> const & other) : Super(other) {}
+
     ArrayBaseN(Element * data, CorePtr const & core) : Super(data, core) {}
 };')dnl
 #ifndef NDARRAY_ArrayBaseN_h_INCLUDED

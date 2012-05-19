@@ -267,6 +267,11 @@ Array<T,N,C>::Array(int n1, int n2, int n3, int n4, int n5, int n6, int n7, int 
     this->operator=(ndarray::allocate(shape));
 }
 
+template <typename T, int N, int C>
+ArrayRef<T,N,C>::ArrayRef(int n1, int n2, int n3, int n4, int n5, int n6, int n7, int n8)
+    : Super(Array<T,N,C>(n1, n2, n3, n4, n5, n6, n7, n8))
+{}
+
 } // namespace ndarray
 
 #endif // !NDARRAY_initialization_h_INCLUDED

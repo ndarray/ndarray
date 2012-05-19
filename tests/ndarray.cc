@@ -569,23 +569,43 @@ BOOST_AUTO_TEST_CASE(manager) {
 
 BOOST_AUTO_TEST_CASE(issue3) {
     ndarray::Array<double,1,1> a1(5);
+    ndarray::Array<double,1,1> r1(5);
     BOOST_CHECK_EQUAL(a1.getSize<0>(), 5);
+    BOOST_CHECK_EQUAL(r1.getSize<0>(), 5);
     ndarray::Array<double,2,2> a2(5);
+    ndarray::ArrayRef<double,2,2> r2(5);
     ndarray::Array<double,2,2> b2(5, 4);
+    ndarray::ArrayRef<double,2,2> s2(5, 4);
     BOOST_CHECK_EQUAL(a2.getSize<0>(), 5);
     BOOST_CHECK_EQUAL(a2.getSize<1>(), 1);
+    BOOST_CHECK_EQUAL(r2.getSize<0>(), 5);
+    BOOST_CHECK_EQUAL(r2.getSize<1>(), 1);
     BOOST_CHECK_EQUAL(b2.getSize<0>(), 5);
     BOOST_CHECK_EQUAL(b2.getSize<1>(), 4);
+    BOOST_CHECK_EQUAL(s2.getSize<0>(), 5);
+    BOOST_CHECK_EQUAL(s2.getSize<1>(), 4);
     ndarray::Array<double,5,-4> a5(5);
+    ndarray::ArrayRef<double,5,-4> r5(5);
     ndarray::Array<double,5,4> b5(5, 4, 3, 2);
+    ndarray::ArrayRef<double,5,4> s5(5, 4, 3, 2);
     BOOST_CHECK_EQUAL(a5.getSize<0>(), 5);
     BOOST_CHECK_EQUAL(a5.getSize<1>(), 1);
     BOOST_CHECK_EQUAL(a5.getSize<2>(), 1);
     BOOST_CHECK_EQUAL(a5.getSize<3>(), 1);
     BOOST_CHECK_EQUAL(a5.getSize<4>(), 1);
+    BOOST_CHECK_EQUAL(r5.getSize<0>(), 5);
+    BOOST_CHECK_EQUAL(r5.getSize<1>(), 1);
+    BOOST_CHECK_EQUAL(r5.getSize<2>(), 1);
+    BOOST_CHECK_EQUAL(r5.getSize<3>(), 1);
+    BOOST_CHECK_EQUAL(r5.getSize<4>(), 1);
     BOOST_CHECK_EQUAL(b5.getSize<0>(), 5);
     BOOST_CHECK_EQUAL(b5.getSize<1>(), 4);
     BOOST_CHECK_EQUAL(b5.getSize<2>(), 3);
     BOOST_CHECK_EQUAL(b5.getSize<3>(), 2);
     BOOST_CHECK_EQUAL(b5.getSize<4>(), 1);
+    BOOST_CHECK_EQUAL(s5.getSize<0>(), 5);
+    BOOST_CHECK_EQUAL(s5.getSize<1>(), 4);
+    BOOST_CHECK_EQUAL(s5.getSize<2>(), 3);
+    BOOST_CHECK_EQUAL(s5.getSize<3>(), 2);
+    BOOST_CHECK_EQUAL(s5.getSize<4>(), 1);
 }

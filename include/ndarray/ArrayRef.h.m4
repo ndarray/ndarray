@@ -75,6 +75,16 @@ public:
     typedef typename Super::Iterator Iterator;
 
     /**
+     *  @brief Construct an array with the given dimensions and allocated but uninitialized memory.
+     *
+     *  Unspecified dimensions will have unit size, and if the number of argmuments is greater
+     *  than the number of dimensions of the array, the extra arguments will be silently ignored.
+     *
+     *  This is implemented in initialization.h.
+     */
+    explicit ArrayRef(int n1, int n2=1, int n3=1, int n4=1, int n5=1, int n6=1, int n7=1, int n8=1);
+
+    /**
      *  @brief Non-converting copy constructor.
      */
     ArrayRef(ArrayRef const & other) : Super(other._data, other._core) {}

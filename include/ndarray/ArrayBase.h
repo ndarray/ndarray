@@ -220,6 +220,9 @@ protected:
         _core = other._core;
     }
 
+    template <typename Other>
+    ArrayBase(ArrayBase<Other> const & other) : _data(other._data), _core(other._core) {}
+
     ArrayBase(Element * data, CorePtr const & core) : _data(data), _core(core) {}
 };
 
