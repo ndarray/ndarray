@@ -35,7 +35,7 @@ public:
 
     bool convertible() { return _impl.convertible(); }
 
-    Array<T,N,C> operator()() { return _impl(); }
+    ArrayRef<T,N,C> operator()() { return ArrayRef<T,N,C>(_impl()); }
 
 private:
     FromBoostPython< Array<T,N,C> > _impl;
