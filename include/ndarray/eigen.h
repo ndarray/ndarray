@@ -273,7 +273,20 @@ public:
         return *this;
     }
 
-    using Base::operator=;
+    template <typename Other>
+    EigenView & operator=(Eigen::DenseBase<Other> const & other) {
+        return Base::operator=(other);
+    }
+
+    template <typename Other>
+    EigenView & operator=(Eigen::EigenBase<Other> const & other) {
+        return Base::operator=(other);
+    }
+
+    template <typename Other>
+    EigenView & operator=(Eigen::ReturnByValue<Other> const & other) {
+        return Base::operator=(other);
+    }
 
     inline Index innerStride() const { return ST::getInnerStride(*Access::getCore(_array)); }
     inline Index outerStride() const { return ST::getOuterStride(*Access::getCore(_array)); }
