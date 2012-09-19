@@ -33,6 +33,7 @@ for header in headers:
 headers += env.Glob("*.h")
 headers += env.Glob("*/*.h")
 headers += env.Glob("*/*/*.h")
+headers += env.Glob("*/*/*/*.h")
 headers += env.Glob("*.i")
 
 Return("headers")
