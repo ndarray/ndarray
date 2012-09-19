@@ -57,7 +57,7 @@ void testEigenView(ndarray::EigenView<double,2,C,Eigen::ArrayXpr,Rows,Cols> b) {
     m4.setRandom();
     Eigen::Array<double,Rows,Cols> m5 = m4 * b;
     Eigen::Array<double,Rows,Cols> m6 = m4 * m3.array();
-    BOOST_CHECK( (m5 == m6).all() );
+    BOOST_CHECK( m5.isApprox(m6) );
 }
 
 template <int C, int Rows, int Cols>
@@ -78,7 +78,7 @@ void testEigenView(ndarray::EigenView<double,1,C,Eigen::ArrayXpr,Rows,Cols> b) {
     m4.setRandom();
     Eigen::Array<double,Rows,Cols> m5 = m4 * b;
     Eigen::Array<double,Rows,Cols> m6 = m4 * m3.array();
-    BOOST_CHECK( (m5 == m6).all() );
+    BOOST_CHECK( m5.isApprox(m6) );
 }
 
 template <int C, int Rows, int Cols>
@@ -101,7 +101,7 @@ void testEigenView(ndarray::EigenView<double,2,C,Eigen::MatrixXpr,Rows,Cols> b) 
     m4.setRandom();
     Eigen::Array<double,Rows,Cols> m5 = m4 * b.array();
     Eigen::Array<double,Rows,Cols> m6 = m4 * m3.array();
-    BOOST_CHECK( (m5 == m6).all() );
+    BOOST_CHECK( m5.isApprox(m6) );
 }
 
 template <int C, int Rows, int Cols>
@@ -122,7 +122,7 @@ void testEigenView(ndarray::EigenView<double,1,C,Eigen::MatrixXpr,Rows,Cols> b) 
     m4.setRandom();
     Eigen::Array<double,Rows,Cols> m5 = m4 * b.array();
     Eigen::Array<double,Rows,Cols> m6 = m4 * m3.array();
-    BOOST_CHECK( (m5 == m6).all() );
+    BOOST_CHECK( m5.isApprox(m6) );
 }
 
 template <typename XprKind>
