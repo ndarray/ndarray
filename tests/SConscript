@@ -46,7 +46,7 @@ if testEnv.haveBoostTest:
 if pyEnv.havePython:
     mod = pyEnv.LoadableModule("python_test_mod", "python_test_mod.cc", SHLIBPREFIX="")
     PythonUnitTest(pyEnv, "python_test.py", mod)
-    if pyEnv.haveSwig:
+    if pyEnv.haveSwig and pyEnv.haveEigen:
         mod = pyEnv.LoadableModule("_swig_test_mod", ["swig_test_mod.i"], SHLIBPREFIX="")
         PythonUnitTest(pyEnv, "swig_test.py", mod)
 
