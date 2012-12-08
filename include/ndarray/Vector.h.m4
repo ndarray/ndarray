@@ -75,6 +75,7 @@ define(`VECTOR_TYPEDEFS',
 
 /// @file ndarray/Vector.h Definition for Vector.
 
+#include <boost/type_traits/is_arithmetic.hpp>
 #include <boost/iterator/reverse_iterator.hpp>
 #include <boost/utility/enable_if.hpp>
 #include <boost/mpl/int.hpp>
@@ -106,6 +107,20 @@ define(`VECTOR_TYPEDEFS',
 /// \endcond
 
 namespace ndarray {
+
+namespace detail {
+
+template <typename T, bool isArithmetic=boost::is_arithmetic<T>::value>
+struct DefaultValue {
+    static T get() { return T(); }
+};
+
+template <typename T>
+struct DefaultValue<T,true> {
+    static T get() { return T(0); }
+};
+
+} // namespace detail
 
 /// \addtogroup ndarrayVectorGroup
 /// @{
@@ -204,7 +219,7 @@ struct Vector {
 	#ifndef _MSC_VER
 	template 
 	#endif
-	operator=(0); }
+	operator=(detail::DefaultValue<T>::get()); }
 
     /// @brief Construct with copies of a scalar.
     explicit Vector(T scalar) {
