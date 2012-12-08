@@ -56,6 +56,12 @@ BOOST_AUTO_TEST_CASE(vectors) {
     BOOST_CHECK_EQUAL(a, f);
 
     e = a.last<0>();
+
+    // make sure we can default-construct whether or not T is a number
+    ndarray::Vector<boost::shared_ptr<int>,2> g;
+    BOOST_CHECK_EQUAL(g, ndarray::makeVector(boost::shared_ptr<int>(), boost::shared_ptr<int>()));
+    ndarray::Vector<int,3> h;
+    BOOST_CHECK_EQUAL(h, ndarray::makeVector(0, 0, 0));
 }
 
 BOOST_AUTO_TEST_CASE(cores) {
