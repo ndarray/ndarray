@@ -35,7 +35,8 @@ namespace ndarray {
 namespace detail {
 
 template <typename Array_>
-struct ArrayAccess {
+class ArrayAccess {
+public:
     typedef typename ExpressionTraits< Array_ >::Element Element;
     typedef typename ExpressionTraits< Array_ >::Core Core;
     typedef typename ExpressionTraits< Array_ >::CorePtr CorePtr;
