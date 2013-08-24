@@ -30,7 +30,11 @@ inline boost::python::object makePyObject(Manager::Ptr const & x) {
     if (y) {
         return y->getOwner();
     }
+#if PY_MAJOR_VERSION == 2
     boost::python::handle<> h(::PyCObject_FromVoidPtr(new Manager::Ptr(x), &destroyManagerCObject));
+#else
+    boost::python::handle<> h(::PyCapsule_New(new Manager::Ptr(x), 0, (PyCapsule_Destructor)&destroyManagerCObject));
+#endif
     return boost::python::object(h);
 }
 
