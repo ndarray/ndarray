@@ -99,6 +99,7 @@ define(`UNARY_OP',
 #include "ndarray/Array.h"
 #include <boost/call_traits.hpp>
 #include <boost/functional.hpp>
+#include <boost/utility/enable_if.hpp>
 
 #include "ndarray/detail/UnaryOp.h"
 #include "ndarray/detail/BinaryOp.h"

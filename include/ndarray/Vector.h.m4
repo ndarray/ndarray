@@ -89,6 +89,7 @@ define(`VECTOR_TYPEDEFS',
 #include <boost/type_traits/is_arithmetic.hpp>
 #include <boost/iterator/reverse_iterator.hpp>
 #include <boost/mpl/int.hpp>
+#include <boost/utility/enable_if.hpp>
 #include <boost/preprocessor/repetition/repeat.hpp>
 #include <boost/preprocessor/repetition/repeat_from_to.hpp>
 #include <boost/preprocessor/repetition/enum.hpp>
