@@ -13,6 +13,10 @@ doc/html
 doc/*.tag
 doc/*.inc
 doc/doxygen.conf
+include/ndarray/ArrayBaseN.h
+include/ndarray/ArrayRef.h
+include/ndarray/Vector.h
+include/ndarray/fft/FFTWTraits.h
 tests/.tests
 version.py
 tests/ndarray
