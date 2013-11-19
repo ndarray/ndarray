@@ -33,7 +33,7 @@ define(`GENERAL_ASSIGN',
         indir(`$2',$1)
         return *this;
     }')dnl
-define(`BASIC_ASSIGN_SCALAR',`std::fill(this->begin(),this->end(),scalar);')dnl
+define(`BASIC_ASSIGN_SCALAR',`Super::Traits::fill(this->begin(),this->end(),scalar);')dnl
 define(`BASIC_ASSIGN_EXPR',`std::copy(expr.begin(),expr.end(),this->begin());')dnl
 define(`AUGMENTED_ASSIGN_SCALAR',
 `Iterator const i_end = this->end();
