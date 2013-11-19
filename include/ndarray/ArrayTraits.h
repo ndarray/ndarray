@@ -69,6 +69,16 @@ struct ArrayTraits {
     static Iterator makeIterator(Element * data, CorePtr const & core, int stride) {
         return Iterator(Reference(data, core), stride);
     }
+    static void fill(Iterator iter, Iterator const & end, Element value) {
+        // We can't use std::fill here because NestedIterator is not formally an STL ForwardIterator;
+        // it has random access traversal, but it does not dereference to an addressable type (see
+        // http://www.boost.org/doc/libs/1_55_0/libs/iterator/doc/new-iter-concepts.html#motivation)
+        // Most C++ standard libraries have a fill implementation that will accept NestedIterator
+        // anyway, but Clang's libc++ is more strictly compliant and does not.
+        for (; iter != end; ++iter) {
+            *iter = value;
+        }
+    }
 };
 
 template <typename T>
@@ -87,6 +97,9 @@ struct ArrayTraits<T,1,0> {
     }
     static Iterator makeIterator(Element * data, CorePtr const & core, int stride) {
         return Iterator(data, stride);
+    }
+    static void fill(Iterator iter, Iterator const & end, Element value) {
+        std::fill(iter, end, value);
     }
 };
 
@@ -107,6 +120,9 @@ struct ArrayTraits<T,1,1> {
     static Iterator makeIterator(Element * data, CorePtr const & core, int stride) {
         return data;
     }
+    static void fill(Iterator iter, Iterator const & end, Element value) {
+        std::fill(iter, end, value);
+    }
 };
 
 template <typename T>
@@ -125,6 +141,9 @@ struct ArrayTraits<T,1,-1> {
     }
     static Iterator makeIterator(Element * data, CorePtr const & core, int stride) {
         return data;
+    }
+    static void fill(Iterator iter, Iterator const & end, Element value) {
+        std::fill(iter, end, value);
     }
 };
 
