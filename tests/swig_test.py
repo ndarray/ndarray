@@ -57,7 +57,22 @@ class TestNumpySwig(unittest.TestCase):
         self.assertEqual(swig_test_mod.acceptOverload(1), 0)
         self.assertEqual(swig_test_mod.acceptOverload(numpy.zeros((2,2), dtype=float)), 2)
         self.assertEqual(swig_test_mod.acceptOverload(numpy.zeros((3,3), dtype=float)), 3)
-        
+
+    def testStrideHandling(self):
+        # in NumPy 1.8+ 1- and 0-sized arrays can have arbitrary strides; we should
+        # be able to handle those
+        array = numpy.zeros(1, dtype=float)
+        # just test that these don't throw
+        swig_test_mod.acceptArray10(array)
+        swig_test_mod.acceptArray10(array)
+        array = numpy.zeros(0, dtype=float)
+        swig_test_mod.acceptArray10(array)
+        swig_test_mod.acceptArray10(array)
+        # test that we gracefully fail when the strides are no multiples of the itemsize
+        dtype = numpy.dtype([("f1", numpy.float64), ("f2", numpy.int16)])
+        table = numpy.zeros(3, dtype=dtype)
+        self.assertRaises(TypeError, swig_test_mod.acceptArray10, table['f1'])
+
 
 if __name__ == "__main__":
     unittest.main()

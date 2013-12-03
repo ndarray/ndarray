@@ -83,7 +83,7 @@ public:
             if (C > 0) {
                 int requiredStride = sizeof(T);
                 for (int i = 0; i < C; ++i) {
-                    if (array.strides(N-i-1) != requiredStride) {
+                    if ((array.shape(N-i-1) > 1) && (array.strides(N-i-1) != requiredStride)) {
                         return false;
                     }
                     requiredStride *= array.shape(N-i-1);
@@ -91,7 +91,7 @@ public:
             } else if (C < 0) {
                 int requiredStride = sizeof(T);
                 for (int i = 0; i < -C; ++i) {
-                    if (array.strides(i) != requiredStride) {
+                    if ((array.shape(i) > 1) && (array.strides(i) != requiredStride)) {
                         return false;
                     }
                     requiredStride *= array.shape(i);
@@ -110,6 +110,15 @@ public:
         boost::numpy::ndarray array = boost::python::extract<boost::numpy::ndarray>(input);
         boost::numpy::dtype dtype = array.get_dtype();
         int itemsize = dtype.get_itemsize();
+        for (int i = 0; i < N; ++i) {
+            if ((array.shape(i) > 1) && (array.strides(i) % itemsize != 0)) {
+                PyErr_SetString(
+                    PyExc_TypeError,
+                    "Cannot convert array to C++: strides must be an integer multiple of the element size"
+                );
+                boost::python::throw_error_already_set();
+            }
+        }
         boost::python::object obj_owner = array.get_base();
         if (obj_owner.is_none()) {
             obj_owner = array;
@@ -118,7 +127,11 @@ public:
         Vector<int,N> strides;
         for (int i=0; i<N; ++i) {
             shape[i] = array.shape(i);
-            strides[i] = array.strides(i) / itemsize;
+            if (shape[i] > 1) {
+                strides[i] = array.strides(i) / itemsize;
+            } else {
+                strides[i] = 1.0;
+            }
         }
         Array<T,N,C> r = ndarray::external(
             reinterpret_cast<T*>(array.get_data()), shape, strides, obj_owner
