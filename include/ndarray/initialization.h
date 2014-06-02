@@ -16,6 +16,7 @@
  */
 
 #include "ndarray/Array.h"
+#include "ndarray/ArrayRef.h"
 #include "ndarray/Manager.h"
 
 namespace ndarray {
