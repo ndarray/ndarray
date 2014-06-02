@@ -71,6 +71,20 @@ class TestNdArrayWrappers(unittest.TestCase):
             vector = tuple(numpy.arange(nd, dtype=float))
             self.assert_(func(vector))
 
+    def testStrideHandling(self):
+        # in NumPy 1.8+ 1- and 0-sized arrays can have arbitrary strides; we should
+        # be able to handle those
+        array = numpy.zeros(1, dtype=float)
+        self.assert_(bp_test_mod.acceptArray_d11(array))
+        self.assert_(bp_test_mod.acceptArray_d10(array))
+        array = numpy.zeros(0, dtype=float)
+        self.assert_(bp_test_mod.acceptArray_d11(array))
+        self.assert_(bp_test_mod.acceptArray_d10(array))
+        # test that we gracefully fail when the strides are not multiples of the itemsize
+        dtype = numpy.dtype([("f1", numpy.float64), ("f2", numpy.int16)])
+        table = numpy.zeros(3, dtype=dtype)
+        self.assertRaises(TypeError, bp_test_mod.acceptArray_d10, table['f1'])
+
     def _testMemory(self):
         shape = (400, 400, 10)
         for n in range(1000000):
