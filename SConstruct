@@ -37,12 +37,12 @@ BOOST_AUTO_TEST_CASE(ConfigTestCase) {
         )
     if not result:
         context.Result(0)
-        print "Cannot build against Boost.Test."
+        print("Cannot build against Boost.Test.")
         return False
     result, output = context.TryRun(source_file, '.cpp')
     if not result:
         context.Result(0)
-        print "Cannot build against Boost.Test."
+        print("Cannot build against Boost.Test.")
         return False
     context.Result(1)
     return True
@@ -54,7 +54,7 @@ def CheckSwig(context):
     context.Result(result)
     if result:
         context.env.AppendUnique(SWIGPATH = ["#include"])
-        print "Using SWIG at", swig_cmd.strip()
+        print("Using SWIG at", swig_cmd.strip())
     return result
 
 setupOptions, makeEnvironment, setupTargets, checks = SConscript("Boost.NumPy/SConscript")
@@ -138,7 +138,7 @@ bpEnv.AppendUnique(CPPPATH=["#Boost.NumPy"])
 if haveBoostPython:
     setupTargets(bpEnv, root="Boost.NumPy")
 elif building:
-    print "Not building Boost.NumPy component."
+    print("Not building Boost.NumPy component.")
 
 headers = SConscript(os.path.join("include", "SConscript"), exports="env")
 prefix = Dir(GetOption("prefix")).abspath
@@ -149,6 +149,4 @@ for header in Flatten(headers):
     relative = os.path.relpath(header.abspath, Dir("#include").abspath)
     env.Alias("install", env.InstallAs(os.path.join(install_headers, relative), header))
 
-# test builds temporarily disabled; something weird is going on with SCons
-if False:
-    tests = SConscript(os.path.join("tests", "SConscript"), exports=["env", "testEnv", "pyEnv", "bpEnv"])
+tests = SConscript(os.path.join("tests", "SConscript"), exports=["env", "testEnv", "pyEnv", "bpEnv"])

@@ -26,6 +26,7 @@
 %declareNumPyConverters(Eigen::Matrix2d);
 %declareNumPyConverters(Eigen::Matrix3d);
 %declareNumPyConverters(Eigen::Matrix<double,2,2,Eigen::DontAlign>);
+%declareNumPyConverters(ndarray::Array<double,1,0>);
 %declareNumPyConverters(ndarray::Array<double,1,1>);
 %declareNumPyConverters(ndarray::Array<double const,1,1>);
 %declareNumPyConverters(ndarray::Array<double,3>);
@@ -92,6 +93,8 @@ bool acceptArray1(ndarray::Array<double,1,1> const & a1) {
     return std::equal(a1.begin(), a1.end(), a2.begin());
 #endif
 }
+
+void acceptArray10(ndarray::Array<double,1,0> const & a1) {}
 
 bool acceptArray3(ndarray::Array<double,3> const & a1) {
     ndarray::Array<double,3> a2 = returnArray3();

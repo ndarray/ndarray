@@ -180,8 +180,18 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
         Array<T,N,C> & output ///< Reference to existing output C++ object.
     ) {
         if (!(PyArray_FLAGS(input.get()) & NPY_ALIGNED)) {
-            PyErr_SetString(PyExc_ValueError, "unaligned arrays cannot be converted to C++");
+            PyErr_SetString(PyExc_TypeError, "unaligned arrays cannot be converted to C++");
             return false;
+        }
+        int itemsize = sizeof(Element);
+        for (int i = 0; i < N; ++i) {
+            if ((PyArray_DIM(input.get(), i) > 1) && (PyArray_STRIDE(input.get(), i) % itemsize != 0)) {
+                PyErr_SetString(
+                    PyExc_TypeError,
+                    "Cannot convert array to C++: strides must be an integer multiple of the element size"
+                );
+                return false;
+            }
         }
         Vector<int,N> shape;
         Vector<int,N> strides;
