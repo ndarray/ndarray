@@ -63,7 +63,7 @@ public:
         detail::Formatter<Derived>::apply(*this,os,expr,0);
     }
 
-    template <typename Derived, int N> friend class detail::Formatter;
+    template <typename Derived, int N> friend struct detail::Formatter;
 };
 
 /// @brief Stream output for ExpressionBase using default-constructed FormatOptions.
