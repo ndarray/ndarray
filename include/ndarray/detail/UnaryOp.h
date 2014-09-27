@@ -16,7 +16,8 @@
  *
  *  @brief Lazy unary expression templates.
  */
-
+#include <cstddef>
+ 
 #include "ndarray/ExpressionBase.h"
 #include "ndarray/vectorize.h"
 #include <boost/iterator/iterator_adaptor.hpp>
@@ -79,12 +80,12 @@ public:
     typedef typename ExpressionTraits<Self>::Iterator Iterator;
     typedef typename ExpressionTraits<Self>::Value Value;
     typedef typename ExpressionTraits<Self>::Reference Reference;
-    typedef Vector<int,N> Index;
+    typedef Vector<std::size_t,N> Index;
     
     UnaryOpExpression(Operand const & operand, UnaryFunction const & functor) :
         _operand(operand), _functor(functor) {}
 
-    Reference operator[](int n) const {
+    Reference operator[](std::size_t n) const {
         return Reference(_operand[n],_functor);
     }
 
@@ -96,7 +97,7 @@ public:
         return Iterator(_operand.end(),_functor);
     }
 
-    template <int P> int getSize() const {
+    template <int P> std::size_t getSize() const {
         return _operand.template getSize<P>();
     }
 

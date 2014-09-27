@@ -10,14 +10,14 @@
  */
 #ifndef NDARRAY_BP_Vector_h_INCLUDED
 #define NDARRAY_BP_Vector_h_INCLUDED
-
+#include <cstddef>
 #include "boost/python.hpp"
 #include "ndarray/Vector.h"
 #include "ndarray/bp_fwd.h"
 
 namespace ndarray {
 
-template <typename T, int N>
+template <typename T, std::size_t N>
 class ToBoostPython< Vector<T,N> > {
 public:
 
@@ -26,7 +26,7 @@ public:
     static boost::python::tuple apply(Vector<T,N> const & x) {
         boost::python::handle<> t(PyTuple_New(N));
         for (int n=0; n<N; ++n) {
-            boost::python::object item(x[n]);
+            boost::python::object item(x[static_cast<size_t>(n)]);
             Py_INCREF(item.ptr());
             PyTuple_SET_ITEM(t.get(), n, item.ptr());
         }
@@ -35,7 +35,7 @@ public:
 
 };
 
-template <typename T, int N>
+template <typename T, std::size_t N>
 class FromBoostPython< Vector<T,N> > {
 public:
 
@@ -62,7 +62,7 @@ public:
         }
         Vector<T,N> r;
         for (int n=0; n<N; ++n) {
-            r[n] = boost::python::extract<T>(t[n]);
+            r[static_cast<size_t>(n)] = boost::python::extract<T>(t[n]);
         }
         return r;
     }

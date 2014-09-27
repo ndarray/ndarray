@@ -16,6 +16,7 @@
  *
  *  @brief Lazy binary expression templates.
  */
+#include <cstddef>
 
 #include "ndarray/ExpressionBase.h"
 #include "ndarray/vectorize.h"
@@ -96,7 +97,7 @@ public:
     typedef typename ExpressionTraits<Self>::Iterator Iterator;
     typedef typename ExpressionTraits<Self>::Value Value;
     typedef typename ExpressionTraits<Self>::Reference Reference;
-    typedef Vector<int,N> Index;
+    typedef Vector<std::size_t,N> Index;
     
     BinaryOpExpression(
         Operand1 const & operand1,
@@ -107,7 +108,7 @@ public:
         NDARRAY_ASSERT(_operand1.getShape() == _operand2.getShape());
     }
 
-    Reference operator[](int n) const {
+    Reference operator[](std::size_t n) const {
         return Reference(_operand1[n],_operand2[n],_functor);
     }
 
@@ -119,7 +120,7 @@ public:
         return Iterator(_operand1.end(),_operand2.end(),_functor);
     }
 
-    template <int P> int getSize() const {
+    template <int P> std::size_t getSize() const {
         return _operand1.template getSize<P>();
     }
 

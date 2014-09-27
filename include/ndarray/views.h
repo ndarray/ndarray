@@ -15,6 +15,8 @@
  *  \file ndarray/views.h @brief Public interface for arbitrary views into arrays.
  */
 
+#include <cstddef>
+ 
 #include <boost/fusion/include/push_back.hpp>
 #include <boost/fusion/include/vector.hpp>
 #include <boost/fusion/include/make_vector.hpp>
@@ -27,23 +29,23 @@ namespace index {
  *  @brief Simple structure defining a noncontiguous range of indices.
  */
 struct Slice {
-    int start;
-    int stop;
-    int step;
+    std::size_t start;
+    std::size_t stop;
+    std::size_t step;
 
-    Slice(int start_, int stop_, int step_) : start(start_), stop(stop_), step(step_) {}
+    Slice(std::size_t start_, std::size_t stop_, std::size_t step_) : start(start_), stop(stop_), step(step_) {}
 
-    int computeSize() const { return (step > 1) ? (stop - start + 1) / step : stop - start; }
+    std::size_t computeSize() const { return (step > 1) ? (stop - start + 1) / step : stop - start; }
 };
 
 /**
  *  @brief Simple structure defining a contiguous range of indices.
  */
 struct Range {
-    int start;
-    int stop;
+    std::size_t start;
+    std::size_t stop;
 
-    Range(int start_, int stop_) : start(start_), stop(stop_) {}
+    Range(std::size_t start_, std::size_t stop_) : start(start_), stop(stop_) {}
 };
 
 /**
@@ -55,9 +57,9 @@ struct Full {};
  *  @brief Structure marking a single element of a dimension.
  */
 struct Scalar {
-    int n;
+    std::size_t n;
 
-    explicit Scalar(int n_) : n(n_) {}
+    explicit Scalar(std::size_t n_) : n(n_) {}
 };
 
 } // namespace index
@@ -97,17 +99,17 @@ struct View {
     Full operator()() const { return Full(boost::fusion::push_back(_seq, index::Full())); }
     
     /// @brief Chain a contiguous range of the next dimension to this.
-    Range operator()(int start, int stop) const {
+    Range operator()(std::size_t start, std::size_t stop) const {
         return Range(boost::fusion::push_back(_seq, index::Range(start, stop)));
     }
 
     /// @brief Chain a noncontiguous slice of the next dimension to this.
-    Slice operator()(int start, int stop, int step) const {
+    Slice operator()(std::size_t start, std::size_t stop, std::size_t step) const {
         return Slice(boost::fusion::push_back(_seq, index::Slice(start, stop, step)));
     }
 
     /// @brief Chain a single element of the next dimension to this.
-    Scalar operator()(int n) const {
+    Scalar operator()(std::size_t n) const {
         return Scalar(boost::fusion::push_back(_seq, index::Scalar(n)));
     }
 };
@@ -123,21 +125,21 @@ inline View< boost::fusion::vector1<index::Full> > view() {
 }
 
 /** @brief Start a view definition that selects a contiguous range in the first dimension. */
-inline View< boost::fusion::vector1<index::Range> > view(int start, int stop) {
+inline View< boost::fusion::vector1<index::Range> > view(std::size_t start, std::size_t stop) {
     return View< boost::fusion::vector1<index::Range> >(
         boost::fusion::make_vector(index::Range(start, stop))
     );
 }
 
 /** @brief Start a view definition that selects a noncontiguous slice of the first dimension. */
-inline View< boost::fusion::vector1<index::Slice> > view(int start, int stop, int step) {
+inline View< boost::fusion::vector1<index::Slice> > view(std::size_t start, std::size_t stop, std::size_t step) {
     return View< boost::fusion::vector1<index::Slice> >(
         boost::fusion::make_vector(index::Slice(start, stop, step))
     );
 }
 
 /** @brief Start a view definition that selects single element from the first dimension. */
-inline View< boost::fusion::vector1<index::Scalar> > view(int n) {
+inline View< boost::fusion::vector1<index::Scalar> > view(std::size_t n) {
     return View< boost::fusion::vector1<index::Scalar> >(
         boost::fusion::make_vector(index::Scalar(n))
     );

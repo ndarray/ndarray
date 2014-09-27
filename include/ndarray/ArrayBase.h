@@ -17,7 +17,8 @@
  *  @brief Definitions for ArrayBase.
  */
 
-
+#include <cstddef>
+ 
 #include <boost/iterator/counting_iterator.hpp>
 
 #include "ndarray/ExpressionBase.h"
@@ -60,7 +61,7 @@ public:
     /// @brief Number of guaranteed row-major contiguous dimensions, counted from the end (boost::mpl::int_).
     typedef typename Traits::RMC RMC;
     /// @brief Vector type for N-dimensional indices.
-    typedef Vector<int,ND::value> Index;
+    typedef Vector<std::size_t,ND::value> Index;
     /// @brief ArrayRef to a reverse-ordered contiguous array; the result of a call to transpose().
     typedef ArrayRef<Element,ND::value,-RMC::value> FullTranspose;
     /// @brief ArrayRef to a noncontiguous array; the result of a call to transpose(...).
@@ -71,7 +72,7 @@ public:
     typedef ArrayRef<Element,ND::value,RMC::value> Deep;
 
     /// @brief Return a single subarray.
-    Reference operator[](int n) const {
+    Reference operator[](std::size_t n) const {
         return Traits::makeReference(
             this->_data + n * this->template getStride<0>(),
             this->_core
@@ -111,12 +112,12 @@ public:
     Manager::Ptr getManager() const { return this->_core->getManager(); }
 
     /// @brief Return the size of a specific dimension.
-    template <int P> int getSize() const {
+    template <int P> size_t getSize() const {
         return detail::getDimension<P>(*this->_core).getSize();
     }
 
     /// @brief Return the stride in a specific dimension.
-    template <int P> int getStride() const {
+    template <int P> std::size_t getStride() const {
         return detail::getDimension<P>(*this->_core).getStride();
     }
 
@@ -127,15 +128,15 @@ public:
     Index getStrides() const { Index r; this->_core->fillStrides(r); return r; }
 
     /// @brief Return the total number of elements in the array.
-    int getNumElements() const { return this->_core->getNumElements(); }
+    std::size_t getNumElements() const { return this->_core->getNumElements(); }
 
     /// @brief Return a view of the array with the order of the dimensions reversed.
     FullTranspose transpose() const {
         Index shape = getShape();
         Index strides = getStrides();
-        for (int n=0; n < ND::value / 2; ++n) {
-            std::swap(shape[n], shape[ND::value-n-1]);
-            std::swap(strides[n], strides[ND::value-n-1]);
+        for (std::size_t n=0; n < static_cast<std::size_t>(ND::value / 2); ++n) {
+            std::swap(shape[n], shape[static_cast<std::size_t>(ND::value-n-1)]);
+            std::swap(strides[n], strides[static_cast<std::size_t>(ND::value-n-1)]);
         }
         return FullTranspose(
             getData(),
@@ -149,7 +150,7 @@ public:
         Index newStrides;
         Index oldShape = getShape();
         Index oldStrides = getStrides();
-        for (int n=0; n < ND::value; ++n) {
+        for (std::size_t n=0; n < static_cast<std::size_t>(ND::value); ++n) {
             newShape[n] = oldShape[order[n]];
             newStrides[n] = oldStrides[order[n]];
         }
@@ -159,7 +160,7 @@ public:
         );
     }
 
-    /// @brief Return a Array view to this.
+    /// @brief Return an Array view to this.
     Shallow const shallow() const { return Shallow(this->getSelf()); }
 
     /// @brief Return an ArrayRef view to this.

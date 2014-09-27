@@ -17,6 +17,8 @@
  * @brief Definitions for Core.
  */
 
+#include <cstddef>
+ 
 #include <boost/intrusive_ptr.hpp>
 #include <boost/mpl/int.hpp>
 #include "ndarray/Vector.h"
@@ -52,19 +54,19 @@ public:
     typedef boost::intrusive_ptr<Core const> ConstPtr; ///< const intrusive_ptr to Core
 
     /// @brief Create a Core::Ptr with the given shape, strides, and manager.
-    template <int M>
+    template <std::size_t M>
     static Ptr create(
-        Vector<int,M> const & shape,
-        Vector<int,M> const & strides, 
+        Vector<std::size_t,M> const & shape,
+        Vector<std::size_t,M> const & strides, 
         Manager::Ptr const & manager = Manager::Ptr()
     ) {
         return Ptr(new Core(shape, strides, manager), false);
     }        
 
     /// @brief Create a Core::Ptr with the given shape and manager with contiguous strides.
-    template <int M>
+    template <std::size_t M>
     static Ptr create(
-        Vector<int,M> const & shape,
+        Vector<std::size_t,M> const & shape,
         DataOrderEnum order,
         Manager::Ptr const & manager = Manager::Ptr()
     ) {
@@ -85,39 +87,39 @@ public:
     Ptr copy() const { return Ptr(new Core(*this)); }
 
     /// @brief Return the size of the Nth dimension.
-    int getSize() const { return _size; }
+    std::size_t getSize() const { return _size; }
 
     /// @brief Return the stride of the Nth dimension.
-    int getStride() const { return _stride; }
+    std::size_t getStride() const { return _stride; }
 
     /// @brief Set the size of the Nth dimension.
-    void setSize(int size) { _size = size; }
+    void setSize(std::size_t size) { _size = size; }
 
     /// @brief Set the stride of the Nth dimension.
-    void setStride(int stride) { _stride = stride; }
+    void setStride(std::size_t stride) { _stride = stride; }
 
     /// @brief Recursively compute the offset to an element.
     template <int M>
-    int computeOffset(Vector<int,M> const & index) const {
+    std::size_t computeOffset(Vector<std::size_t,M> const & index) const {
         return index[M-N] * this->getStride() + Super::computeOffset(index);
     }
 
     /// @brief Recursively fill a shape vector.
     template <int M>
-    void fillShape(Vector<int,M> & shape) const {
+    void fillShape(Vector<std::size_t,M> & shape) const {
         shape[M-N] = this->getSize();
         Super::fillShape(shape);
     }
 
     /// @brief Recursively fill a strides vector.
     template <int M>
-    void fillStrides(Vector<int,M> & strides) const {
+    void fillStrides(Vector<std::size_t,M> & strides) const {
         strides[M-N] = this->getStride();
         Super::fillStrides(strides);
     }
 
     /// @brief Recursively determine the total number of elements.
-    int getNumElements() const {
+    std::size_t getNumElements() const {
         return getSize() * Super::getNumElements();
     }
     
@@ -126,23 +128,23 @@ protected:
     // Explicit strides
     template <int M>
     Core (
-        Vector<int,M> const & shape,
-        Vector<int,M> const & strides, 
+        Vector<std::size_t,M> const & shape,
+        Vector<std::size_t,M> const & strides, 
         Manager::Ptr const & manager
     ) : Super(shape, strides, manager), _size(shape[M-N]), _stride(strides[M-N]) {}
 
     // Row-major strides
     template <int M>
     Core (
-        Vector<int,M> const & shape,
+        Vector<std::size_t,M> const & shape,
         Manager::Ptr const & manager
     ) : Super(shape, manager), _size(shape[M-N]), _stride(Super::getStride() * Super::getSize()) {}
 
     // Column-major strides
     template <int M>
     Core (
-        Vector<int,M> const & shape,
-        int stride,
+        Vector<std::size_t,M> const & shape,
+        std::size_t stride,
         Manager::Ptr const & manager
     ) : Super(shape, stride * shape[M-N], manager), _size(shape[M-N]), _stride(stride) {}
 
@@ -154,8 +156,8 @@ protected:
     Core(Core const & other) : Super(other), _size(other._size), _stride(other._stride) {}
 
 private:
-    int _size;
-    int _stride;
+    std::size_t _size;
+    std::size_t _stride;
 };
 
 /**
@@ -184,12 +186,12 @@ public:
 
     Ptr copy() const { return Ptr(new Core(*this)); }
 
-    int getSize() const { return 1; }
-    int getStride() const { return 1; }
+    std::size_t getSize() const { return 1; }
+    std::size_t getStride() const { return 1; }
 
     /// @brief Recursively compute the offset to an element.
     template <int M>
-    int computeOffset(Vector<int,M> const & index) const { return 0; }
+    std::size_t computeOffset(Vector<std::size_t,M> const & index) const { return 0; }
 
     /// @brief Return the Manager that determines the lifetime of the array data.
     Manager::Ptr getManager() const { return _manager; }
@@ -199,14 +201,14 @@ public:
 
     /// @brief Recursively fill a shape vector.
     template <int M>
-    void fillShape(Vector<int,M> const & shape) const {}
+    void fillShape(Vector<std::size_t,M> const & shape) const {}
 
     /// @brief Recursively fill a strides vector.
     template <int M>
-    void fillStrides(Vector<int,M> const & strides) const {}
+    void fillStrides(Vector<std::size_t,M> const & strides) const {}
 
     /// @brief Recursively determine the total number of elements.
-    int getNumElements() const { return 1; }
+    std::size_t getNumElements() const { return 1; }
 
     /// @brief Return the reference count (for debugging purposes).
     int getRC() const { return _rc; }
@@ -220,21 +222,21 @@ protected:
 
     template <int M>
     Core(
-        Vector<int,M> const & shape,
-        Vector<int,M> const & strides, 
+        Vector<std::size_t,M> const & shape,
+        Vector<std::size_t,M> const & strides, 
         Manager::Ptr const & manager
     ) : _manager(manager), _rc(1) {}
 
     template <int M>
     Core(
-        Vector<int,M> const & shape,
+        Vector<std::size_t,M> const & shape,
         Manager::Ptr const & manager
     ) : _manager(manager), _rc(1) {}
 
     template <int M>
     Core(
-        Vector<int,M> const & shape,
-        int stride,
+        Vector<std::size_t,M> const & shape,
+        std::size_t stride,
         Manager::Ptr const & manager
     ) : _manager(manager), _rc(1) {}
 

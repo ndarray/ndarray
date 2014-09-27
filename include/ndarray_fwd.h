@@ -25,6 +25,8 @@
 
 /// @internal \defgroup ndarrayInternalGroup Internals
 
+#include <cstddef>
+
 #include <boost/type_traits/is_const.hpp>
 #include <boost/type_traits/add_const.hpp>
 #include <boost/type_traits/remove_const.hpp>
@@ -97,7 +99,7 @@ template <typename Derived> class ExpressionBase;
 template <typename Derived> class ArrayBase;
 template <typename T, int N, int C=0> class ArrayRef;
 template <typename T, int N, int C=0> class Array;
-template <typename T, int N> struct Vector;
+template <typename T, std::size_t N> struct Vector;
 
 } // namespace ndarray
 

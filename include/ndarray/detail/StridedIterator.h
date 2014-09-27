@@ -16,7 +16,8 @@
  *
  *  @brief Definition of StridedIterator.
  */
-
+#include <cstddef>
+ 
 #include "ndarray_fwd.h"
 #include <boost/iterator/iterator_facade.hpp>
 
@@ -40,7 +41,7 @@ public:
     
     StridedIterator() : _data(0), _stride(0) {}
 
-    StridedIterator(T * data, int stride) : _data(data), _stride(stride) {}
+    StridedIterator(T * data, std::ptrdiff_t stride) : _data(data), _stride(stride) {}
 
     StridedIterator(StridedIterator const & other) : _data(other._data), _stride(other._stride) {}
 
@@ -75,10 +76,10 @@ private:
 
     void increment() { _data += _stride; }
     void decrement() { _data -= _stride; }
-    void advance(int n) { _data += _stride * n; }
+    void advance(std::ptrdiff_t n) { _data += _stride * n; }
 
     template <typename U>
-    int distance_to(StridedIterator<U> const & other) const {
+    std::ptrdiff_t distance_to(StridedIterator<U> const & other) const {
         return std::distance(_data, other._data) / _stride; 
     }
 
@@ -88,7 +89,7 @@ private:
     }
 
     T * _data;
-    int _stride;
+    std::ptrdiff_t _stride;
 
 };
 
