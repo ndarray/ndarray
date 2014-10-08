@@ -11,7 +11,7 @@
 #ifndef NDARRAY_FFT_FourierOps_h_INCLUDED
 #define NDARRAY_FFT_FourierOps_h_INCLUDED
 
-/** 
+/**
  *  @file ndarray/fft/FourierOps.h
  *
  *  @brief Common Fourier-space operations.
@@ -21,9 +21,16 @@
 
 #include "ndarray.h"
 
+
+
 namespace ndarray {
 /// \cond INTERNAL
 namespace detail {
+
+#ifdef _MSC_VER
+/** Portable double pi value. */
+static const double M_PI = 4. * atan(1.);
+#endif
 
 /**
  *  @internal @ingroup FFTndarrayInternalGroup
@@ -43,7 +50,7 @@ struct FourierOps {
         T u = -2.0 * M_PI * (*offset) / array.size();
         int kMid = (array.size() + 1) / 2;
         for (int k = 0; k < kMid; ++k, ++iter) {
-            FourierOps<T,N-1>::shift(offset+1, factor * std::polar(static_cast<T>(1), u * k), 
+            FourierOps<T,N-1>::shift(offset+1, factor * std::polar(static_cast<T>(1), u * k),
                                      *iter, real_last_dim);
         }
         if (array.size() % 2 == 0) {
@@ -85,7 +92,7 @@ struct FourierOps {
  */
 template <typename T>
 struct FourierOps<T,1> {
-    
+
     template <int C>
     static void shift(
         T const * offset,
@@ -117,7 +124,7 @@ struct FourierOps<T,1> {
         }
         if (real_last_dim % 2 == 0) {
             array[kMid] = static_cast<T>(0);
-        }            
+        }
     }
 
 };

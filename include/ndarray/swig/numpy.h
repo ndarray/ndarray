@@ -11,27 +11,28 @@
 #ifndef NDARRAY_SWIG_numpy_h_INCLUDED
 #define NDARRAY_SWIG_numpy_h_INCLUDED
 
-/** 
+/**
  *  @file ndarray/swig/numpy.h
  *  @brief Python C-API conversions between ndarray and numpy.
  */
-
+#include <cstddef>
+#include <typeinfo>
 #include "ndarray.h"
 #include "ndarray/swig/PyConverter.h"
 
 namespace ndarray {
 namespace detail {
 
-/** 
+/**
  *  @internal @ingroup ndarrayPythonInternalGroup
- *  @brief Traits class that specifies Numpy typecodes for numeric types. 
+ *  @brief Traits class that specifies Numpy typecodes for numeric types.
  */
-template <typename T> struct NumpyTraits { 
-    static int getCode(); 
+template <typename T> struct NumpyTraits {
+    static int getCode();
 };
 
 /// \cond SPECIALIZATIONS
-    
+
 template <> struct NumpyTraits<bool> {
     static int getCode() {
 	if (sizeof(bool)==sizeof(npy_bool)) return NPY_BOOL;
@@ -47,37 +48,60 @@ template <> struct NumpyTraits<npy_ubyte> { static int getCode() { return NPY_UB
 template <> struct NumpyTraits<npy_byte> { static int getCode() { return NPY_BYTE; } };
 template <> struct NumpyTraits<npy_ushort> { static int getCode() { return NPY_USHORT; } };
 template <> struct NumpyTraits<npy_short> { static int getCode() { return NPY_SHORT; } };
-template <> struct NumpyTraits<npy_uint> { static int getCode() { return NPY_UINT; } };
-template <> struct NumpyTraits<npy_int> { static int getCode() { return NPY_INT; } };
+// NPY_INT is a virtual flag that is never actually used. It must be
+// checked against the platform dtype.
+// see http://mail.scipy.org/pipermail/numpy-discussion/2010-June/051057.html.
+template <> struct NumpyTraits<npy_uint> { static int getCode() {
+  switch(sizeof(int)) {
+    case 1: return NPY_UBYTE;
+    case 2: return NPY_USHORT;
+    case 4: return NPY_ULONG;
+    case 8: return NPY_ULONGLONG;
+    // no datatype here...
+    default: throw std::exception();
+}
+}};
+template <> struct NumpyTraits<npy_int> { static int getCode() {
+  switch(sizeof(int)) {
+    case 1: return NPY_BYTE;
+    case 2: return NPY_SHORT;
+    case 4: return NPY_LONG;
+    case 8: return NPY_LONGLONG;
+    // no datatype here...
+    default: throw std::exception();
+}
+}};
 template <> struct NumpyTraits<npy_ulong> { static int getCode() { return NPY_ULONG; } };
 template <> struct NumpyTraits<npy_long> { static int getCode() { return NPY_LONG; } };
 template <> struct NumpyTraits<npy_ulonglong> { static int getCode() { return NPY_ULONGLONG; } };
 template <> struct NumpyTraits<npy_longlong> { static int getCode() { return NPY_LONGLONG; } };
 template <> struct NumpyTraits<npy_float> { static int getCode() { return NPY_FLOAT; } };
 template <> struct NumpyTraits<npy_double> { static int getCode() { return NPY_DOUBLE; } };
-template <> struct NumpyTraits<npy_longdouble> { static int getCode() { return NPY_LONGDOUBLE; } };
+#if (npy_double != npy_longdouble)
+  template <> struct NumpyTraits<npy_longdouble> { static int getCode() { return NPY_LONGDOUBLE; } };
+#endif
 template <> struct NumpyTraits<npy_cfloat> { static int getCode() { return NPY_CFLOAT; } };
 template <> struct NumpyTraits<npy_cdouble> { static int getCode() { return NPY_CDOUBLE; } };
 template <> struct NumpyTraits<npy_clongdouble> { static int getCode() { return NPY_CLONGDOUBLE; } };
 
-template <> struct NumpyTraits<std::complex<float> > { 
-    static int getCode() { assert(sizeof(std::complex<float>)==sizeof(npy_cfloat)); return NPY_CFLOAT; } 
+template <> struct NumpyTraits<std::complex<float> > {
+    static int getCode() { assert(sizeof(std::complex<float>)==sizeof(npy_cfloat)); return NPY_CFLOAT; }
 };
 
-template <> struct NumpyTraits<std::complex<double> > { 
-    static int getCode() { assert(sizeof(std::complex<double>)==sizeof(npy_cdouble)); return NPY_CDOUBLE; } 
+template <> struct NumpyTraits<std::complex<double> > {
+    static int getCode() { assert(sizeof(std::complex<double>)==sizeof(npy_cdouble)); return NPY_CDOUBLE; }
 };
 
-template <> struct NumpyTraits<std::complex<long double> > { 
-    static int getCode() { 
-	assert(sizeof(std::complex<long double>)==sizeof(npy_clongdouble)); 
-	return NPY_CLONGDOUBLE; 
+template <> struct NumpyTraits<std::complex<long double> > {
+    static int getCode() {
+	assert(sizeof(std::complex<long double>)==sizeof(npy_clongdouble));
+	return NPY_CLONGDOUBLE;
     }
 };
 
 /// \endcond
 
-/** 
+/**
  *  @internal @ingroup ndarrayPythonInternalGroup
  *  @brief A destructor for a Python CObject that owns a shared_ptr.
  */
@@ -121,7 +145,7 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
         int actualType = PyArray_TYPE(p.get());
         int requiredType = detail::NumpyTraits<NonConst>::getCode();
         if (actualType != requiredType) {
-            PyErr_SetString(PyExc_ValueError, "numpy.ndarray argument has incorrect data type");
+            PyErr_SetString(PyExc_ValueError, ("numpy.ndarray argument has incorrect data type"));
             return false;
         }
         if (PyArray_NDIM(p.get()) != N) {
@@ -134,9 +158,9 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
             return false;
         }
         if (C > 0) {
-            int requiredStride = sizeof(Element);
+            std::size_t requiredStride = sizeof(Element);
             for (int i = 0; i < C; ++i) {
-                int actualStride = PyArray_STRIDE(p.get(), N-i-1);
+                std::size_t actualStride = PyArray_STRIDE(p.get(), N-i-1);
                 if (actualStride != requiredStride) {
                     PyErr_SetString(
                         PyExc_ValueError,
@@ -149,7 +173,7 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
         } else if (C < 0) {
             int requiredStride = sizeof(Element);
             for (int i = 0; i < -C; ++i) {
-                int actualStride = PyArray_STRIDE(p.get(), i);
+                std::size_t actualStride = PyArray_STRIDE(p.get(), i);
                 if (actualStride != requiredStride) {
                     PyErr_SetString(
                         PyExc_ValueError,
@@ -165,7 +189,7 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
 
     /**
      *  @brief Complete a Python to C++ conversion begun with fromPythonStage1().
-     * 
+     *
      *  The copy will be shallow if possible and deep if necessary to meet the data type
      *  and contiguousness requirements.  If a non-const array is required, the copy will
      *  always be shallow; if this is not possible, ValueError will be raised.
@@ -183,7 +207,7 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
             PyErr_SetString(PyExc_TypeError, "unaligned arrays cannot be converted to C++");
             return false;
         }
-        int itemsize = sizeof(Element);
+        std::size_t itemsize = sizeof(Element);
         for (int i = 0; i < N; ++i) {
             if ((PyArray_DIM(input.get(), i) > 1) && (PyArray_STRIDE(input.get(), i) % itemsize != 0)) {
                 PyErr_SetString(
@@ -193,8 +217,8 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
                 return false;
             }
         }
-        Vector<int,N> shape;
-        Vector<int,N> strides;
+        Vector<std::size_t,N> shape;
+        Vector<std::size_t,N> strides;
         std::copy(PyArray_DIMS(input.get()), PyArray_DIMS(input.get()) + N, shape.begin());
         std::copy(PyArray_STRIDES(input.get()), PyArray_STRIDES(input.get()) + N , strides.begin());
         for (int i = 0; i < N; ++i) strides[i] /= sizeof(Element);
@@ -226,8 +250,8 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
         if (writeable) flags |= NPY_WRITEABLE;
         npy_intp outShape[N];
         npy_intp outStrides[N];
-        Vector<int,N> inShape = m.getShape();
-        Vector<int,N> inStrides = m.getStrides();
+        Vector<std::size_t,N> inShape = m.getShape();
+        Vector<std::size_t,N> inStrides = m.getStrides();
         std::copy(inShape.begin(), inShape.end(), outShape);
         for (int i = 0; i < N; ++i) outStrides[i] = inStrides[i] * sizeof(Element);
         PyPtr array(

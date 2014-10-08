@@ -10,6 +10,8 @@
  */
 #include "ndarray.h"
 
+#include <cstddef>
+
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE ndarray
 #include "boost/test/unit_test.hpp"
@@ -48,8 +50,8 @@ BOOST_AUTO_TEST_CASE(vectors) {
 
 BOOST_AUTO_TEST_CASE(cores) {
     typedef ndarray::detail::Core<3> Core;
-    ndarray::Vector<int,3> shape = ndarray::makeVector(4,3,2);
-    ndarray::Vector<int,3> strides = ndarray::makeVector(6,2,1);
+    ndarray::Vector<std::size_t,3> shape = ndarray::makeVector<std::size_t>(4,3,2);
+    ndarray::Vector<std::size_t,3> strides = ndarray::makeVector<std::size_t>(6,2,1);
     Core::Ptr core = Core::create(shape, strides);
     BOOST_CHECK_EQUAL(core->getRC(),1);
     Core::Ptr copy = core;
@@ -59,7 +61,7 @@ BOOST_AUTO_TEST_CASE(cores) {
 }
 
 BOOST_AUTO_TEST_CASE(allocation) {
-    ndarray::Vector<int,3> shape = ndarray::makeVector(5,6,7);
+    ndarray::Vector<std::size_t,3> shape = ndarray::makeVector<std::size_t>(5,6,7);
     ndarray::Array<float,3,3> a = ndarray::allocate(shape);
     BOOST_CHECK_EQUAL(a.getShape(), shape);
 
@@ -71,7 +73,7 @@ BOOST_AUTO_TEST_CASE(allocation) {
     BOOST_CHECK_EQUAL(b.getStride<0>(), 6*7);
     BOOST_CHECK_EQUAL(b.getStride<1>(), 7);
     BOOST_CHECK_EQUAL(b.getStride<2>(), 1);
-    BOOST_CHECK_EQUAL(b.getStrides(), ndarray::makeVector(6*7 ,7, 1));
+    BOOST_CHECK_EQUAL(b.getStrides(), ndarray::makeVector<std::size_t>(6*7 ,7, 1));
 
     ndarray::Array<float,3,-3> c = ndarray::allocate(5,6,7);
     BOOST_CHECK_EQUAL(c.getShape(), shape);
@@ -81,14 +83,14 @@ BOOST_AUTO_TEST_CASE(allocation) {
     BOOST_CHECK_EQUAL(c.getStride<0>(), 1);
     BOOST_CHECK_EQUAL(c.getStride<1>(), 5);
     BOOST_CHECK_EQUAL(c.getStride<2>(), 5*6);
-    BOOST_CHECK_EQUAL(c.getStrides(), ndarray::makeVector(1, 5, 5*6));
-    
+    BOOST_CHECK_EQUAL(c.getStrides(), ndarray::makeVector<std::size_t>(1, 5, 5*6));
+
 }
 
 BOOST_AUTO_TEST_CASE(external) {
     double data[3*4*2] = {0};
-    ndarray::Vector<int,3> shape = ndarray::makeVector(3,4,2);
-    ndarray::Vector<int,3> strides = ndarray::makeVector(8,2,1);
+    ndarray::Vector<std::size_t,3> shape = ndarray::makeVector<std::size_t>(3,4,2);
+    ndarray::Vector<std::size_t,3> strides = ndarray::makeVector<std::size_t>(8,2,1);
     ndarray::Array<double,3,3> a = ndarray::external(data,shape,strides);
     BOOST_CHECK_EQUAL(a.getData(), data);
     BOOST_CHECK_EQUAL(a.getShape(), shape);
@@ -97,16 +99,16 @@ BOOST_AUTO_TEST_CASE(external) {
 
 BOOST_AUTO_TEST_CASE(conversion) {
     double data[3*4*2] = {0};
-    ndarray::Vector<int,3> shape = ndarray::makeVector(3,4,2);
-    ndarray::Vector<int,3> strides = ndarray::makeVector(8,2,1);
+    ndarray::Vector<std::size_t,3> shape = ndarray::makeVector<std::size_t>(3,4,2);
+    ndarray::Vector<std::size_t,3> strides = ndarray::makeVector<std::size_t>(8,2,1);
     ndarray::Array<double,3,3> a = ndarray::external(data,shape,strides);
     ndarray::Array<double const,3> b = a;
 }
 
 BOOST_AUTO_TEST_CASE(shallow) {
     double data[3*4*2] = {0};
-    ndarray::Vector<int,3> shape = ndarray::makeVector(3,4,2);
-    ndarray::Vector<int,3> strides = ndarray::makeVector(8,2,1);
+    ndarray::Vector<std::size_t,3> shape = ndarray::makeVector<std::size_t>(3,4,2);
+    ndarray::Vector<std::size_t,3> strides = ndarray::makeVector<std::size_t>(8,2,1);
     ndarray::Array<double,3,3> a = ndarray::external(data,shape,strides);
     ndarray::Array<double,3,1> b = ndarray::external(data,shape,strides);
     BOOST_CHECK(a == b);
@@ -128,8 +130,8 @@ BOOST_AUTO_TEST_CASE(shallow) {
 
 BOOST_AUTO_TEST_CASE(casts) {
     double data[3*4*2] = {0};
-    ndarray::Vector<int,3> shape = ndarray::makeVector(3,4,2);
-    ndarray::Vector<int,3> strides = ndarray::makeVector(8,2,1);
+    ndarray::Vector<std::size_t,3> shape = ndarray::makeVector<std::size_t>(3,4,2);
+    ndarray::Vector<std::size_t,3> strides = ndarray::makeVector<std::size_t>(8,2,1);
     ndarray::Array<double const,3,1> a = ndarray::external(data,shape,strides);
     ndarray::Array<double const,3,2> b = ndarray::static_dimension_cast<2>(a);
     BOOST_CHECK(a == b);
@@ -144,8 +146,8 @@ BOOST_AUTO_TEST_CASE(casts) {
 
 BOOST_AUTO_TEST_CASE(complex) {
     std::complex<double> data[3*4*2] = { std::complex<double>(0.0,0.0) };
-    ndarray::Vector<int,3> shape = ndarray::makeVector(3,4,2);
-    ndarray::Vector<int,3> strides = ndarray::makeVector(8,2,1);
+    ndarray::Vector<std::size_t,3> shape = ndarray::makeVector<std::size_t>(3,4,2);
+    ndarray::Vector<std::size_t,3> strides = ndarray::makeVector<std::size_t>(8,2,1);
     ndarray::Array<std::complex<double>,3,3> a = ndarray::external(data,shape,strides);
     ndarray::Array<double const,3,0> re(getReal(a));
     ndarray::Array<double const,3,0> im(getImag(a));
@@ -155,40 +157,40 @@ BOOST_AUTO_TEST_CASE(complex) {
 }
 
 BOOST_AUTO_TEST_CASE(indexing) {
-    double data[3*4*2] = { 
+    double data[3*4*2] = {
          0, 1, 2, 3, 4, 5, 6, 7,
          8, 9,10,11,12,13,14,15,
         16,17,18,19,20,21,22,23,
     };
-    ndarray::Vector<int,3> a_shape = ndarray::makeVector(4,3,2);
-    ndarray::Vector<int,3> a_strides = ndarray::makeVector(6,2,1);
+    ndarray::Vector<std::size_t,3> a_shape = ndarray::makeVector<std::size_t>(4,3,2);
+    ndarray::Vector<std::size_t,3> a_strides = ndarray::makeVector<std::size_t>(6,2,1);
     ndarray::Array<double,3,3> a = ndarray::external(data, a_shape, a_strides);
     BOOST_CHECK(a.front().shallow() == a[0].shallow());
     BOOST_CHECK(a.back().shallow() == a[a_shape[0]-1].shallow());
-    int n = 0;
-    for (int i=0; i<a_shape[0]; ++i) {
-        for (int j=0; j<a_shape[1]; ++j) {
-            for (int k=0; k<a_shape[2]; ++k) {
+    std::size_t n = 0;
+    for (std::size_t i=0; i<a_shape[0]; ++i) {
+        for (std::size_t j=0; j<a_shape[1]; ++j) {
+            for (std::size_t k=0; k<a_shape[2]; ++k) {
                 BOOST_CHECK_EQUAL(a[i][j][k], n);
                 BOOST_CHECK_EQUAL(a(i,j,k), n);
                 ++n;
             }
         }
     }
-    ndarray::Vector<int,2> b_shape = ndarray::makeVector(8,3);
-    ndarray::Vector<int,2> b_strides = ndarray::makeVector(1,8);
+    ndarray::Vector<std::size_t,2> b_shape = ndarray::makeVector<std::size_t>(8,3);
+    ndarray::Vector<std::size_t,2> b_strides = ndarray::makeVector<std::size_t>(1,8);
     ndarray::Array<double,2> b = ndarray::external(data, b_shape, b_strides);
-    for (int i=0; i<b_shape[0]; ++i) {
-        for (int j=0; j<b_shape[1]; ++j) {
+    for (std::size_t i=0; i<b_shape[0]; ++i) {
+        for (std::size_t j=0; j<b_shape[1]; ++j) {
             BOOST_CHECK_EQUAL(b[i][j], i+8*j);
             BOOST_CHECK_EQUAL(b(i,j), i+8*j);
         }
     }
-    ndarray::Vector<int,2> c_shape = ndarray::makeVector(4,3);
-    ndarray::Vector<int,2> c_strides = ndarray::makeVector(1,8);
+    ndarray::Vector<std::size_t,2> c_shape = ndarray::makeVector<std::size_t>(4,3);
+    ndarray::Vector<std::size_t,2> c_strides = ndarray::makeVector<std::size_t>(1,8);
     ndarray::Array<double,2> c = ndarray::external(data, c_shape, c_strides);
-    for (int i=0; i<c_shape[0]; ++i) {
-        for (int j=0; j<c_shape[1]; ++j) {
+    for (std::size_t i=0; i<c_shape[0]; ++i) {
+        for (std::size_t j=0; j<c_shape[1]; ++j) {
             BOOST_CHECK_EQUAL(c[i][j], i+8*j);
             BOOST_CHECK_EQUAL(c(i,j), i+8*j);
         }
@@ -196,13 +198,13 @@ BOOST_AUTO_TEST_CASE(indexing) {
 }
 
 BOOST_AUTO_TEST_CASE(iterators) {
-    double data[3*4*2] = { 
+    double data[3*4*2] = {
          0, 1, 2, 3, 4, 5, 6, 7,
          8, 9,10,11,12,13,14,15,
         16,17,18,19,20,21,22,23,
     };
-    ndarray::Vector<int,3> a_shape = ndarray::makeVector(4,3,2);
-    ndarray::Vector<int,3> a_strides = ndarray::makeVector(6,2,1);
+    ndarray::Vector<std::size_t,3> a_shape = ndarray::makeVector<std::size_t>(4,3,2);
+    ndarray::Vector<std::size_t,3> a_strides = ndarray::makeVector<std::size_t>(6,2,1);
     ndarray::Array<double,3,3> a = ndarray::external(data, a_shape, a_strides);
     ndarray::Array<double,3,3>::Iterator ai_iter = a.begin();
     ndarray::Array<double,3,3>::Iterator const ai_end = a.end();
@@ -217,8 +219,8 @@ BOOST_AUTO_TEST_CASE(iterators) {
             }
         }
     }
-    ndarray::Vector<int,2> b_shape = ndarray::makeVector(4,3);
-    ndarray::Vector<int,2> b_strides = ndarray::makeVector(1,8);
+    ndarray::Vector<std::size_t,2> b_shape = ndarray::makeVector<std::size_t>(4,3);
+    ndarray::Vector<std::size_t,2> b_strides = ndarray::makeVector<std::size_t>(1,8);
     ndarray::Array<double,2> b = ndarray::external(data, b_shape, b_strides);
     ndarray::Array<double,2>::Iterator bi_iter = b.begin();
     ndarray::Array<double,2>::Iterator const bi_end = b.end();
@@ -233,38 +235,38 @@ BOOST_AUTO_TEST_CASE(iterators) {
 }
 
 BOOST_AUTO_TEST_CASE(views) {
-    ndarray::Vector<int,3> shape = ndarray::makeVector(4,3,2);
+    ndarray::Vector<std::size_t,3> shape = ndarray::makeVector<std::size_t>(4,3,2);
     ndarray::Array<double,3,3> a = ndarray::allocate(shape);
     BOOST_CHECK(a == a[ndarray::view()()].shallow());
     BOOST_CHECK(a == a[ndarray::view()].shallow());
-    BOOST_CHECK(a[1].shallow() == a[ndarray::view(1)].shallow());
-    BOOST_CHECK(a[1][2].shallow() == a[ndarray::view(1)(2)].shallow());
+    BOOST_CHECK(a[1].shallow() == a[ndarray::view((std::size_t)1)].shallow());
+    BOOST_CHECK(a[1][2].shallow() == a[ndarray::view((std::size_t)1)((std::size_t)2)].shallow());
     BOOST_CHECK(a != a[ndarray::view(0,3)].shallow());
     ndarray::Array<double const,2> b = a[ndarray::view()(1,3)(0)];
-    BOOST_CHECK(b.getShape() == ndarray::makeVector(4,2));
-    BOOST_CHECK(b.getStrides() == ndarray::makeVector(6,2));
+    BOOST_CHECK(b.getShape() == ndarray::makeVector<std::size_t>(4,2));
+    BOOST_CHECK(b.getStrides() == ndarray::makeVector<std::size_t>(6,2));
     BOOST_CHECK(b.getData() == a.getData() + 2);
     ndarray::Array<double const,2> c = b[ndarray::view(0,4,2)()];
-    BOOST_CHECK(c.getShape() == ndarray::makeVector(2,2));
-    BOOST_CHECK(c.getStrides() == ndarray::makeVector(12,2));
+    BOOST_CHECK(c.getShape() == ndarray::makeVector<std::size_t>(2,2));
+    BOOST_CHECK(c.getStrides() == ndarray::makeVector<std::size_t>(12,2));
     BOOST_CHECK(c.getData() == b.getData());
 }
 
 #ifndef GCC_45
 
 BOOST_AUTO_TEST_CASE(predicates) {
-    double data1[3*4*2] = { 
+    double data1[3*4*2] = {
          0, 1, 2, 3, 4, 5, 6, 7,
          8, 9,10,11,12,13,14,15,
         16,17,18,19,20,21,22,23,
     };
-    double data2[3*4*2] = { 
+    double data2[3*4*2] = {
          0, 1, 2, 3, 4, 5, 6, 7,
          8, 9,10,11,12,13,14,15,
         16,17,18,19,20,21,22,23,
     };
-    ndarray::Vector<int,3> shape = ndarray::makeVector(4,3,2);
-    ndarray::Vector<int,3> strides = ndarray::makeVector(6,2,1);
+    ndarray::Vector<std::size_t,3> shape = ndarray::makeVector<std::size_t>(4,3,2);
+    ndarray::Vector<std::size_t,3> strides = ndarray::makeVector<std::size_t>(6,2,1);
     ndarray::Array<double const,3,3> a = ndarray::external(data1, shape, strides);
     ndarray::Array<bool,3,2> b = ndarray::allocate(shape);
     ndarray::Array<bool,3> c = ndarray::allocate(shape);
@@ -299,15 +301,15 @@ BOOST_AUTO_TEST_CASE(predicates) {
 }
 
 BOOST_AUTO_TEST_CASE(allclose) {
-   float data[3*4*2] = { 
+   float data[3*4*2] = {
          0, 1, 2, 3, 4, 5, 6, 7,
          8, 9,10,11,12,13,14,15,
         16,17,18,19,20,21,22,23,
     };
-    ndarray::Vector<int,3> shape = ndarray::makeVector(4,3,2);
-    ndarray::Vector<int,3> strides = ndarray::makeVector(6,2,1);
+    ndarray::Vector<std::size_t,3> shape = ndarray::makeVector<std::size_t>(4,3,2);
+    ndarray::Vector<std::size_t,3> strides = ndarray::makeVector<std::size_t>(6,2,1);
     ndarray::Array<float,3,2> a = ndarray::external(data,shape,strides);
-    ndarray::Array<double,4,4> b = ndarray::allocate(ndarray::concatenate(shape, 3));
+    ndarray::Array<double,4,4> b = ndarray::allocate(ndarray::concatenate(shape, (std::size_t)3));
     ndarray::Array<double,3,3> c = ndarray::allocate(shape);
     c.deep() = a + 1.2;
     b.deep() = a + 1.2;
@@ -318,13 +320,13 @@ BOOST_AUTO_TEST_CASE(allclose) {
 }
 
 BOOST_AUTO_TEST_CASE(binary_ops) {
-    float data[3*4*2] = { 
+    float data[3*4*2] = {
          0, 1, 2, 3, 4, 5, 6, 7,
          8, 9,10,11,12,13,14,15,
         16,17,18,19,20,21,22,23,
     };
-    ndarray::Vector<int,3> shape = ndarray::makeVector(4,3,2);
-    ndarray::Vector<int,3> strides = ndarray::makeVector(6,2,1);
+    ndarray::Vector<std::size_t,3> shape = ndarray::makeVector<std::size_t>(4,3,2);
+    ndarray::Vector<std::size_t,3> strides = ndarray::makeVector<std::size_t>(6,2,1);
     ndarray::Array<float,3,2> a = ndarray::external(data,shape,strides);
     ndarray::Array<double,3,1> b = ndarray::allocate(shape);
     ndarray::Array<double,3,3> c = ndarray::allocate(shape);
@@ -344,21 +346,21 @@ BOOST_AUTO_TEST_CASE(binary_ops) {
 }
 
 BOOST_AUTO_TEST_CASE(broadcasting) {
-    double data3[3*4*2] = { 
+    double data3[3*4*2] = {
          0, 1, 2, 3, 4, 5, 6, 7,
          8, 9,10,11,12,13,14,15,
         16,17,18,19,20,21,22,23,
     };
-    double data2[3*4] = { 
+    double data2[3*4] = {
         0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
     };
-    double data32[3*4*2] = { 
+    double data32[3*4*2] = {
         0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11,
     };
-    ndarray::Vector<int,3> shape3 = ndarray::makeVector(3,4,2);
-    ndarray::Vector<int,3> strides3 = ndarray::makeVector(8,2,1);
-    ndarray::Vector<int,2> shape2 = ndarray::makeVector(3,4);
-    ndarray::Vector<int,2> strides2 = ndarray::makeVector(4,1);
+    ndarray::Vector<std::size_t,3> shape3 = ndarray::makeVector<std::size_t>(3,4,2);
+    ndarray::Vector<std::size_t,3> strides3 = ndarray::makeVector<std::size_t>(8,2,1);
+    ndarray::Vector<std::size_t,2> shape2 = ndarray::makeVector<std::size_t>(3,4);
+    ndarray::Vector<std::size_t,2> strides2 = ndarray::makeVector<std::size_t>(4,1);
     ndarray::Array<double const,3,3> a3 = ndarray::external(data3,shape3,strides3);
     ndarray::Array<double const,3,3> a32 = ndarray::external(data32,shape3,strides3);
     ndarray::Array<double const,2,2> a2 = ndarray::external(data2,shape2,strides2);
@@ -380,13 +382,13 @@ BOOST_AUTO_TEST_CASE(broadcasting) {
 #endif
 
 BOOST_AUTO_TEST_CASE(assignment) {
-    double data[3*4*2] = { 
+    double data[3*4*2] = {
          0, 1, 2, 3, 4, 5, 6, 7,
          8, 9,10,11,12,13,14,15,
         16,17,18,19,20,21,22,23,
     };
-    ndarray::Vector<int,3> shape = ndarray::makeVector(3,4,2);
-    ndarray::Vector<int,3> strides = ndarray::makeVector(8,2,1);
+    ndarray::Vector<std::size_t,3> shape = ndarray::makeVector<std::size_t>(3,4,2);
+    ndarray::Vector<std::size_t,3> strides = ndarray::makeVector<std::size_t>(8,2,1);
     ndarray::Array<double,3,3> a = ndarray::external(data,shape,strides);
     ndarray::Array<double,3,3> b = ndarray::allocate(shape);
     b.deep() = a;
@@ -438,11 +440,11 @@ BOOST_AUTO_TEST_CASE(transpose) {
          8, 9,10,11,12,13,14,15,
         16,17,18,19,20,21,22,23,
     };
-    ndarray::Vector<int,3> shape = ndarray::makeVector(3,4,2);
-    ndarray::Vector<int,3> strides = ndarray::makeVector(8,2,1);
+    ndarray::Vector<std::size_t,3> shape = ndarray::makeVector<std::size_t>(3,4,2);
+    ndarray::Vector<std::size_t,3> strides = ndarray::makeVector<std::size_t>(8,2,1);
     ndarray::Array<double,3,3> a = ndarray::external(data,shape,strides);
     ndarray::Array<double const,3,-3> b = a.transpose();
-    ndarray::Array<double const,3> c = a.transpose(ndarray::makeVector(1,0,2));
+    ndarray::Array<double const,3> c = a.transpose(ndarray::makeVector<std::size_t>(1,0,2));
     for (int i=0; i<shape[0]; ++i) {
         for (int j=0; j<shape[1]; ++j) {
             for (int k=0; k<shape[2]; ++k) {
@@ -451,16 +453,16 @@ BOOST_AUTO_TEST_CASE(transpose) {
             }
         }
     }
-    BOOST_CHECK(a[ndarray::view()(1)(1)].shallow() == b[ndarray::view(1)(1)()].shallow());
-    BOOST_CHECK(a[ndarray::view(0)()(1)].shallow() == b[ndarray::view(1)()(0)].shallow());
-    BOOST_CHECK(a[ndarray::view(0)(0)()].shallow() == b[ndarray::view()(0)(0)].shallow());
-    BOOST_CHECK(a[ndarray::view()(1)(1)].shallow() == c[ndarray::view(1)()(1)].shallow());
-    BOOST_CHECK(a[ndarray::view(0)()(1)].shallow() == c[ndarray::view()(0)(1)].shallow());
-    BOOST_CHECK(a[ndarray::view(0)(0)()].shallow() == c[ndarray::view(0)(0)()].shallow());
+    BOOST_CHECK(a[ndarray::view()(1)(1)].shallow() == b[ndarray::view((std::size_t)1)((std::size_t)1)()].shallow());
+    BOOST_CHECK(a[ndarray::view((std::size_t)0)()((std::size_t)1)].shallow() == b[ndarray::view((std::size_t)1)()((std::size_t)0)].shallow());
+    BOOST_CHECK(a[ndarray::view((std::size_t)0)((std::size_t)0)()].shallow() == b[ndarray::view()((std::size_t)0)((std::size_t)0)].shallow());
+    BOOST_CHECK(a[ndarray::view()((std::size_t)1)((std::size_t)1)].shallow() == c[ndarray::view((std::size_t)1)()((std::size_t)1)].shallow());
+    BOOST_CHECK(a[ndarray::view((std::size_t)0)()((std::size_t)1)].shallow() == c[ndarray::view()((std::size_t)0)((std::size_t)1)].shallow());
+    BOOST_CHECK(a[ndarray::view((std::size_t)0)((std::size_t)0)()].shallow() == c[ndarray::view((std::size_t)0)((std::size_t)0)()].shallow());
 
     {
-        ndarray::Array<double const,2,2> a1 = a[ndarray::view(0)()()];
-        ndarray::Array<double const,2,-2> b1 = b[ndarray::view()()(0)];
+        ndarray::Array<double const,2,2> a1 = a[ndarray::view((std::size_t)0)()()];
+        ndarray::Array<double const,2,-2> b1 = b[ndarray::view()()((std::size_t)0)];
         BOOST_CHECK(b1.transpose().shallow() == a1.shallow());
         BOOST_CHECK(a1.transpose().shallow() == b1.shallow());
     }
@@ -496,22 +498,26 @@ BOOST_AUTO_TEST_CASE(transpose) {
 }
 
 BOOST_AUTO_TEST_CASE(flatten) {
-    double data[3*4*2] = { 
+    double data[3*4*2] = {
          0, 1, 2, 3, 4, 5, 6, 7,
          8, 9,10,11,12,13,14,15,
         16,17,18,19,20,21,22,23,
     };
-    ndarray::Vector<int,3> a_shape = ndarray::makeVector(4,3,2);
-    ndarray::Vector<int,3> a_strides = ndarray::makeVector(6,2,1);
+    ndarray::Vector<std::size_t,3> a_shape = ndarray::makeVector<std::size_t>(4,3,2);
+    ndarray::Vector<std::size_t,3> a_strides = ndarray::makeVector<std::size_t>(6,2,1);
     ndarray::Array<double,3,3> a = ndarray::external(data,a_shape,a_strides);
     ndarray::Array<double,2,2> b = ndarray::flatten<2>(a);
     ndarray::Array<double,2,2> b_check = ndarray::external(
-        data, ndarray::makeVector(4,6), ndarray::makeVector(6,1)
+        data,
+        ndarray::makeVector<std::size_t>(4,6),
+        ndarray::makeVector<std::size_t>(6,1)
     );
     BOOST_CHECK(b.shallow() == b_check.shallow());
     ndarray::Array<double,1,1> c = ndarray::flatten<1>(a);
     ndarray::Array<double,1,1> c_check = ndarray::external(
-        data, ndarray::makeVector(24), ndarray::makeVector(1)
+        data,
+        ndarray::makeVector<std::size_t>(24),
+        ndarray::makeVector<std::size_t>(1)
     );
 }
 
@@ -522,7 +528,7 @@ BOOST_AUTO_TEST_CASE(unique) {
     BOOST_CHECK(!a.isUnique());
     BOOST_CHECK(!b.isUnique());
     a = ndarray::Array<double,2,2>();
-    BOOST_CHECK(b.isUnique());    
+    BOOST_CHECK(b.isUnique());
     ndarray::Array<double const,2,1> c = b[ndarray::view(1,4)(1,3)];
     BOOST_CHECK(!c.isUnique());
     BOOST_CHECK(!b.isUnique());
@@ -562,7 +568,7 @@ BOOST_AUTO_TEST_CASE(zeroSize) {
 
 BOOST_AUTO_TEST_CASE(manager) {
     ndarray::Array<double,1,1> a = ndarray::allocate(5);
-    ndarray::Array<double,1,1> b 
+    ndarray::Array<double,1,1> b
         = ndarray::external(a.getData(), a.getShape(), a.getStrides(), a.getManager());
     BOOST_CHECK_EQUAL(a.getManager(), b.getManager()); // no extra indirection in makeManager
 }

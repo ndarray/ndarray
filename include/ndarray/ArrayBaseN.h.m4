@@ -49,7 +49,7 @@ private:
  *
  *  @brief Definition of ArrayBaseN, a dimension-specialized CRTP base class for Array and ArrayRef.
  */
-
+#include <cstddef>
 #include "ndarray/ArrayBase.h"
 
 namespace ndarray {
@@ -75,12 +75,12 @@ private:
     ArrayBaseN(Element * data, CorePtr const & core) : Super(data, core) {}
 };
 
-SPECIALIZE(1, `int n0', `n0')
-SPECIALIZE(2, `int n0, int n1', `n0, n1')
-SPECIALIZE(3, `int n0, int n1, int n2', `n0, n1, n2')
-SPECIALIZE(4, `int n0, int n1, int n2, int n3', `n0, n1, n2, n3')
-SPECIALIZE(5, `int n0, int n1, int n2, int n3, int n4', `n0, n1, n2, n3, n4')
-SPECIALIZE(6, `int n0, int n1, int n2, int n3, int n4, int n5', `n0, n1, n2, n3, n4, n5')
+SPECIALIZE(1, `std::size_t n0', `n0')
+SPECIALIZE(2, `std::size_t n0, std::size_t n1', `n0, n1')
+SPECIALIZE(3, `std::size_t n0, std::size_t n1, std::size_t n2', `n0, n1, n2')
+SPECIALIZE(4, `std::size_t n0, std::size_t n1, std::size_t n2, std::size_t n3', `n0, n1, n2, n3')
+SPECIALIZE(5, `std::size_t n0, std::size_t n1, std::size_t n2, std::size_t n3, std::size_t n4', `n0, n1, n2, n3, n4')
+SPECIALIZE(6, `std::size_t n0, std::size_t n1, std::size_t n2, std::size_t n3, std::size_t n4, std::size_t n5', `n0, n1, n2, n3, n4, n5')
 
 } // namespace ndarray
 

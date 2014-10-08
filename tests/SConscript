@@ -8,6 +8,7 @@
 #  of the source distribution, or alternately available at:
 #  https://github.com/ndarray/ndarray
 #
+import os
 import sys
 
 def RunBinaryUnitTest(target, source, env):
@@ -40,14 +41,23 @@ if testEnv.haveBoostTest:
         BinaryUnitTest(testEnv, "ndarray-eigen.cc")
     if testEnv.haveFFTW:
         fftwEnv = testEnv.Clone()
-        fftwEnv.Append(LIBS=["fftw3"])
         BinaryUnitTest(fftwEnv, "ndarray-fft.cc")
 
 if pyEnv.havePython:
     mod = pyEnv.LoadableModule("python_test_mod", "python_test_mod.cc", SHLIBPREFIX="")
+    if os.name == 'nt':
+        # Move the module to have the correct name.
+        mod = env.Command(os.path.join(Dir('.').srcnode().abspath, "python_test_mod.pyd"),
+                          mod,
+                          Move(os.path.join(Dir('.').srcnode().abspath, "python_test_mod.pyd"), mod[0]))
     PythonUnitTest(pyEnv, "python_test.py", mod)
     if pyEnv.haveSwig and pyEnv.haveEigen:
         mod = pyEnv.LoadableModule("_swig_test_mod", ["swig_test_mod.i"], SHLIBPREFIX="")
+        if os.name == 'nt':
+            # Move the module to have the correct name.
+            mod = env.Command(os.path.join(Dir('.').srcnode().abspath, "_swig_test_mod.pyd"),
+                              mod,
+                              Move(os.path.join(Dir('.').srcnode().abspath, "_swig_test_mod.pyd"), mod[0]))
         PythonUnitTest(pyEnv, "swig_test.py", mod)
 
 if bpEnv.haveBoostPython:
@@ -57,12 +67,22 @@ if bpEnv.haveBoostPython:
     bpEnv.Append( LINKFLAGS = ["$__RPATH"] )  # workaround for SCons bug #1644
     mod = bpEnv.LoadableModule("bp_test_mod", "bp_test_mod.cc", SHLIBPREFIX="",
                                LIBS=libs, LIBPATH=libpath, RPATH=rpath)
+    if os.name == 'nt':
+        # Move the module to have the correct name.
+        mod = env.Command(os.path.join(Dir('.').srcnode().abspath, "bp_test_mod.pyd"),
+                          mod,
+                          Move(os.path.join(Dir('.').srcnode().abspath, "bp_test_mod.pyd"), mod[0]))
     PythonUnitTest(bpEnv, "bp_test.py", mod)
     if bpEnv.haveEigen:
         mod = bpEnv.LoadableModule("eigen_bp_test_mod", "eigen_bp_test_mod.cc", SHLIBPREFIX="",
                                    LIBS=libs, LIBPATH=libpath, RPATH=rpath)
+        if os.name == 'nt':
+            # Move the module to have the correct name.
+            mod = env.Command(os.path.join(Dir('.').srcnode().abspath, "eigen_bp_test_mod.pyd"),
+                              mod,
+                              Move(os.path.join(Dir('.').srcnode().abspath, "eigen_bp_test_mod.pyd"), mod[0]))
         PythonUnitTest(bpEnv, "eigen_bp_test.py", mod)
-        
+
 
 env.Clean("tests", Glob("*.os"))
 env.Clean("tests", Glob("*.pyc"))
