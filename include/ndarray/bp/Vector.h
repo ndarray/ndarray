@@ -17,7 +17,7 @@
 
 namespace ndarray {
 
-template <typename T, std::size_t N>
+template <typename T, int N>
 class ToBoostPython< Vector<T,N> > {
 public:
 
@@ -35,7 +35,7 @@ public:
 
 };
 
-template <typename T, std::size_t N>
+template <typename T, int N>
 class FromBoostPython< Vector<T,N> > {
 public:
 

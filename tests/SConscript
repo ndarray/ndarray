@@ -16,7 +16,7 @@ def RunBinaryUnitTest(target, source, env):
         env.Execute(Touch(target))
 
 def BinaryUnitTest(env, source, dependencies=None):
-    bin = env.Program(source)
+    bin = env.Program(target="%s.test" % source, source=source)
     run = env.Command(".%s.succeeded" % str(source), bin, RunBinaryUnitTest)
     if dependencies:
         env.Depends(run, dependencies)

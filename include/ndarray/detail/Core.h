@@ -54,7 +54,7 @@ public:
     typedef boost::intrusive_ptr<Core const> ConstPtr; ///< const intrusive_ptr to Core
 
     /// @brief Create a Core::Ptr with the given shape, strides, and manager.
-    template <std::size_t M>
+    template <int M>
     static Ptr create(
         Vector<std::size_t,M> const & shape,
         Vector<std::size_t,M> const & strides, 
@@ -64,7 +64,7 @@ public:
     }        
 
     /// @brief Create a Core::Ptr with the given shape and manager with contiguous strides.
-    template <std::size_t M>
+    template <int M>
     static Ptr create(
         Vector<std::size_t,M> const & shape,
         DataOrderEnum order,

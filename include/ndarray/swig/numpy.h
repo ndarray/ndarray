@@ -48,10 +48,11 @@ template <> struct NumpyTraits<npy_ubyte> { static int getCode() { return NPY_UB
 template <> struct NumpyTraits<npy_byte> { static int getCode() { return NPY_BYTE; } };
 template <> struct NumpyTraits<npy_ushort> { static int getCode() { return NPY_USHORT; } };
 template <> struct NumpyTraits<npy_short> { static int getCode() { return NPY_SHORT; } };
-// NPY_INT is a virtual flag that is never actually used. It must be
+// NPY_INT is on Windows a virtual flag that is never actually used. It must be
 // checked against the platform dtype.
 // see http://mail.scipy.org/pipermail/numpy-discussion/2010-June/051057.html.
 template <> struct NumpyTraits<npy_uint> { static int getCode() {
+#ifdef _MSC_VER
   switch(sizeof(int)) {
     case 1: return NPY_UBYTE;
     case 2: return NPY_USHORT;
@@ -59,9 +60,13 @@ template <> struct NumpyTraits<npy_uint> { static int getCode() {
     case 8: return NPY_ULONGLONG;
     // no datatype here...
     default: throw std::exception();
-}
+  }
+#else
+  return NPY_UINT;
+#endif
 }};
 template <> struct NumpyTraits<npy_int> { static int getCode() {
+#ifdef _MSC_VER
   switch(sizeof(int)) {
     case 1: return NPY_BYTE;
     case 2: return NPY_SHORT;
@@ -69,7 +74,10 @@ template <> struct NumpyTraits<npy_int> { static int getCode() {
     case 8: return NPY_LONGLONG;
     // no datatype here...
     default: throw std::exception();
-}
+  }
+#else
+  return NPY_INT;
+#endif
 }};
 template <> struct NumpyTraits<npy_ulong> { static int getCode() { return NPY_ULONG; } };
 template <> struct NumpyTraits<npy_long> { static int getCode() { return NPY_LONG; } };

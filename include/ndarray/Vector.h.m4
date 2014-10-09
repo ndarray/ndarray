@@ -30,21 +30,21 @@ define(`VECTOR_ASSIGN',
 define(`VECTOR_BINARY_OP',
 `
     /// @brief Operator overload for Vector $1 Vector.
-    template <typename T, typename U, std::size_t N>
+    template <typename T, typename U, int N>
     Vector<typename Promote<T,U>::Type,N>
     operator $1(Vector<T,N> const & a, Vector<U,N> const & b) {
         Vector<typename Promote<T,U>::Type,N> r(a);
         return r $1= b;
     }
     /** @brief Operator overload for Vector $1 Scalar. */
-    template <typename T, typename U, std::size_t N>
+    template <typename T, typename U, int N>
     Vector<typename Promote<T,U>::Type,N>
     operator $1(Vector<T,N> const & a, U b) {
         Vector<typename Promote<T,U>::Type,N> r(a);
         return r $1= b;
     }
     /** @brief Operator overload for Scalar $1 Vector. */
-    template <typename T, typename U, std::size_t N>
+    template <typename T, typename U, int N>
     Vector<typename Promote<T,U>::Type,N>
     operator $1(U a, Vector<T,N> const & b) {
         Vector<typename Promote<T,U>::Type,N> r(a);
@@ -79,7 +79,7 @@ define(`VECTOR_TYPEDEFS',
 
 #include <boost/iterator/reverse_iterator.hpp>
 #include <boost/utility/enable_if.hpp>
-#include <boost/mpl/size_t.hpp>
+#include <boost/mpl/int.hpp>
 #include <boost/preprocessor/repetition/repeat.hpp>
 #include <boost/preprocessor/repetition/repeat_from_to.hpp>
 #include <boost/preprocessor/repetition/enum.hpp>
@@ -125,12 +125,12 @@ namespace ndarray {
  */
 template <
     typename T, ///< Data type.
-    std::size_t N       ///< Number of elements.
+    int N       ///< Number of elements.
     >
 struct Vector {
     VECTOR_TYPEDEFS
 
-    typedef boost::mpl::size_t<N> ND;
+    typedef boost::mpl::int_<N> ND;
 
     size_type size() const { return static_cast<size_type>(N); }           ///< @brief Return the size of the Vector.
     size_type max_size() const { return static_cast<size_type>(N); }       ///< @brief Return the size of the Vector.
@@ -167,7 +167,7 @@ struct Vector {
     const_reference operator[](std::size_t i) const { return elems[i]; }
 
     /// @brief Create a new Vector that is a subset of this.
-    template <std::size_t Start, std::size_t Stop>
+    template <int Start, int Stop>
     Vector<T,Stop-Start> getRange() const {
         Vector<T,Stop-Start> r;
         std::copy(begin() + Start, begin()+Stop, r.begin());
@@ -175,14 +175,14 @@ struct Vector {
     }
 
     /// @brief Create a new Vector from the first M elements of this.
-    template <std::size_t M> Vector<T,M> first() const {
+    template <int M> Vector<T,M> first() const {
         Vector<T,M> r;
         std::copy(begin(), begin() + M, r.begin());
         return r;
     }
 
     /// @brief Create a new Vector from the last M elements of this.
-    template <std::size_t M> Vector<T,M> last() const {
+    template <int M> Vector<T,M> last() const {
         Vector<T,M> r;
         std::copy(begin() + (N - M), begin() + N, r.begin());
         return r;
@@ -277,7 +277,7 @@ template <typename T>
 struct Vector<T,0> {
     VECTOR_TYPEDEFS
 
-    typedef boost::mpl::size_t<0> ND;
+    typedef boost::mpl::int_<0> ND;
 
     size_type size() const { return 0; }           ///< @brief Return the size of the Vector.
     size_type max_size() const { return 0; }       ///< @brief Return the size of the Vector.
@@ -314,18 +314,18 @@ struct Vector<T,0> {
     const_reference operator[](std::size_t i) const { NDARRAY_ASSERT(false); return 0; }
 
     /// @brief Create a new Vector that is a subset of this.
-    template <std::size_t Start, std::size_t Stop>
+    template <int Start, int Stop>
     Vector<T,Stop-Start> getRange() const {
         return Vector<T,Stop-Start>();
     }
 
     /// @brief Create a new Vector from the first M elements of this.
-    template <std::size_t M> Vector<T,M> first() const {
+    template <int M> Vector<T,M> first() const {
         return Vector<T,M>();
     }
 
     /// @brief Create a new Vector from the last M elements of this.
-    template <std::size_t M> Vector<T,M> last() const {
+    template <int M> Vector<T,M> last() const {
         return Vector<T,M>();
     }
 
@@ -368,7 +368,7 @@ struct Vector<T,0> {
 
 
 /// @brief Concatenate two Vectors into a single long Vector.
-template <typename T, std::size_t N, std::size_t M>
+template <typename T, int N, int M>
 inline Vector<T,N+M> concatenate(Vector<T,N> const & a, Vector<T,M> const & b) {
     Vector<T,N+M> r;
     std::copy(a.begin(),a.end(),r.begin());
@@ -377,7 +377,7 @@ inline Vector<T,N+M> concatenate(Vector<T,N> const & a, Vector<T,M> const & b) {
 } 
 
 /// @brief Return a new Vector with the given scalar appended to the original.
-template <typename T, std::size_t N>
+template <typename T, int N>
 inline Vector<T,N+1> concatenate(Vector<T,N> const & a, T const & b) {
     Vector<T,N+1> r;
     std::copy(a.begin(),a.end(),r.begin());
@@ -386,7 +386,7 @@ inline Vector<T,N+1> concatenate(Vector<T,N> const & a, T const & b) {
 }
 
 /// @brief Return a new Vector with the given scalar prepended to the original.
-template <typename T, std::size_t N>
+template <typename T, int N>
 inline Vector<T,N+1> concatenate(T const & a, Vector<T,N> const & b) {
     Vector<T,N+1> r;
     r[0] = a;
@@ -402,12 +402,12 @@ BOOST_PP_REPEAT_FROM_TO(1, NDARRAY_MAKE_VECTOR_MAX, NDARRAY_MAKE_VECTOR_SPEC, un
  *
  *  Defined for N in [0 - NDARRAY_MAKE_VECTOR_MAX).
  */
-template <typename T, std::size_t N>
+template <typename T, int N>
 Vector<T,N> makeVector(T v1, T v2, ..., T vN);
 #endif
 
 /** @brief Unary bitwise NOT for Vector. */
-template <typename T, std::size_t N>
+template <typename T, int N>
 inline Vector<T,N> operator~(Vector<T,N> const & vector) {
     Vector<T,N> r(vector);
     for (typename Vector<T,N>::Iterator i = r.begin(); i != r.end(); ++i) (*i) = ~(*i);
@@ -415,7 +415,7 @@ inline Vector<T,N> operator~(Vector<T,N> const & vector) {
 }
 
 /** @brief Unary negation for Vector. */
-template <typename T, std::size_t N>
+template <typename T, int N>
 inline Vector<T,N> operator!(Vector<T,N> const & vector) {
     Vector<T,N> r(vector);
     for (typename Vector<T,N>::Iterator i = r.begin(); i != r.end(); ++i) (*i) = !(*i);
