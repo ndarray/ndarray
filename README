@@ -15,10 +15,9 @@ an empty Boost.NumPy directory.  Even if you don't plan to use
 Boost.NumPy (which is required only if you want to build the
 Boost.Python bindings for ndarray), it *is* necessary to checkout the
 Boost.NumPy source (as parts of the build system is shared).  So,
-immediately after cloning ndarray, you'll need to run two commands:
+immediately after cloning ndarray, you'll need to run:
 
-git submodule init
-git submodule update
+git submodule update --init --recursive
 
 From there, you'll be able to build ndarray and (optionally)
 Boost.NumPy together just by running "scons" from the root of the
