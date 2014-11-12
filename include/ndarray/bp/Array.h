@@ -10,6 +10,7 @@
  */
 #ifndef NDARRAY_BP_Array_h_INCLUDED
 #define NDARRAY_BP_Array_h_INCLUDED
+#include <cstddef>
 
 #include "boost/numpy.hpp"
 #include "ndarray.h"
@@ -54,12 +55,12 @@ public:
         boost::numpy::dtype dtype
             = boost::numpy::dtype::get_builtin<typename boost::remove_const<T>::type>();
         boost::python::object owner = detail::makePyObject(array.getManager());
-        int itemsize = dtype.get_itemsize();
-        ndarray::Vector<int,N> shape_elements = array.getShape();
-        ndarray::Vector<int,N> strides_elements = array.getStrides();
+        std::size_t itemsize = dtype.get_itemsize();
+        ndarray::Vector<std::size_t,N> shape_elements = array.getShape();
+        ndarray::Vector<std::size_t,N> strides_elements = array.getStrides();
         std::vector<Py_intptr_t> shape_bytes(N);
         std::vector<Py_intptr_t> strides_bytes(N);
-        for (int n=0; n<N; ++n) {
+        for (std::size_t n=0; n<N; ++n) {
             shape_bytes[n] = shape_elements[n];
             strides_bytes[n] = strides_elements[n] * itemsize;
         }
@@ -85,7 +86,7 @@ public:
             if (N != array.get_nd()) return false;
             if (!boost::is_const<T>::value && !(flags & boost::numpy::ndarray::WRITEABLE)) return false;
             if (C > 0) {
-                int requiredStride = sizeof(T);
+                std::size_t requiredStride = sizeof(T);
                 for (int i = 0; i < C; ++i) {
                     if ((array.shape(N-i-1) > 1) && (array.strides(N-i-1) != requiredStride)) {
                         return false;
@@ -93,7 +94,7 @@ public:
                     requiredStride *= array.shape(N-i-1);
                 }
             } else if (C < 0) {
-                int requiredStride = sizeof(T);
+                std::size_t requiredStride = sizeof(T);
                 for (int i = 0; i < -C; ++i) {
                     if ((array.shape(i) > 1) && (array.strides(i) != requiredStride)) {
                         return false;
@@ -113,7 +114,7 @@ public:
         if (input.is_none()) return Array<T,N,C>();
         boost::numpy::ndarray array = boost::python::extract<boost::numpy::ndarray>(input);
         boost::numpy::dtype dtype = array.get_dtype();
-        int itemsize = dtype.get_itemsize();
+        std::size_t itemsize = dtype.get_itemsize();
         for (int i = 0; i < N; ++i) {
             if ((array.shape(i) > 1) && (array.strides(i) % itemsize != 0)) {
                 PyErr_SetString(
@@ -127,14 +128,14 @@ public:
         if (obj_owner.is_none()) {
             obj_owner = array;
         }
-        Vector<int,N> shape;
-        Vector<int,N> strides;
+        Vector<std::size_t,N> shape;
+        Vector<std::size_t,N> strides;
         for (int i=0; i<N; ++i) {
             shape[i] = array.shape(i);
             if (shape[i] > 1) {
                 strides[i] = array.strides(i) / itemsize;
             } else {
-                strides[i] = 1.0;
+                strides[i] = 1;
             }
         }
         Array<T,N,C> r = ndarray::external(

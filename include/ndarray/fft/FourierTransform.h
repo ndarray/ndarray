@@ -11,11 +11,13 @@
 #ifndef NDARRAY_FFT_FourierTransform_h_INCLUDED
 #define NDARRAY_FFT_FourierTransform_h_INCLUDED
 
-/** 
+/**
  *  @file ndarray/fft/FourierTransform.h
  *
  *  @brief Definitions for FourierTransform.
  */
+
+#include <cstddef>
 
 #include <boost/noncopyable.hpp>
 
@@ -42,22 +44,22 @@ template <typename T, int N>
 class FourierTransform : private boost::noncopyable {
     BOOST_STATIC_ASSERT((!boost::is_const<T>::value));
 public:
-    
+
     typedef boost::shared_ptr<FourierTransform> Ptr;
 
     typedef typename detail::FourierTraits<T>::ElementX ElementX; ///< Real-space array data type;
     typedef typename detail::FourierTraits<T>::ElementK ElementK; ///< Fourier-space array data type;
 
-    typedef Vector<int,N> Index; ///< Shape type for arrays.
+    typedef Vector<std::size_t,N> Index; ///< Shape type for arrays.
     typedef Array<ElementX,N,N> ArrayX; ///< Real-space array type.
     typedef Array<ElementK,N,N> ArrayK; ///< Fourier-space array type.
-    typedef Vector<int,N+1> MultiplexIndex; ///< Shape type for multiplexed arrays.
+    typedef Vector<std::size_t,N+1> MultiplexIndex; ///< Shape type for multiplexed arrays.
     typedef Array<ElementX,N+1,N+1> MultiplexArrayX; ///< Real-space multiplexed array type.
     typedef Array<ElementK,N+1,N+1> MultiplexArrayK; ///< Fourier-space multiplexed array type.
 
     /**
      *  @brief Create a plan for forward-transforming a single N-dimensional array.
-     *   
+     *
      *  Arrays will be initialized with new memory if empty.  If they are not empty,
      *  existing data may be overwritten when the plan is created.
      */
@@ -69,7 +71,7 @@ public:
 
     /**
      *  @brief Create a plan for inverse-transforming a single N-dimensional array.
-     *   
+     *
      *  Arrays will be initialized with new memory if empty.  If they are not empty,
      *  existing data may be overwritten when the plan is created.
      */
@@ -81,7 +83,7 @@ public:
 
     /**
      *  @brief Create a plan for forward-transforming a sequence of nested N-dimensional arrays.
-     *   
+     *
      *  Arrays will be initialized with new memory if empty.  If they are not empty,
      *  existing data may be overwritten when the plan is created.
      */
@@ -93,7 +95,7 @@ public:
 
     /**
      *  @brief Create a plan for inverse-transforming a sequence of nested N-dimensional arrays.
-     *   
+     *
      *  Arrays will be initialized with new memory if empty.  If they are not empty,
      *  existing data may be overwritten when the plan is created.
      */
@@ -105,26 +107,26 @@ public:
 
     /// @brief Create a new real-space array with the given real-space shape.
     template <int M>
-    static Array<ElementX,M,M> initializeX(Vector<int,M> const & shape);
+    static Array<ElementX,M,M> initializeX(Vector<std::size_t,M> const & shape);
 
     /// @brief Create a new Fourier-space array with the given real-space shape.
     template <int M>
-    static Array<ElementK,M,M> initializeK(Vector<int,M> const & shape);
+    static Array<ElementK,M,M> initializeK(Vector<std::size_t,M> const & shape);
 
-    /** 
+    /**
      *  @brief Initialize, as necessary, a pair of arrays with the given real-space shape.
-     * 
+     *
      *  If either array is not empty, it must be consistent with the given shape.
      */
     template <int M>
-    static void initialize(Vector<int,M> const & shape, Array<ElementX,M,M> & x, Array<ElementK,M,M> & k);
+    static void initialize(Vector<std::size_t,M> const & shape, Array<ElementX,M,M> & x, Array<ElementK,M,M> & k);
 
     /// @brief Execute the FFTW plan.
     void execute();
 
     ~FourierTransform();
 
-private:
+   private:
     typedef boost::shared_ptr<ElementX> OwnerX;
     typedef boost::shared_ptr<ElementK> OwnerK;
 

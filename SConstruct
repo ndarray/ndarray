@@ -8,59 +8,14 @@
 #  of the source distribution, or alternately available at:
 #  https://github.com/ndarray/ndarray
 #
-
 import os
+import sys
+sys.path.insert(0, os.path.abspath('Boost.NumPy'))
+from SConsChecks import AddLibOptions, GetLibChecks
 
-def CheckBoostTest(context):
-    source_file = """
-#define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE config
-#include "boost/test/unit_test.hpp"
-#include "boost/test/results_reporter.hpp"
-#include <iostream>
-
-BOOST_AUTO_TEST_CASE(ConfigTestCase) {
-    boost::unit_test::results_reporter::set_stream(std::cout);
-    BOOST_CHECK(true);
-}
-"""
-    context.Message("Checking for Boost.Test Library...")
-    context.env.setupPaths(
-        prefix = GetOption("boost_prefix"),
-        include = GetOption("boost_include"),
-        lib = GetOption("boost_lib")
-        )
-    result = (
-        context.checkLibs([''], source_file) or
-        context.checkLibs(['boost_unit_test_framework'], source_file) or
-        context.checkLibs(['boost_unit_test_framework-mt'], source_file)
-        )
-    if not result:
-        context.Result(0)
-        print("Cannot build against Boost.Test.")
-        return False
-    result, output = context.TryRun(source_file, '.cpp')
-    if not result:
-        context.Result(0)
-        print("Cannot build against Boost.Test.")
-        return False
-    context.Result(1)
-    return True
-
-def CheckSwig(context):
-    context.Message("Checking for SWIG...")
-    context.env.PrependUnique(SWIGFLAGS = ["-python", "-c++"])
-    result, swig_cmd = config.TryAction("which swig > $TARGET")
-    context.Result(result)
-    if result:
-        context.env.AppendUnique(SWIGPATH = ["#include"])
-        print("Using SWIG at", swig_cmd.strip())
-    return result
-
-setupOptions, makeEnvironment, setupTargets, checks = SConscript("Boost.NumPy/SConscript")
-
-checks["CheckBoostTest"] = CheckBoostTest
-checks["CheckSwig"] = CheckSwig
+setupOptions, makeEnvironment, setupTargets, checks, libs = SConscript("Boost.NumPy/SConscript")
+libs.extend(['swig', 'eigen', 'boost.test', 'fftw', 'boost.preprocessor'])
+checks = GetLibChecks(libs)
 
 variables = setupOptions()
 
@@ -69,7 +24,6 @@ AddOption("--with-eigen", dest="eigen_prefix", type="string", nargs=1, action="s
           help="prefix for Eigen libraries; should have an 'include' subdirectory")
 AddOption("--with-eigen-include", dest="eigen_include", type="string", nargs=1, action="store",
           metavar="DIR", help="location of Eigen header files")
-
 AddOption("--with-fftw", dest="fftw_prefix", type="string", nargs=1, action="store",
           metavar="DIR", default=os.environ.get("FFTW_DIR"),
           help="prefix for FFTW libraries; should have 'include' and 'lib' subdirectories")
@@ -77,7 +31,6 @@ AddOption("--with-fftw-include", dest="fftw_include", type="string", nargs=1, ac
           metavar="DIR", help="location of FFTW header files")
 AddOption("--with-fftw-lib", dest="fftw_lib", type="string", nargs=1, action="store",
           metavar="DIR", help="location of FFTW library")
-
 building = not GetOption("help") and not GetOption("clean")
 
 env = makeEnvironment(variables)
@@ -85,18 +38,8 @@ env.AppendUnique(CPPPATH=["#include"])
 
 if building:
     config = env.Configure(custom_tests=checks)
-    config.env.setupPaths(
-        prefix = GetOption("eigen_prefix"),
-        include = GetOption("eigen_include"),
-        lib = None
-        )
-    config.env.setupPaths(
-        prefix = GetOption("fftw_prefix"),
-        include = GetOption("fftw_include"),
-        lib = GetOption("fftw_lib")
-        )
-    haveEigen = config.CheckCXXHeader("Eigen/Core")
-    haveFFTW = config.CheckLibWithHeader("fftw3", "fftw3.h", "C", autoadd=False)
+    haveEigen = config.CheckEigen()
+    haveFFTW = config.CheckFFTW()
     env = config.Finish()
 else:
     haveEigen = False
@@ -118,6 +61,9 @@ if building:
     config = pyEnv.Configure(custom_tests=checks)
     havePython = config.CheckPython() and config.CheckNumPy()
     haveSwig = havePython and config.CheckSwig()
+    if haveSwig:
+        pyEnv.AppendUnique(SWIGPATH = ["#include"])
+    config.CheckBoostPP()
     pyEnv = config.Finish()
 else:
     havePython = False
@@ -141,6 +87,7 @@ elif building:
     print("Not building Boost.NumPy component.")
 
 headers = SConscript(os.path.join("include", "SConscript"), exports="env")
+
 prefix = Dir(GetOption("prefix")).abspath
 install_headers = GetOption("install_headers")
 if not install_headers:
@@ -149,5 +96,4 @@ for header in Flatten(headers):
     relative = os.path.relpath(header.abspath, Dir("#include").abspath)
     env.Alias("install", env.InstallAs(os.path.join(install_headers, relative), header))
 
-if False:
-    tests = SConscript(os.path.join("tests", "SConscript"), exports=["env", "testEnv", "pyEnv", "bpEnv"])
+tests = SConscript(os.path.join("tests", "SConscript"), exports=["env", "testEnv", "pyEnv", "bpEnv"])

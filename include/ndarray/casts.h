@@ -16,7 +16,8 @@
  *
  *  @brief Specialized casts for Array.
  */
-
+#include <cstddef>
+ 
 #include "ndarray/Array.h"
 #include "ndarray/ArrayRef.h"
 #include <boost/type_traits/add_const.hpp>
@@ -39,9 +40,9 @@ struct ComplexExtractor {
         >::type RealElement;
     typedef ArrayRef<RealElement,ND::value,0> Result;
     typedef detail::ArrayAccess<Result> Access;
-    typedef Vector<int,ND::value> Index;
+    typedef Vector<std::size_t,ND::value> Index;
 
-    static inline Result apply(Array_ const & array, int offset) {
+    static inline Result apply(Array_ const & array, std::size_t offset) {
         return Access::construct(
             reinterpret_cast<RealElement*>(array.getData()) + offset,
             Access::Core::create(array.getShape(), array.getStrides() * 2, array.getManager())
@@ -90,17 +91,17 @@ static_dimension_cast(Array<T,N,C> const & array) {
 template <int C_, typename T, int N, int C>
 Array<T,N,C_>
 dynamic_dimension_cast(Array<T,N,C> const & array) {
-    Vector<int,N> shape = array.getShape();
-    Vector<int,N> strides = array.getStrides();
+    Vector<std::size_t,N> shape = array.getShape();
+    Vector<std::size_t,N> strides = array.getStrides();
     if (C_ >= 0) {
-        int n = 1;
+        std::size_t n = 1;
         for (int i=1; i <= C_; ++i) {
-            if (strides[N-i] != n) return Array<T,N,C_>();
+            if (strides[static_cast<size_t>(N-i)] != n) return Array<T,N,C_>();
             n *= shape[N-i];
         }
     } else {
-        int n = 1;
-        for (int i=0; i < -C_; ++i) {
+        std::size_t n = 1;
+        for (std::size_t i=0; i < static_cast<size_t>(-C_); ++i) {
             if (strides[i] != n) return Array<T,N,C_>();
             n *= strides[i];
         }
@@ -138,12 +139,12 @@ flatten(Array<T,N,C> const & input) {
     typedef detail::ArrayAccess< ArrayRef<T,Nf,(C+Nf-N)> > Access;
     typedef typename Access::Core Core;
     BOOST_STATIC_ASSERT(C+Nf-N >= 1);
-    Vector<int,N> oldShape = input.getShape();
-    Vector<int,Nf> newShape = oldShape.template first<Nf>();
-    for (int n=Nf; n<N; ++n)
+    Vector<std::size_t,N> oldShape = input.getShape();
+    Vector<std::size_t,Nf> newShape = oldShape.template first<Nf>();
+    for (std::size_t n=static_cast<size_t>(Nf); n<static_cast<size_t>(N); ++n)
         newShape[Nf-1] *= oldShape[n];
-    Vector<int,Nf> newStrides = input.getStrides().template first<Nf>();
-    newStrides[Nf-1] = 1;
+    Vector<std::size_t,Nf> newStrides = input.getStrides().template first<Nf>();
+    newStrides[static_cast<size_t>(Nf-1)] = 1;
     return Access::construct(input.getData(), Core::create(newShape, newStrides, input.getManager()));
 }
 

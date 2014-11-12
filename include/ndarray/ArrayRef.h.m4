@@ -82,7 +82,7 @@ public:
      *
      *  This is implemented in initialization.h.
      */
-    explicit ArrayRef(int n1, int n2=1, int n3=1, int n4=1, int n5=1, int n6=1, int n7=1, int n8=1);
+    explicit ArrayRef(std::size_t n1, std::size_t n2=1, std::size_t n3=1, std::size_t n4=1, std::size_t n5=1, std::size_t n6=1, std::size_t n7=1, std::size_t n8=1);
 
     /**
      *  @brief Non-converting copy constructor.

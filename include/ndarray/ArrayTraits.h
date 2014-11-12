@@ -17,6 +17,8 @@
  *  @brief Traits for Array.
  */
 
+#include <cstddef>
+ 
 #include "ndarray_fwd.h"
 #include "ndarray/ExpressionTraits.h"
 #include "ndarray/detail/Core.h"
@@ -54,7 +56,7 @@ struct ArrayTraits {
     static Reference makeReference(Element * data, CorePtr const & core) {
         return Reference(data, core);
     }
-    static Iterator makeIterator(Element * data, CorePtr const & core, int stride) {
+    static Iterator makeIterator(Element * data, CorePtr const & core, std::ptrdiff_t stride) {
         return Iterator(Reference(data, core), stride);
     }
 };
@@ -73,7 +75,7 @@ struct ArrayTraits<T,1,0> {
     static Reference makeReference(Element * data, CorePtr const & core) {
         return *data;
     }
-    static Iterator makeIterator(Element * data, CorePtr const & core, int stride) {
+    static Iterator makeIterator(Element * data, CorePtr const & core, std::ptrdiff_t stride) {
         return Iterator(data, stride);
     }
 };
@@ -92,7 +94,7 @@ struct ArrayTraits<T,1,1> {
     static Reference makeReference(Element * data, CorePtr const & core) {
         return *data;
     }
-    static Iterator makeIterator(Element * data, CorePtr const & core, int stride) {
+    static Iterator makeIterator(Element * data, CorePtr const & core, std::ptrdiff_t stride) {
         return data;
     }
 };
@@ -111,7 +113,7 @@ struct ArrayTraits<T,1,-1> {
     static Reference makeReference(Element * data, CorePtr const & core) {
         return *data;
     }
-    static Iterator makeIterator(Element * data, CorePtr const & core, int stride) {
+    static Iterator makeIterator(Element * data, CorePtr const & core, std::ptrdiff_t stride) {
         return data;
     }
 };

@@ -1,3 +1,4 @@
 [submodule "Boost.NumPy"]
 	path = Boost.NumPy
-	url = git://github.com/ndarray/Boost.NumPy.git
+	url = https://github.com/ChrislS/Boost.NumPy.git
+	branch = master

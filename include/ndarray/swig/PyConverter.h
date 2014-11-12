@@ -15,6 +15,7 @@
  *  @file ndarray/swig/PyConverter.h
  *  @brief Python C-API conversions for standard numeric types.
  */
+#include <cstddef>
 #include <Python.h>
 
 #include <boost/intrusive_ptr.hpp>
@@ -44,11 +45,11 @@ namespace detail {
  */
 template <typename T>
 struct PyConverterBase {
-    
+
     /**
      *  @brief Check if a Python object might be convertible to T.
      *
-     *  \return true if the conversion may be successful, and 
+     *  \return true if the conversion may be successful, and
      *  false if it definitely is not.  Will not raise a Python
      *  exception.
      *
@@ -90,7 +91,7 @@ struct PyConverterBase {
         if (!PyConverter<T>::fromPythonStage1(p)) return false;
         return PyConverter<T>::fromPythonStage2(arg,*output);
     }
-    
+
 };
 
 } // namespace ndarray::detail
@@ -105,7 +106,7 @@ struct PyConverterBase {
 template <typename T>
 struct PyConverter : public detail::PyConverterBase<T> {
 
-    /** 
+    /**
      *  @brief Convert a C++ object to a new Python object.
      *
      *  \return A new Python object, or NULL on failure (with
@@ -181,6 +182,43 @@ struct PyConverter<bool> : public detail::PyConverterBase<bool> {
 };
 
 template <>
+struct PyConverter<std::size_t> : public detail::PyConverterBase<std::size_t> {
+
+    static bool fromPythonStage1(PyPtr & input) {
+        if (!PyInt_Check(input.get()) && !PyLong_Check(input.get())) {
+            PyPtr s(PyObject_Repr(input.get()));
+            if (!s) return false;
+            char * cs = PyString_AsString(s.get());
+            if (!cs) return false;
+            PyErr_Format(PyExc_TypeError,"'%s' is not a valid C++ size value.",cs);
+        }
+        return true;
+    }
+
+    static bool fromPythonStage2(PyPtr const & input, std::size_t & output) {
+        NDARRAY_ASSERT(input);
+        long long tmpoutput = PyLong_AsLongLong(input.get());
+        if (tmpoutput < 0) {
+            return false;
+        } else {
+            switch(sizeof(std::size_t)) {
+              case 4: output = PyLong_AsLong(input.get()); break;
+              case 8: output = PyLong_AsLongLong(input.get()); break;
+              // no datatype here...
+              default: throw std::exception();
+            }
+        }
+        return true;
+    }
+
+    static PyObject * toPython(std::size_t input) {
+        return PyLong_FromSize_t(input);
+    }
+
+    static PyTypeObject const * getPyType() { return &PyLong_Type; }
+};
+
+template <>
 struct PyConverter<int> : public detail::PyConverterBase<int> {
 
     static bool fromPythonStage1(PyPtr & input) {
@@ -203,7 +241,7 @@ struct PyConverter<int> : public detail::PyConverterBase<int> {
     static PyObject * toPython(int input) {
         return PyInt_FromLong(input);
     }
-    
+
     static PyTypeObject const * getPyType() { return &PyInt_Type; }
 };
 
@@ -257,7 +295,7 @@ struct PyConverter<float> : public detail::PyConverterBase<float> {
     static PyObject * toPython(float input) {
         return PyFloat_FromDouble(input);
     }
-    
+
     static PyTypeObject const * getPyType() { return &PyFloat_Type; }
 };
 
@@ -284,7 +322,7 @@ struct PyConverter<double> : public detail::PyConverterBase<double> {
     static PyObject * toPython(double input) {
         return PyFloat_FromDouble(input);
     }
-    
+
     static PyTypeObject const * getPyType() { return &PyFloat_Type; }
 };
 
@@ -312,7 +350,7 @@ struct PyConverter< std::complex<U> > : public detail::PyConverterBase< std::com
     static PyObject * toPython(std::complex<U> const & input) {
         return PyComplex_FromDoubles(input.real(),input.imag());
     }
-    
+
     static PyTypeObject const * getPyType() { return &PyComplex_Type; }
 };
 
@@ -342,7 +380,7 @@ struct PyConverter< std::string > : public detail::PyConverterBase<std::string> 
     static PyObject * toPython(std::string const & input) {
         return PyString_FromStringAndSize(input.data(),input.size());
     }
-    
+
     static PyTypeObject const * getPyType() { return &PyString_Type; }
 };
 

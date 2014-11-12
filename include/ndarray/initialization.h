@@ -14,7 +14,7 @@
 /** 
  *  \file ndarray/initialization.h @brief Construction functions for array.
  */
-
+#include <cstddef>
 #include "ndarray/Array.h"
 #include "ndarray/ArrayRef.h"
 #include "ndarray/Manager.h"
@@ -50,15 +50,15 @@ public:
         typedef typename Access::Core Core;
         typedef typename Access::Element Element;
         DataOrderEnum order = (ExpressionTraits< Target >::RMC::value < 0) ? COLUMN_MAJOR : ROW_MAJOR;
-        int total = _shape.product();
+        std::size_t total = _shape.product();
         std::pair<Manager::Ptr,Element*> p = SimpleManager<Element>::allocate(total);
         return Access::construct(p.second, Core::create(_shape, order, p.first));
     }
 
-    explicit SimpleInitializer(Vector<int,N> const & shape) : _shape(shape) {}
+    explicit SimpleInitializer(Vector<std::size_t,N> const & shape) : _shape(shape) {}
 
 private:
-    Vector<int,N> _shape;
+    Vector<std::size_t,N> _shape;
 };
 
 template <typename T, int N, typename Owner>
@@ -79,16 +79,16 @@ public:
 
     ExternalInitializer(
         T * data, 
-        Vector<int,N> const & shape,
-        Vector<int,N> const & strides,
+        Vector<std::size_t,N> const & shape,
+        Vector<std::size_t,N> const & strides,
         Owner const & owner
     ) : _data(data), _owner(owner), _shape(shape), _strides(strides) {}
 
 private:
     T * _data;
     Owner _owner;
-    Vector<int,N> _shape;
-    Vector<int,N> _strides;
+    Vector<std::size_t,N> _shape;
+    Vector<std::size_t,N> _strides;
 };
 
 } // namespace detail
@@ -102,7 +102,7 @@ private:
  *  @returns A temporary object convertible to an Array with fully contiguous row-major strides.
  */
 template <int N>
-inline detail::SimpleInitializer<N> allocate(Vector<int,N> const & shape) {
+inline detail::SimpleInitializer<N> allocate(Vector<std::size_t,N> const & shape) {
     return detail::SimpleInitializer<N>(shape); 
 }
 
@@ -111,7 +111,7 @@ inline detail::SimpleInitializer<N> allocate(Vector<int,N> const & shape) {
  *
  *  @returns A temporary object convertible to an Array with fully contiguous row-major strides.
  */
-inline detail::SimpleInitializer<1> allocate(int n) {
+inline detail::SimpleInitializer<1> allocate(std::size_t n) {
     return detail::SimpleInitializer<1>(ndarray::makeVector(n)); 
 }
 
@@ -120,7 +120,7 @@ inline detail::SimpleInitializer<1> allocate(int n) {
  *
  *  @returns A temporary object convertible to an Array with fully contiguous row-major strides.
  */
-inline detail::SimpleInitializer<2> allocate(int n1, int n2) {
+inline detail::SimpleInitializer<2> allocate(std::size_t n1, std::size_t n2) {
     return detail::SimpleInitializer<2>(ndarray::makeVector(n1, n2)); 
 }
 
@@ -129,7 +129,7 @@ inline detail::SimpleInitializer<2> allocate(int n1, int n2) {
  *
  *  @returns A temporary object convertible to an Array with fully contiguous row-major strides.
  */
-inline detail::SimpleInitializer<3> allocate(int n1, int n2, int n3) {
+inline detail::SimpleInitializer<3> allocate(std::size_t n1, std::size_t n2, std::size_t n3) {
     return detail::SimpleInitializer<3>(ndarray::makeVector(n1, n2, n3)); 
 }
 
@@ -150,12 +150,12 @@ copy(ExpressionBase<Derived> const & expr) {
 
 /// @brief Compute row- or column-major strides for the given shape.
 template <int N>
-Vector<int,N> computeStrides(Vector<int,N> const & shape, DataOrderEnum order=ROW_MAJOR) {
-    Vector<int,N> r(1);
+Vector<std::size_t,N> computeStrides(Vector<std::size_t,N> const & shape, DataOrderEnum order=ROW_MAJOR) {
+    Vector<std::size_t,N> r(1);
     if (order == ROW_MAJOR) {
-        for (int n=N-1; n > 0; --n) r[n-1] = r[n] * shape[n];
+        for (std::size_t n=static_cast<size_t>(N-1); n > 0; --n) r[n-1] = r[n] * shape[n];
     } else {
-        for (int n=1; n < N; ++n) r[n] = r[n-1] * shape[n-1];
+        for (std::size_t n=1; n < static_cast<size_t>(N); ++n) r[n] = r[n-1] * shape[n-1];
     }
     return r;
 }
@@ -176,8 +176,8 @@ Vector<int,N> computeStrides(Vector<int,N> const & shape, DataOrderEnum order=RO
 template <typename T, int N, typename Owner>
 inline detail::ExternalInitializer<T,N,Owner> external(
     T * data,
-    Vector<int,N> const & shape,
-    Vector<int,N> const & strides,
+    Vector<std::size_t,N> const & shape,
+    Vector<std::size_t,N> const & strides,
     Owner const & owner
 ) {
     return detail::ExternalInitializer<T,N,Owner>(data, shape, strides, owner);
@@ -198,8 +198,8 @@ inline detail::ExternalInitializer<T,N,Owner> external(
 template <typename T, int N>
 inline detail::ExternalInitializer<T,N,detail::NullOwner> external(
     T * data,
-    Vector<int,N> const & shape,
-    Vector<int,N> const & strides
+    Vector<std::size_t,N> const & shape,
+    Vector<std::size_t,N> const & strides
 ) {
     return detail::ExternalInitializer<T,N,detail::NullOwner>(data, shape, strides, detail::NullOwner());
 }
@@ -220,7 +220,7 @@ inline detail::ExternalInitializer<T,N,detail::NullOwner> external(
 template <typename T, int N, typename Owner>
 inline detail::ExternalInitializer<T,N,Owner> external(
     T * data,
-    Vector<int,N> const & shape,
+    Vector<std::size_t,N> const & shape,
     DataOrderEnum order,
     Owner const & owner
 ) {
@@ -242,7 +242,7 @@ inline detail::ExternalInitializer<T,N,Owner> external(
 template <typename T, int N>
 inline detail::ExternalInitializer<T,N,detail::NullOwner> external(
     T * data,
-    Vector<int,N> const & shape,
+    Vector<std::size_t,N> const & shape,
     DataOrderEnum order = ROW_MAJOR
 ) {
     return detail::ExternalInitializer<T,N,detail::NullOwner>(
@@ -253,7 +253,7 @@ inline detail::ExternalInitializer<T,N,detail::NullOwner> external(
 /// @}
 
 template <typename T, int N, int C>
-Array<T,N,C>::Array(int n1, int n2, int n3, int n4, int n5, int n6, int n7, int n8)
+Array<T,N,C>::Array(std::size_t n1, std::size_t n2, std::size_t n3, std::size_t n4, std::size_t n5, std::size_t n6, std::size_t n7, std::size_t n8)
     : Super(0, CorePtr())
 {
     typename Super::Index shape;
@@ -269,7 +269,7 @@ Array<T,N,C>::Array(int n1, int n2, int n3, int n4, int n5, int n6, int n7, int 
 }
 
 template <typename T, int N, int C>
-ArrayRef<T,N,C>::ArrayRef(int n1, int n2, int n3, int n4, int n5, int n6, int n7, int n8)
+ArrayRef<T,N,C>::ArrayRef(std::size_t n1, std::size_t n2, std::size_t n3, std::size_t n4, std::size_t n5, std::size_t n6, std::size_t n7, std::size_t n8)
     : Super(Array<T,N,C>(n1, n2, n3, n4, n5, n6, n7, n8))
 {}
 

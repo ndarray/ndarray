@@ -11,6 +11,8 @@
 #ifndef NDARRAY_ExpressionBase_h_INCLUDED
 #define NDARRAY_ExpressionBase_h_INCLUDED
 
+#include <cstddef>
+
 /** 
  *  @file ndarray/ExpressionBase.h
  *
@@ -50,12 +52,12 @@ public:
     /// @brief Nested expression or element value type.
     typedef typename ExpressionTraits<Derived>::Value Value;
     /// @brief Vector type for N-dimensional indices.
-    typedef Vector<int,ND::value> Index;
+    typedef Vector<std::size_t,ND::value> Index;
     /// @brief CRTP derived type.
     typedef Derived Self;
 
     /// @brief Return a single nested expression or element.
-    Reference operator[](int n) const { return getSelf().operator[](n); }
+    Reference operator[](std::size_t n) const { return getSelf().operator[](n); }
 
     /// @brief Return the first nested expression or element.
     Reference front() const { return this->operator[](0); }
@@ -70,13 +72,13 @@ public:
     Iterator end() const { return getSelf().end(); }
 
     /// @brief Return the size of a specific dimension.
-    template <int P> int getSize() const { return getSelf().template getSize<P>(); }
+    template <int P> std::size_t getSize() const { return getSelf().template getSize<P>(); }
 
     /// @brief Return a Vector of the sizes of all dimensions.
     Index getShape() const { return getSelf().getShape(); }
 
     /// @brief Return the total number of elements in the expression.
-    int getNumElements() const { return getSelf().getNumElements(); }
+    std::size_t getNumElements() const { return getSelf().getNumElements(); }
 
     /* ------------------------- STL Compatibility -------------------------- */
 
@@ -86,8 +88,8 @@ public:
     typedef Reference reference;
     typedef Reference const_reference;
     typedef Iterator pointer;
-    typedef int difference_type;
-    typedef int size_type;
+    typedef std::ptrdiff_t difference_type;
+    typedef std::size_t size_type;
 
     /// @brief Return the size of the first dimension.
     size_type size() const { return this->template getSize<0>(); }

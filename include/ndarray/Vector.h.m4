@@ -67,13 +67,15 @@ define(`VECTOR_TYPEDEFS',
     typedef boost::reverse_iterator<T*> reverse_iterator;
     typedef boost::reverse_iterator<const T*> const_reverse_iterator;
     typedef T * pointer;
-    typedef int difference_type;
-    typedef int size_type;
+    typedef std::ptrdiff_t difference_type;
+    typedef std::size_t size_type;
 ')dnl
 #ifndef NDARRAY_Vector_h_INCLUDED
 #define NDARRAY_Vector_h_INCLUDED
 
 /// @file ndarray/Vector.h Definition for Vector.
+
+#include <cstddef>
 
 #include <boost/iterator/reverse_iterator.hpp>
 #include <boost/utility/enable_if.hpp>
@@ -114,7 +116,7 @@ namespace ndarray {
  *  @class Vector
  *  @brief A fixed-size 1D array class.
  *
- *  Vector (with T==int) is primarily used as the data
+ *  Vector (with T==std::size_t) is primarily used as the data
  *  type for the shape and strides attributes of Array.
  *  
  *  Vector is implemented almost exactly as a non-aggregate
@@ -130,8 +132,8 @@ struct Vector {
 
     typedef boost::mpl::int_<N> ND;
 
-    size_type size() const { return N; }           ///< @brief Return the size of the Vector.
-    size_type max_size() const { return N; }       ///< @brief Return the size of the Vector.
+    size_type size() const { return static_cast<size_type>(N); }           ///< @brief Return the size of the Vector.
+    size_type max_size() const { return static_cast<size_type>(N); }       ///< @brief Return the size of the Vector.
     bool empty() const { return N==0; }            ///< @brief Return true if size() == 0.
     /// @brief Return an iterator to the beginning of the Vector.
     iterator begin() { return elems; }
@@ -160,9 +162,9 @@ struct Vector {
     const_reference back() const { return *(elems+N-1); }
 
     /// @brief Return a reference to the element with the given index.
-    reference operator[](int i) { return elems[i]; }
+    reference operator[](std::size_t i) { return elems[i]; }
     /// @brief Return a const_reference to the element with the given index.
-    const_reference operator[](int i) const { return elems[i]; }
+    const_reference operator[](std::size_t i) const { return elems[i]; }
 
     /// @brief Create a new Vector that is a subset of this.
     template <int Start, int Stop>
@@ -217,7 +219,11 @@ struct Vector {
     /// @brief Converting copy constructor.
     template <typename U>
     explicit Vector(Vector<U,N> const & other) {
-        this->template operator=(other);
+        this->
+		#ifndef _MSC_VER
+		template 
+		#endif
+		operator=(other);
     }
 
     /// @brief Return true if elements of other are equal to the elements of this.
@@ -303,9 +309,9 @@ struct Vector<T,0> {
     const_reference back() const { NDARRAY_ASSERT(false); return 0; }
 
     /// @brief Return a reference to the element with the given index.
-    reference operator[](int i) { NDARRAY_ASSERT(false); return 0; }
+    reference operator[](std::size_t i) { NDARRAY_ASSERT(false); return 0; }
     /// @brief Return a const_reference to the element with the given index.
-    const_reference operator[](int i) const { NDARRAY_ASSERT(false); return 0; }
+    const_reference operator[](std::size_t i) const { NDARRAY_ASSERT(false); return 0; }
 
     /// @brief Create a new Vector that is a subset of this.
     template <int Start, int Stop>
@@ -368,7 +374,7 @@ inline Vector<T,N+M> concatenate(Vector<T,N> const & a, Vector<T,M> const & b) {
     std::copy(a.begin(),a.end(),r.begin());
     std::copy(b.begin(),b.end(),r.begin()+N);
     return r;
-}
+} 
 
 /// @brief Return a new Vector with the given scalar appended to the original.
 template <typename T, int N>
