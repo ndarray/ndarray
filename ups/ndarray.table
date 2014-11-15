@@ -6,4 +6,4 @@ setupRequired(base)
 setupRequired(swig)
 setupRequired(fftw)
 
-envAppend(PYTHONPATH, ${PRODUCT_DIR}/python)
+envPrepend(PYTHONPATH, ${PRODUCT_DIR}/python)
