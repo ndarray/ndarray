@@ -13,6 +13,7 @@ doc/*.tag
 doc/*.inc
 doc/doxygen.conf
 tests/.tests
+tests/*.test
 version.py
 tests/ndarray
 tests/ndarray-eigen
