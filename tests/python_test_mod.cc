@@ -11,7 +11,10 @@
 #include "Python.h"
 #include "numpy/arrayobject.h"
 #include "ndarray/swig.h"
+#include <cstddef>
+#ifndef _MSC_VER
 #pragma GCC diagnostic ignored "-Wuninitialized"
+#endif
 
 template <typename T, int N>
 static PyObject * passVector(PyObject * self, PyObject * args) {
@@ -47,6 +50,7 @@ static PyMethodDef methods[] = {
     {"makeFloatArray3",&makeArray<double,3>,METH_VARARGS,NULL},
     {"passIntVector3",&passVector<int,3>,METH_VARARGS,NULL},
     {"passIntArray33",&passArray<int,3,3>,METH_VARARGS,NULL},
+    {"passUIntArray33",&passArray<unsigned int,3,3>,METH_VARARGS,NULL},
     {"passConstIntArray33",&passArray<int const,3,3>,METH_VARARGS,NULL},
     {"passIntArray30",&passArray<int,3,0>,METH_VARARGS,NULL},
     {"makeIntArray3",&makeArray<int,3>,METH_VARARGS,NULL},

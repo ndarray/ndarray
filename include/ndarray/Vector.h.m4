@@ -217,7 +217,11 @@ struct Vector {
     /// @brief Converting copy constructor.
     template <typename U>
     explicit Vector(Vector<U,N> const & other) {
-        this->template operator=(other);
+        this->
+		#ifndef _MSC_VER
+		template 
+		#endif
+		operator=(other);
     }
 
     /// @brief Return true if elements of other are equal to the elements of this.

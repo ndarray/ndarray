@@ -73,14 +73,22 @@ public:
     /// @brief Return a single subarray.
     Reference operator[](int n) const {
         return Traits::makeReference(
-            this->_data + n * this->template getStride<0>(),
+            this->_data + n * this->
+			#ifndef _MSC_VER
+			template
+			#endif
+			getStride<0>(),
             this->_core
         );
     }
 
     /// @brief Return a single element from the array.
     Element & operator[](Index const & i) const {
-        return *(this->_data + this->_core->template computeOffset(i));
+        return *(this->_data + this->_core->
+			#ifndef _MSC_VER
+			template
+			#endif
+			computeOffset(i));
     }
 
     /// @brief Return an Iterator to the beginning of the array.
@@ -88,16 +96,32 @@ public:
         return Traits::makeIterator(
             this->_data,
             this->_core,
-            this->template getStride<0>()
+            this->
+				#ifndef _MSC_VER
+				template
+				#endif
+				getStride<0>()
         );
     }
 
     /// @brief Return an Iterator to one past the end of the array.
     Iterator end() const {
         return Traits::makeIterator(
-            this->_data + this->template getSize<0>() * this->template getStride<0>(), 
+            this->_data + this->
+				#ifndef _MSC_VER
+				template
+				#endif
+				getSize<0>() * this->
+					#ifndef _MSC_VER
+					template
+					#endif
+					getStride<0>(), 
             this->_core,
-            this->template getStride<0>()
+            this->
+				#ifndef _MSC_VER
+				template
+				#endif
+				getStride<0>()
         );
     }
 

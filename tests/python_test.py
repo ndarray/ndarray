@@ -20,10 +20,18 @@ class TestNDArray(unittest.TestCase):
         self.assert_(a1.flags["WRITEABLE"])
         self.assert_(a2.flags["WRITEABLE"])
 
+        ua1 = numpy.zeros((5,3,4),dtype=numpy.uint32)
+        self.assert_(ua1.flags["WRITEABLE"])
+
         b1 = python_test_mod.passIntArray33(a1)
         self.assert_(b1.flags["WRITEABLE"])
         self.assertEqual(a1.shape,b1.shape)
         self.assertEqual(a1.strides,b1.strides)
+
+        ub1 = python_test_mod.passUIntArray33(ua1)
+        self.assert_(ub1.flags["WRITEABLE"])
+        self.assertEqual(a1.shape,ub1.shape)
+        self.assertEqual(a1.strides,ub1.strides)
 
         c1 = python_test_mod.passIntArray30(a1)
         self.assert_(c1.flags["WRITEABLE"])

@@ -47,25 +47,60 @@ template <> struct NumpyTraits<npy_ubyte> { static int getCode() { return NPY_UB
 template <> struct NumpyTraits<npy_byte> { static int getCode() { return NPY_BYTE; } };
 template <> struct NumpyTraits<npy_ushort> { static int getCode() { return NPY_USHORT; } };
 template <> struct NumpyTraits<npy_short> { static int getCode() { return NPY_SHORT; } };
-template <> struct NumpyTraits<npy_uint> { static int getCode() { return NPY_UINT; } };
-template <> struct NumpyTraits<npy_int> { static int getCode() { return NPY_INT; } };
+// NPY_INT is on Windows a virtual flag that is never actually used. It must be
+// checked against the platform dtype.
+// see http://mail.scipy.org/pipermail/numpy-discussion/2010-June/051057.html.
+template <> struct NumpyTraits<npy_uint> {
+    static int getCode() {
+#ifdef _MSC_VER
+        switch(sizeof(int)) {
+        case 1: return NPY_UBYTE;
+        case 2: return NPY_USHORT;
+        case 4: return NPY_ULONG;
+        case 8: return NPY_ULONGLONG;
+        // no datatype here...
+        default: throw std::exception();
+        }
+#else
+        return NPY_UINT;
+#endif
+    }
+};
+template <> struct NumpyTraits<npy_int> {
+    static int getCode() {
+#ifdef _MSC_VER
+        switch(sizeof(int)) {
+        case 1: return NPY_BYTE;
+        case 2: return NPY_SHORT;
+        case 4: return NPY_LONG;
+        case 8: return NPY_LONGLONG;
+        // no datatype here...
+        default: throw std::exception();
+        }
+#else
+    return NPY_INT;
+#endif
+    }
+};
 template <> struct NumpyTraits<npy_ulong> { static int getCode() { return NPY_ULONG; } };
 template <> struct NumpyTraits<npy_long> { static int getCode() { return NPY_LONG; } };
 template <> struct NumpyTraits<npy_ulonglong> { static int getCode() { return NPY_ULONGLONG; } };
 template <> struct NumpyTraits<npy_longlong> { static int getCode() { return NPY_LONGLONG; } };
 template <> struct NumpyTraits<npy_float> { static int getCode() { return NPY_FLOAT; } };
 template <> struct NumpyTraits<npy_double> { static int getCode() { return NPY_DOUBLE; } };
-template <> struct NumpyTraits<npy_longdouble> { static int getCode() { return NPY_LONGDOUBLE; } };
+#if (npy_double != npy_longdouble)
+  template <> struct NumpyTraits<npy_longdouble> { static int getCode() { return NPY_LONGDOUBLE; } };
+#endif
 template <> struct NumpyTraits<npy_cfloat> { static int getCode() { return NPY_CFLOAT; } };
 template <> struct NumpyTraits<npy_cdouble> { static int getCode() { return NPY_CDOUBLE; } };
 template <> struct NumpyTraits<npy_clongdouble> { static int getCode() { return NPY_CLONGDOUBLE; } };
 
 template <> struct NumpyTraits<std::complex<float> > { 
-    static int getCode() { assert(sizeof(std::complex<float>)==sizeof(npy_cfloat)); return NPY_CFLOAT; } 
+    static int getCode() { assert(sizeof(std::complex<float>)==sizeof(npy_cfloat)); return NPY_CFLOAT; }
 };
 
 template <> struct NumpyTraits<std::complex<double> > { 
-    static int getCode() { assert(sizeof(std::complex<double>)==sizeof(npy_cdouble)); return NPY_CDOUBLE; } 
+    static int getCode() { assert(sizeof(std::complex<double>)==sizeof(npy_cdouble)); return NPY_CDOUBLE; }
 };
 
 template <> struct NumpyTraits<std::complex<long double> > { 
@@ -121,7 +156,7 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
         int actualType = PyArray_TYPE(p.get());
         int requiredType = detail::NumpyTraits<NonConst>::getCode();
         if (actualType != requiredType) {
-            PyErr_SetString(PyExc_ValueError, "numpy.ndarray argument has incorrect data type");
+            PyErr_SetString(PyExc_ValueError, ("numpy.ndarray argument has incorrect data type"));
             return false;
         }
         if (PyArray_NDIM(p.get()) != N) {
