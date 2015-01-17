@@ -23,7 +23,7 @@ generated = ["ndarray/ArrayRef.h",
              "ndarray/eigen/bp/auto/Array.h",
              "ndarray/eigen/bp/auto/Matrix.h",
              ]
-m4include = Dir("#m4").abspath
+m4include = Dir("../m4").abspath
 m4flags = "-I%s" % m4include
 headers = [env.M4(filename, "%s.m4" % filename, M4FLAGS=[m4flags]) for filename in generated]
 

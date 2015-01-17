@@ -25,6 +25,11 @@ namespace ndarray {
 /// \cond INTERNAL
 namespace detail {
 
+#ifdef _MSC_VER
+/** Portable double pi value. */
+static const double M_PI = 4. * atan(1.);
+#endif
+
 /**
  *  @internal @ingroup FFTndarrayInternalGroup
  *  @brief Implementations for the shift() and differentiate() functions.

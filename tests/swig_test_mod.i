@@ -14,7 +14,9 @@
 #include "numpy/arrayobject.h"
 #include "ndarray/swig.h"
 #include "ndarray/swig/eigen.h"
+#ifdef __GNUC__
 #pragma GCC diagnostic ignored "-Wuninitialized"
+#endif
 %}
 %init %{
     import_array();

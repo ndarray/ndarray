@@ -198,18 +198,30 @@ struct Vector {
      *
      *  Initializes the elements to zero.
      */
-    Vector() { this->template operator=(0); }
+    Vector() { this->
+	#ifndef _MSC_VER
+	template 
+	#endif
+	operator=(0); }
 
     /// @brief Construct with copies of a scalar.
     template <typename U>
     explicit Vector(U scalar) {
-        this->template operator=(scalar);
+        this->
+		#ifndef _MSC_VER
+		template 
+		#endif
+		operator=(scalar);
     }
 
     /// @brief Converting copy constructor.
     template <typename U>
     explicit Vector(Vector<U,N> const & other) {
-        this->template operator=(other);
+        this->
+		#ifndef _MSC_VER
+		template 
+		#endif
+		operator=(other);
     }
 
     /// @brief Return true if elements of other are equal to the elements of this.
