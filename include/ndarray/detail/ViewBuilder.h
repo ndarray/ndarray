@@ -166,7 +166,7 @@ struct IndexTraits<ndarray::index::Scalar> {
         typedef Dimensions< 
             (D::ND::value - 1),
             ((D::RMC::value < (D::N_I::value - 1)) ? D::RMC::value : (D::N_I::value - 1)),
-            (D::IDX::value + 1)
+            D::IDX::value
         > Type;
     };
 
