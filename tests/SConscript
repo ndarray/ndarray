@@ -40,6 +40,7 @@ Import("env", "testEnv", "pyEnv", "bpEnv")
 
 if testEnv.haveBoostTest:
     BinaryUnitTest(testEnv, "ndarray.cc")
+    BinaryUnitTest(testEnv, "views.cc")
     if testEnv.haveEigen:
         BinaryUnitTest(testEnv, "ndarray-eigen.cc")
     if testEnv.haveFFTW:
