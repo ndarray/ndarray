@@ -93,14 +93,188 @@ struct PyConverterBase {
     
 };
 
+/**
+ *  @internal @ingroup ndarrayPythonInternalGroup
+ *
+ *  Intermediate base class for PyConverter implementations for non-bool integer types,
+ *  providing a common stage 1 test.
+ */
+template <typename T>
+struct PyIntConverterBase : public PyConverterBase<T> {
+
+    static bool fromPythonStage1(PyPtr & input) {
+        if (!PyInt_Check(input.get()) && !PyLong_Check(input.get())) {
+            PyPtr s(PyObject_Repr(input.get()));
+            if (!s) return false;
+            char * cs = PyString_AsString(s.get());
+            if (!cs) return false;
+            PyErr_Format(PyExc_TypeError, "'%s' is not a valid C++ integer value.", cs);
+        }
+        return true;
+    }
+
+};
+
+/**
+ *  @internal @ingroup ndarrayPythonInternalGroup
+ *
+ *  Implementation of PyConverter for non-bool integer types, specialized on
+ *  whether the type is unsigned and whether it is smaller than, equal to, or
+ *  greater than long (which is the maximum for Python's 'int') in size.
+ */
+template <
+    typename T,
+    bool isUnsigned=boost::is_unsigned<T>::value,
+    int cmpToLong=(sizeof(T) < sizeof(long)) ? -1 : ((sizeof(T)==sizeof(long)) ? 0 : 1)
+    >
+struct PyIntConverter;
+
+/**
+ *  @internal @ingroup ndarrayPythonInternalGroup
+ *
+ *  Specialized implementation of PyConverter for signed integers smaller than long in size.
+ */
+template <typename T>
+struct PyIntConverter<T,false,-1> : public PyIntConverterBase<T> {
+
+    static bool fromPythonStage2(PyPtr const & input, T & output) {
+        NDARRAY_ASSERT(input);
+        output = PyInt_AsLong(input.get());
+        if (PyErr_Occurred()) return false; // could get OverflowError here.
+        return true;
+    }
+
+    static PyObject * toPython(T input) {
+        return PyInt_FromLong(input);
+    }
+
+    static PyTypeObject const * getPyType() { return &PyInt_Type; }
+
+};
+
+/**
+ *  @internal @ingroup ndarrayPythonInternalGroup
+ *
+ *  Specialized implementation of PyConverter for unsigned integers smaller than long in size.
+ */
+template <typename T>
+struct PyIntConverter<T,true,-1> : public PyIntConverterBase<T> {
+
+    static bool fromPythonStage2(PyPtr const & input, T & output) {
+        NDARRAY_ASSERT(input);
+        output = PyInt_AsLong(input.get());
+        if (PyErr_Occurred()) return false; // could get OverflowError here.
+        return true;
+    }
+
+    static PyObject * toPython(T input) {
+        return PyInt_FromLong(input);
+    }
+
+    static PyTypeObject const * getPyType() { return &PyInt_Type; }
+
+};
+
+/**
+ *  @internal @ingroup ndarrayPythonInternalGroup
+ *
+ *  Specialized implementation of PyConverter for signed integers equal to long in size.
+ */
+template <typename T>
+struct PyIntConverter<T,false,0> : public PyIntConverterBase<T> {
+
+    static bool fromPythonStage2(PyPtr const & input, T & output) {
+        NDARRAY_ASSERT(input);
+        output = PyInt_AsLong(input.get());
+        if (PyErr_Occurred()) return false; // could get OverflowError here.
+        return true;
+    }
+
+    static PyObject * toPython(T input) {
+        return PyInt_FromLong(input);
+    }
+
+    static PyTypeObject const * getPyType() { return &PyInt_Type; }
+
+};
+
+/**
+ *  @internal @ingroup ndarrayPythonInternalGroup
+ *
+ *  Specialized implementation of PyConverter for unsigned integers equal to long in size.
+ */
+template <typename T>
+struct PyIntConverter<T,true,0> : public PyIntConverterBase<T> {
+
+    static bool fromPythonStage2(PyPtr const & input, T & output) {
+        NDARRAY_ASSERT(input);
+        output = PyLong_AsUnsignedLong(input.get());
+        if (PyErr_Occurred()) return false; // could get OverflowError here.
+        return true;
+    }
+
+    static PyObject * toPython(T input) {
+        return PyLong_FromUnsignedLong(input);
+    }
+
+    static PyTypeObject const * getPyType() { return &PyLong_Type; }
+
+};
+
+/**
+ *  @internal @ingroup ndarrayPythonInternalGroup
+ *
+ *  Specialized implementation of PyConverter for signed integers greater than long in size.
+ */
+template <typename T>
+struct PyIntConverter<T,false,1> : public PyIntConverterBase<T> {
+
+    static bool fromPythonStage2(PyPtr const & input, T & output) {
+        NDARRAY_ASSERT(input);
+        output = PyLong_AsLongLong(input.get());
+        if (PyErr_Occurred()) return false; // could get OverflowError here.
+        return true;
+    }
+
+    static PyObject * toPython(T input) {
+        return PyLong_FromLongLong(input);
+    }
+
+    static PyTypeObject const * getPyType() { return &PyLong_Type; }
+
+};
+
+/**
+ *  @internal @ingroup ndarrayPythonInternalGroup
+ *
+ *  Specialized implementation of PyConverter for unsigned integers greater than long in size.
+ */
+template <typename T>
+struct PyIntConverter<T,true,1> : public PyIntConverterBase<T> {
+
+    static bool fromPythonStage2(PyPtr const & input, T & output) {
+        NDARRAY_ASSERT(input);
+        output = PyLong_AsUnsignedLongLong(input.get());
+        if (PyErr_Occurred()) return false; // could get OverflowError here.
+        return true;
+    }
+
+    static PyObject * toPython(T input) {
+        return PyLong_FromUnsignedLongLong(input);
+    }
+
+    static PyTypeObject const * getPyType() { return &PyLong_Type; }
+
+};
+
 } // namespace ndarray::detail
 
 /**
- *  @ingroup ndarrayndarrayPythonGroup
+ *  @ingroup ndarrayPythonGroup
  *  @brief A class providing Python conversion functions for T.
  *
- *  Undocumented specializations exist for bool, int, long, float, double,
- *  std::complex, and std::string.
+ *  Undocumented specializations exist for bool, (unsigned) short, (unsigned) int, (unsigned) long,
+ *  (unsigned long long), float, double, std::complex<float>, std::complex<double>, and std::string.
  */
 template <typename T>
 struct PyConverter : public detail::PyConverterBase<T> {
@@ -180,59 +354,14 @@ struct PyConverter<bool> : public detail::PyConverterBase<bool> {
     static PyTypeObject const * getPyType() { return &PyBool_Type; }
 };
 
-template <>
-struct PyConverter<int> : public detail::PyConverterBase<int> {
-
-    static bool fromPythonStage1(PyPtr & input) {
-        if (!PyInt_Check(input.get()) && !PyLong_Check(input.get())) {
-            PyPtr s(PyObject_Repr(input.get()));
-            if (!s) return false;
-            char * cs = PyString_AsString(s.get());
-            if (!cs) return false;
-            PyErr_Format(PyExc_TypeError,"'%s' is not a valid C++ int value.",cs);
-        }
-        return true;
-    }
-
-    static bool fromPythonStage2(PyPtr const & input, int & output) {
-        NDARRAY_ASSERT(input);
-        output = PyInt_AsLong(input.get());
-        return true;
-    }
-
-    static PyObject * toPython(int input) {
-        return PyInt_FromLong(input);
-    }
-    
-    static PyTypeObject const * getPyType() { return &PyInt_Type; }
-};
-
-template <>
-struct PyConverter<long> : public detail::PyConverterBase<long> {
-
-    static bool fromPythonStage1(PyPtr & input) {
-        if (!PyInt_Check(input.get()) && !PyLong_Check(input.get())) {
-            PyPtr s(PyObject_Repr(input.get()));
-            if (!s) return false;
-            char * cs = PyString_AsString(s.get());
-            if (!cs) return false;
-            PyErr_Format(PyExc_TypeError,"'%s' is not a valid C++ long value.",cs);
-        }
-        return true;
-    }
-
-    static bool fromPythonStage2(PyPtr const & input, long & output) {
-        NDARRAY_ASSERT(input);
-        output = PyLong_AsLong(input.get());
-        return true;
-    }
-
-    static PyObject * toPython(long input) {
-        return PyLong_FromLong(input);
-    }
-
-    static PyTypeObject const * getPyType() { return &PyLong_Type; }
-};
+template <> struct PyConverter<short> : public detail::PyIntConverter<short> {};
+template <> struct PyConverter<unsigned short> : public detail::PyIntConverter<unsigned short> {};
+template <> struct PyConverter<int> : public detail::PyIntConverter<int> {};
+template <> struct PyConverter<unsigned int> : public detail::PyIntConverter<unsigned int> {};
+template <> struct PyConverter<long> : public detail::PyIntConverter<long> {};
+template <> struct PyConverter<unsigned long> : public detail::PyIntConverter<unsigned long> {};
+template <> struct PyConverter<long long> : public detail::PyIntConverter<long long> {};
+template <> struct PyConverter<unsigned long long> : public detail::PyIntConverter<unsigned long long> {};
 
 template <>
 struct PyConverter<float> : public detail::PyConverterBase<float> {
