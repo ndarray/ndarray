@@ -205,18 +205,13 @@ struct Vector {
 	operator=(0); }
 
     /// @brief Construct with copies of a scalar.
-    template <typename U>
-    explicit Vector(U scalar) {
-        this->
-		#ifndef _MSC_VER
-		template 
-		#endif
-		operator=(scalar);
+    explicit Vector(T scalar) {
+        this->operator=(scalar);
     }
 
     /// @brief Converting copy constructor.
     template <typename U>
-    explicit Vector(Vector<U,N> const & other) {
+    Vector(Vector<U,N> const & other) {
         this->
 		#ifndef _MSC_VER
 		template 
@@ -252,6 +247,16 @@ struct Vector {
     Vector reverse() const {
         Vector r;
         std::copy(begin(), end(), r.rbegin());
+        return r;
+    }
+
+    /// @brief Cast the vector element-wise to another type.
+    template <typename U>
+    Vector<U,N> cast() const {
+        Vector<U,N> r;
+        for (int i = 0; i < N; ++i) {
+            r[i] = static_cast<U>((*this)[i]);
+        }
         return r;
     }
 
@@ -340,12 +345,11 @@ struct Vector<T,0> {
     Vector() {}
 
     /// @brief Construct with copies of a scalar.
-    template <typename U>
-    explicit Vector(U scalar) {}
+    explicit Vector(T scalar) {}
 
     /// @brief Converting copy constructor.
     template <typename U>
-    explicit Vector(Vector<U,0> const & other) {}
+    Vector(Vector<U,0> const & other) {}
 
     /// @brief Return true if elements of other are equal to the elements of this.
     bool operator==(Vector const & other) const { return true; }
@@ -361,6 +365,10 @@ struct Vector<T,0> {
 
     /// @brief Return a Vector with the elements reversed.
     Vector reverse() const { return Vector(); }
+
+    /// @brief Cast the vector element-wise to another type.
+    template <typename U>
+    Vector<U,0> cast() const { return Vector<U,0>(); }
 
 };
 
