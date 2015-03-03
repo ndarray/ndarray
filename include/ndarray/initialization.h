@@ -50,15 +50,15 @@ public:
         typedef typename Access::Core Core;
         typedef typename Access::Element Element;
         DataOrderEnum order = (ExpressionTraits< Target >::RMC::value < 0) ? COLUMN_MAJOR : ROW_MAJOR;
-        int total = _shape.product();
+        Size total = _shape.product();
         std::pair<Manager::Ptr,Element*> p = SimpleManager<Element>::allocate(total);
         return Access::construct(p.second, Core::create(_shape, order, p.first));
     }
 
-    explicit SimpleInitializer(Vector<int,N> const & shape) : _shape(shape) {}
+    explicit SimpleInitializer(Vector<Size,N> const & shape) : _shape(shape) {}
 
 private:
-    Vector<int,N> _shape;
+    Vector<Size,N> _shape;
 };
 
 template <typename T, int N, typename Owner>
@@ -79,16 +79,16 @@ public:
 
     ExternalInitializer(
         T * data, 
-        Vector<int,N> const & shape,
-        Vector<int,N> const & strides,
+        Vector<Size,N> const & shape,
+        Vector<Offset,N> const & strides,
         Owner const & owner
     ) : _data(data), _owner(owner), _shape(shape), _strides(strides) {}
 
 private:
     T * _data;
     Owner _owner;
-    Vector<int,N> _shape;
-    Vector<int,N> _strides;
+    Vector<Size,N> _shape;
+    Vector<Offset,N> _strides;
 };
 
 } // namespace detail
@@ -101,9 +101,9 @@ private:
  *
  *  @returns A temporary object convertible to an Array with fully contiguous row-major strides.
  */
-template <int N>
-inline detail::SimpleInitializer<N> allocate(Vector<int,N> const & shape) {
-    return detail::SimpleInitializer<N>(shape); 
+template <int N, typename U>
+inline detail::SimpleInitializer<N> allocate(Vector<U,N> const & shape) {
+    return detail::SimpleInitializer<N>(Vector<Size,N>(shape));
 }
 
 /** 
@@ -111,7 +111,7 @@ inline detail::SimpleInitializer<N> allocate(Vector<int,N> const & shape) {
  *
  *  @returns A temporary object convertible to an Array with fully contiguous row-major strides.
  */
-inline detail::SimpleInitializer<1> allocate(int n) {
+inline detail::SimpleInitializer<1> allocate(Size n) {
     return detail::SimpleInitializer<1>(ndarray::makeVector(n)); 
 }
 
@@ -120,7 +120,7 @@ inline detail::SimpleInitializer<1> allocate(int n) {
  *
  *  @returns A temporary object convertible to an Array with fully contiguous row-major strides.
  */
-inline detail::SimpleInitializer<2> allocate(int n1, int n2) {
+inline detail::SimpleInitializer<2> allocate(Size n1, Size n2) {
     return detail::SimpleInitializer<2>(ndarray::makeVector(n1, n2)); 
 }
 
@@ -129,7 +129,7 @@ inline detail::SimpleInitializer<2> allocate(int n1, int n2) {
  *
  *  @returns A temporary object convertible to an Array with fully contiguous row-major strides.
  */
-inline detail::SimpleInitializer<3> allocate(int n1, int n2, int n3) {
+inline detail::SimpleInitializer<3> allocate(Size n1, Size n2, Size n3) {
     return detail::SimpleInitializer<3>(ndarray::makeVector(n1, n2, n3)); 
 }
 
@@ -150,8 +150,8 @@ copy(ExpressionBase<Derived> const & expr) {
 
 /// @brief Compute row- or column-major strides for the given shape.
 template <int N>
-Vector<int,N> computeStrides(Vector<int,N> const & shape, DataOrderEnum order=ROW_MAJOR) {
-    Vector<int,N> r(1);
+Vector<Offset,N> computeStrides(Vector<Size,N> const & shape, DataOrderEnum order=ROW_MAJOR) {
+    Vector<Offset,N> r(1);
     if (order == ROW_MAJOR) {
         for (int n=N-1; n > 0; --n) r[n-1] = r[n] * shape[n];
     } else {
@@ -173,14 +173,19 @@ Vector<int,N> computeStrides(Vector<int,N> const & shape, DataOrderEnum order=RO
  *
  *  @returns A temporary object convertible to an Array.
  */
-template <typename T, int N, typename Owner>
+template <typename T, int N, typename U, typename V, typename Owner>
 inline detail::ExternalInitializer<T,N,Owner> external(
     T * data,
-    Vector<int,N> const & shape,
-    Vector<int,N> const & strides,
+    Vector<U,N> const & shape,
+    Vector<V,N> const & strides,
     Owner const & owner
 ) {
-    return detail::ExternalInitializer<T,N,Owner>(data, shape, strides, owner);
+    return detail::ExternalInitializer<T,N,Owner>(
+        data,
+        Vector<Size,N>(shape),
+        Vector<Offset,N>(strides),
+        owner
+    );
 }
 
 /** 
@@ -195,13 +200,18 @@ inline detail::ExternalInitializer<T,N,Owner> external(
  *
  *  @returns A temporary object convertible to an Array.
  */
-template <typename T, int N>
+template <typename T, int N, typename U, typename V>
 inline detail::ExternalInitializer<T,N,detail::NullOwner> external(
     T * data,
-    Vector<int,N> const & shape,
-    Vector<int,N> const & strides
+    Vector<U,N> const & shape,
+    Vector<V,N> const & strides
 ) {
-    return detail::ExternalInitializer<T,N,detail::NullOwner>(data, shape, strides, detail::NullOwner());
+    return detail::ExternalInitializer<T,N,detail::NullOwner>(
+        data,
+        Vector<Size,N>(shape),
+        Vector<Offset,N>(strides),
+        detail::NullOwner()
+    );
 }
 
 /** 
@@ -217,14 +227,19 @@ inline detail::ExternalInitializer<T,N,detail::NullOwner> external(
  *
  *  @returns A temporary object convertible to an Array.
  */
-template <typename T, int N, typename Owner>
+template <typename T, int N, typename U, typename Owner>
 inline detail::ExternalInitializer<T,N,Owner> external(
     T * data,
-    Vector<int,N> const & shape,
+    Vector<U,N> const & shape,
     DataOrderEnum order,
     Owner const & owner
 ) {
-    return detail::ExternalInitializer<T,N,Owner>(data, shape, computeStrides(shape, order), owner);
+    return detail::ExternalInitializer<T,N,Owner>(
+        data,
+        Vector<Size,N>(shape),
+        computeStrides(shape, order),
+        owner
+    );
 }
 
 /** 
@@ -239,21 +254,24 @@ inline detail::ExternalInitializer<T,N,Owner> external(
  *
  *  @returns A temporary object convertible to an Array.
  */
-template <typename T, int N>
+template <typename T, int N, typename U>
 inline detail::ExternalInitializer<T,N,detail::NullOwner> external(
     T * data,
-    Vector<int,N> const & shape,
+    Vector<U,N> const & shape,
     DataOrderEnum order = ROW_MAJOR
 ) {
     return detail::ExternalInitializer<T,N,detail::NullOwner>(
-        data, shape, computeStrides(shape, order), detail::NullOwner()
+        data,
+        Vector<Size,N>(shape),
+        computeStrides(shape, order),
+        detail::NullOwner()
     );
 }
 
 /// @}
 
 template <typename T, int N, int C>
-Array<T,N,C>::Array(int n1, int n2, int n3, int n4, int n5, int n6, int n7, int n8)
+Array<T,N,C>::Array(Size n1, Size n2, Size n3, Size n4, Size n5, Size n6, Size n7, Size n8)
     : Super(0, CorePtr())
 {
     typename Super::Index shape;
@@ -269,7 +287,7 @@ Array<T,N,C>::Array(int n1, int n2, int n3, int n4, int n5, int n6, int n7, int 
 }
 
 template <typename T, int N, int C>
-ArrayRef<T,N,C>::ArrayRef(int n1, int n2, int n3, int n4, int n5, int n6, int n7, int n8)
+ArrayRef<T,N,C>::ArrayRef(Size n1, Size n2, Size n3, Size n4, Size n5, Size n6, Size n7, Size n8)
     : Super(Array<T,N,C>(n1, n2, n3, n4, n5, n6, n7, n8))
 {}
 

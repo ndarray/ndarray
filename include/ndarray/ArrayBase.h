@@ -59,8 +59,10 @@ public:
     typedef typename Traits::ND ND;
     /// @brief Number of guaranteed row-major contiguous dimensions, counted from the end (boost::mpl::int_).
     typedef typename Traits::RMC RMC;
-    /// @brief Vector type for N-dimensional indices.
-    typedef Vector<int,ND::value> Index;
+    /// @brief Vector type for N-dimensional indices and shapes.
+    typedef Vector<Size,ND::value> Index;
+    /// @brief Vector type for N-dimensional offsets and strides.
+    typedef Vector<Offset,ND::value> Strides;
     /// @brief ArrayRef to a reverse-ordered contiguous array; the result of a call to transpose().
     typedef ArrayRef<Element,ND::value,-RMC::value> FullTranspose;
     /// @brief ArrayRef to a noncontiguous array; the result of a call to transpose(...).
@@ -71,7 +73,7 @@ public:
     typedef ArrayRef<Element,ND::value,RMC::value> Deep;
 
     /// @brief Return a single subarray.
-    Reference operator[](int n) const {
+    Reference operator[](Size n) const {
         return Traits::makeReference(
             this->_data + n * this->
 			#ifndef _MSC_VER
@@ -135,12 +137,12 @@ public:
     Manager::Ptr getManager() const { return this->_core->getManager(); }
 
     /// @brief Return the size of a specific dimension.
-    template <int P> int getSize() const {
+    template <int P> Size getSize() const {
         return detail::getDimension<P>(*this->_core).getSize();
     }
 
     /// @brief Return the stride in a specific dimension.
-    template <int P> int getStride() const {
+    template <int P> Offset getStride() const {
         return detail::getDimension<P>(*this->_core).getStride();
     }
 
@@ -148,15 +150,15 @@ public:
     Index getShape() const { Index r; this->_core->fillShape(r); return r; }
 
     /// @brief Return a Vector of the strides of all dimensions.
-    Index getStrides() const { Index r; this->_core->fillStrides(r); return r; }
+    Strides getStrides() const { Strides r; this->_core->fillStrides(r); return r; }
 
     /// @brief Return the total number of elements in the array.
-    int getNumElements() const { return this->_core->getNumElements(); }
+    Size getNumElements() const { return this->_core->getNumElements(); }
 
     /// @brief Return a view of the array with the order of the dimensions reversed.
     FullTranspose transpose() const {
         Index shape = getShape();
-        Index strides = getStrides();
+        Strides strides = getStrides();
         for (int n=0; n < ND::value / 2; ++n) {
             std::swap(shape[n], shape[ND::value-n-1]);
             std::swap(strides[n], strides[ND::value-n-1]);
@@ -170,9 +172,9 @@ public:
     /// @brief Return a view of the array with the dimensions permuted.
     Transpose transpose(Index const & order) const {
         Index newShape;
-        Index newStrides;
+        Strides newStrides;
         Index oldShape = getShape();
-        Index oldStrides = getStrides();
+        Strides oldStrides = getStrides();
         for (int n=0; n < ND::value; ++n) {
             newShape[n] = oldShape[order[n]];
             newStrides[n] = oldStrides[order[n]];

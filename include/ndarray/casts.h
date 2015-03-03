@@ -39,9 +39,9 @@ struct ComplexExtractor {
         >::type RealElement;
     typedef ArrayRef<RealElement,ND::value,0> Result;
     typedef detail::ArrayAccess<Result> Access;
-    typedef Vector<int,ND::value> Index;
+    typedef Vector<Size,ND::value> Index;
 
-    static inline Result apply(Array_ const & array, int offset) {
+    static inline Result apply(Array_ const & array, Offset offset) {
         return Access::construct(
             reinterpret_cast<RealElement*>(array.getData()) + offset,
             Access::Core::create(array.getShape(), array.getStrides() * 2, array.getManager())
@@ -90,16 +90,16 @@ static_dimension_cast(Array<T,N,C> const & array) {
 template <int C_, typename T, int N, int C>
 Array<T,N,C_>
 dynamic_dimension_cast(Array<T,N,C> const & array) {
-    Vector<int,N> shape = array.getShape();
-    Vector<int,N> strides = array.getStrides();
+    Vector<Size,N> shape = array.getShape();
+    Vector<Offset,N> strides = array.getStrides();
     if (C_ >= 0) {
-        int n = 1;
+        Offset n = 1;
         for (int i=1; i <= C_; ++i) {
             if (strides[N-i] != n) return Array<T,N,C_>();
             n *= shape[N-i];
         }
     } else {
-        int n = 1;
+        Offset n = 1;
         for (int i=0; i < -C_; ++i) {
             if (strides[i] != n) return Array<T,N,C_>();
             n *= strides[i];
@@ -138,11 +138,11 @@ flatten(Array<T,N,C> const & input) {
     typedef detail::ArrayAccess< ArrayRef<T,Nf,(C+Nf-N)> > Access;
     typedef typename Access::Core Core;
     BOOST_STATIC_ASSERT(C+Nf-N >= 1);
-    Vector<int,N> oldShape = input.getShape();
-    Vector<int,Nf> newShape = oldShape.template first<Nf>();
+    Vector<Size,N> oldShape = input.getShape();
+    Vector<Size,Nf> newShape = oldShape.template first<Nf>();
     for (int n=Nf; n<N; ++n)
         newShape[Nf-1] *= oldShape[n];
-    Vector<int,Nf> newStrides = input.getStrides().template first<Nf>();
+    Vector<Offset,Nf> newStrides = input.getStrides().template first<Nf>();
     newStrides[Nf-1] = 1;
     return Access::construct(input.getData(), Core::create(newShape, newStrides, input.getManager()));
 }

@@ -40,7 +40,7 @@ public:
     
     StridedIterator() : _data(0), _stride(0) {}
 
-    StridedIterator(T * data, int stride) : _data(data), _stride(stride) {}
+    StridedIterator(T * data, Offset stride) : _data(data), _stride(stride) {}
 
     StridedIterator(StridedIterator const & other) : _data(other._data), _stride(other._stride) {}
 
@@ -75,10 +75,10 @@ private:
 
     void increment() { _data += _stride; }
     void decrement() { _data -= _stride; }
-    void advance(int n) { _data += _stride * n; }
+    void advance(Offset n) { _data += _stride * n; }
 
     template <typename U>
-    int distance_to(StridedIterator<U> const & other) const {
+    Offset distance_to(StridedIterator<U> const & other) const {
         return std::distance(_data, other._data) / _stride; 
     }
 
@@ -88,7 +88,7 @@ private:
     }
 
     T * _data;
-    int _stride;
+    Offset _stride;
 
 };
 

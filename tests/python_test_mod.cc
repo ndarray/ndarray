@@ -34,9 +34,15 @@ static PyObject * passArray(PyObject * self, PyObject * args) {
 
 template <typename T, int N>
 static PyObject * makeArray(PyObject * self, PyObject * args) {
-    ndarray::Vector<int,N> shape;
-    if (!PyArg_ParseTuple(args,"O&",ndarray::PyConverter< ndarray::Vector<int,N> >::fromPython,&shape))
+    ndarray::Vector<ndarray::Size,N> shape;
+    if (!PyArg_ParseTuple(
+            args,
+            "O&",
+            ndarray::PyConverter< ndarray::Vector<ndarray::Size,N> >::fromPython,
+            &shape)
+    ) {
         return NULL;
+    }
     ndarray::Array<T,N,N> array = ndarray::allocate(shape);
     array.deep() = static_cast<T>(0);
     return ndarray::PyConverter< ndarray::Array<T,N,N> >::toPython(array);

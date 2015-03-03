@@ -79,12 +79,12 @@ public:
     typedef typename ExpressionTraits<Self>::Iterator Iterator;
     typedef typename ExpressionTraits<Self>::Value Value;
     typedef typename ExpressionTraits<Self>::Reference Reference;
-    typedef Vector<int,N> Index;
+    typedef Vector<Size,N> Index;
     
     UnaryOpExpression(Operand const & operand, UnaryFunction const & functor) :
         _operand(operand), _functor(functor) {}
 
-    Reference operator[](int n) const {
+    Reference operator[](Size n) const {
         return Reference(_operand[n],_functor);
     }
 
@@ -96,7 +96,7 @@ public:
         return Iterator(_operand.end(),_functor);
     }
 
-    template <int P> int getSize() const {
+    template <int P> Size getSize() const {
         return _operand.template getSize<P>();
     }
 

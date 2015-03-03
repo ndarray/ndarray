@@ -25,6 +25,8 @@
 
 /// @internal \defgroup ndarrayInternalGroup Internals
 
+#include <cstddef>
+
 #include <boost/type_traits/is_const.hpp>
 #include <boost/type_traits/add_const.hpp>
 #include <boost/type_traits/remove_const.hpp>
@@ -46,6 +48,9 @@ class Manager;
 
 /// @brief An enumeration for stride computation.
 enum DataOrderEnum { ROW_MAJOR=1, COLUMN_MAJOR=2 };
+
+typedef std::size_t Size;
+typedef std::ptrdiff_t Offset;
 
 namespace detail {
 

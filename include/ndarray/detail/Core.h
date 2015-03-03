@@ -54,8 +54,8 @@ public:
     /// @brief Create a Core::Ptr with the given shape, strides, and manager.
     template <int M>
     static Ptr create(
-        Vector<int,M> const & shape,
-        Vector<int,M> const & strides, 
+        Vector<Size,M> const & shape,
+        Vector<Offset,M> const & strides, 
         Manager::Ptr const & manager = Manager::Ptr()
     ) {
         return Ptr(new Core(shape, strides, manager), false);
@@ -64,7 +64,7 @@ public:
     /// @brief Create a Core::Ptr with the given shape and manager with contiguous strides.
     template <int M>
     static Ptr create(
-        Vector<int,M> const & shape,
+        Vector<Size,M> const & shape,
         DataOrderEnum order,
         Manager::Ptr const & manager = Manager::Ptr()
     ) {
@@ -85,39 +85,39 @@ public:
     Ptr copy() const { return Ptr(new Core(*this)); }
 
     /// @brief Return the size of the Nth dimension.
-    int getSize() const { return _size; }
+    Size getSize() const { return _size; }
 
     /// @brief Return the stride of the Nth dimension.
-    int getStride() const { return _stride; }
+    Offset getStride() const { return _stride; }
 
     /// @brief Set the size of the Nth dimension.
-    void setSize(int size) { _size = size; }
+    void setSize(Size size) { _size = size; }
 
     /// @brief Set the stride of the Nth dimension.
-    void setStride(int stride) { _stride = stride; }
+    void setStride(Offset stride) { _stride = stride; }
 
     /// @brief Recursively compute the offset to an element.
     template <int M>
-    int computeOffset(Vector<int,M> const & index) const {
+    Offset computeOffset(Vector<Size,M> const & index) const {
         return index[M-N] * this->getStride() + Super::computeOffset(index);
     }
 
     /// @brief Recursively fill a shape vector.
     template <int M>
-    void fillShape(Vector<int,M> & shape) const {
+    void fillShape(Vector<Size,M> & shape) const {
         shape[M-N] = this->getSize();
         Super::fillShape(shape);
     }
 
     /// @brief Recursively fill a strides vector.
     template <int M>
-    void fillStrides(Vector<int,M> & strides) const {
+    void fillStrides(Vector<Offset,M> & strides) const {
         strides[M-N] = this->getStride();
         Super::fillStrides(strides);
     }
 
     /// @brief Recursively determine the total number of elements.
-    int getNumElements() const {
+    Size getNumElements() const {
         return getSize() * Super::getNumElements();
     }
     
@@ -126,23 +126,23 @@ protected:
     // Explicit strides
     template <int M>
     Core (
-        Vector<int,M> const & shape,
-        Vector<int,M> const & strides, 
+        Vector<Size,M> const & shape,
+        Vector<Offset,M> const & strides, 
         Manager::Ptr const & manager
     ) : Super(shape, strides, manager), _size(shape[M-N]), _stride(strides[M-N]) {}
 
     // Row-major strides
     template <int M>
     Core (
-        Vector<int,M> const & shape,
+        Vector<Size,M> const & shape,
         Manager::Ptr const & manager
     ) : Super(shape, manager), _size(shape[M-N]), _stride(Super::getStride() * Super::getSize()) {}
 
     // Column-major strides
     template <int M>
     Core (
-        Vector<int,M> const & shape,
-        int stride,
+        Vector<Size,M> const & shape,
+        Offset stride,
         Manager::Ptr const & manager
     ) : Super(shape, stride * shape[M-N], manager), _size(shape[M-N]), _stride(stride) {}
 
@@ -154,8 +154,8 @@ protected:
     Core(Core const & other) : Super(other), _size(other._size), _stride(other._stride) {}
 
 private:
-    int _size;
-    int _stride;
+    Size _size;
+    Offset _stride;
 };
 
 /**
@@ -184,12 +184,12 @@ public:
 
     Ptr copy() const { return Ptr(new Core(*this)); }
 
-    int getSize() const { return 1; }
-    int getStride() const { return 1; }
+    Size getSize() const { return 1; }
+    Offset getStride() const { return 1; }
 
     /// @brief Recursively compute the offset to an element.
     template <int M>
-    int computeOffset(Vector<int,M> const & index) const { return 0; }
+    Offset computeOffset(Vector<Size,M> const & index) const { return 0; }
 
     /// @brief Return the Manager that determines the lifetime of the array data.
     Manager::Ptr getManager() const { return _manager; }
@@ -199,14 +199,14 @@ public:
 
     /// @brief Recursively fill a shape vector.
     template <int M>
-    void fillShape(Vector<int,M> const & shape) const {}
+    void fillShape(Vector<Size,M> const & shape) const {}
 
     /// @brief Recursively fill a strides vector.
     template <int M>
-    void fillStrides(Vector<int,M> const & strides) const {}
+    void fillStrides(Vector<Offset,M> const & strides) const {}
 
     /// @brief Recursively determine the total number of elements.
-    int getNumElements() const { return 1; }
+    Size getNumElements() const { return 1; }
 
     /// @brief Return the reference count (for debugging purposes).
     int getRC() const { return _rc; }
@@ -220,21 +220,21 @@ protected:
 
     template <int M>
     Core(
-        Vector<int,M> const & shape,
-        Vector<int,M> const & strides, 
+        Vector<Size,M> const & shape,
+        Vector<Offset,M> const & strides, 
         Manager::Ptr const & manager
     ) : _manager(manager), _rc(1) {}
 
     template <int M>
     Core(
-        Vector<int,M> const & shape,
+        Vector<Size,M> const & shape,
         Manager::Ptr const & manager
     ) : _manager(manager), _rc(1) {}
 
     template <int M>
     Core(
-        Vector<int,M> const & shape,
-        int stride,
+        Vector<Size,M> const & shape,
+        Offset stride,
         Manager::Ptr const & manager
     ) : _manager(manager), _rc(1) {}
 

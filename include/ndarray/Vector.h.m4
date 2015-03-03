@@ -114,8 +114,8 @@ namespace ndarray {
  *  @class Vector
  *  @brief A fixed-size 1D array class.
  *
- *  Vector (with T==int) is primarily used as the data
- *  type for the shape and strides attributes of Array.
+ *  Vector is primarily used as the data type for the shape
+ *  (with T==Size) and strides (with T==Offset) attributes of Array.
  *  
  *  Vector is implemented almost exactly as a non-aggregate
  *  boost::array, but with the addition of mathematical
@@ -129,10 +129,12 @@ struct Vector {
     VECTOR_TYPEDEFS
 
     typedef boost::mpl::int_<N> ND;
-
-    size_type size() const { return N; }           ///< @brief Return the size of the Vector.
-    size_type max_size() const { return N; }       ///< @brief Return the size of the Vector.
-    bool empty() const { return N==0; }            ///< @brief Return true if size() == 0.
+    /// @brief Return the size of the Vector.
+    size_type size() const { return N; }
+    /// @brief Return the size of the Vector.
+    size_type max_size() const { return N; }
+    ///< @brief Return true if size() == 0.
+    bool empty() const { return N==0; }
     /// @brief Return an iterator to the beginning of the Vector.
     iterator begin() { return elems; }
     /// @brief Return a const_iterator to the beginning of the Vector.
@@ -383,8 +385,9 @@ inline Vector<T,N+M> concatenate(Vector<T,N> const & a, Vector<T,M> const & b) {
 }
 
 /// @brief Return a new Vector with the given scalar appended to the original.
-template <typename T, int N>
-inline Vector<T,N+1> concatenate(Vector<T,N> const & a, T const & b) {
+template <typename T, int N, typename U>
+inline typename boost::enable_if<boost::is_convertible<U,T>,Vector<T,N+1> >::type
+concatenate(Vector<T,N> const & a, U b) {
     Vector<T,N+1> r;
     std::copy(a.begin(),a.end(),r.begin());
     r[N] = b;
@@ -392,8 +395,9 @@ inline Vector<T,N+1> concatenate(Vector<T,N> const & a, T const & b) {
 }
 
 /// @brief Return a new Vector with the given scalar prepended to the original.
-template <typename T, int N>
-inline Vector<T,N+1> concatenate(T const & a, Vector<T,N> const & b) {
+template <typename T, int N, typename U>
+inline typename boost::enable_if<boost::is_convertible<U,T>,Vector<T,N+1> >::type
+concatenate(U a, Vector<T,N> const & b) {
     Vector<T,N+1> r;
     r[0] = a;
     std::copy(b.begin(),b.end(),r.begin()+1);

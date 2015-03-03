@@ -56,7 +56,7 @@ class SimpleManager : public Manager {
     typedef typename boost::remove_const<T>::type U;
 public:
     
-    static std::pair<Manager::Ptr,T*> allocate(int size) {
+    static std::pair<Manager::Ptr,T*> allocate(Size size) {
         boost::intrusive_ptr<SimpleManager> r(new SimpleManager(size));
         return std::pair<Manager::Ptr,T*>(r, r->_p.get());
     }
@@ -64,7 +64,7 @@ public:
     virtual bool isUnique() const { return true; }
 
 private:
-    explicit SimpleManager(int size) : _p() {
+    explicit SimpleManager(Size size) : _p() {
         if (size > 0) _p.reset(new U[size]);
     }
     boost::scoped_array<U> _p;

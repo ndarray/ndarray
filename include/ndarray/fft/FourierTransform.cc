@@ -16,7 +16,7 @@ namespace ndarray {
 template <typename T, int N> 
 template <int M>
 Array<typename FourierTransform<T,N>::ElementX,M,M>
-FourierTransform<T,N>::initializeX(Vector<int,M> const & shape) {
+FourierTransform<T,N>::initializeX(Vector<Size,M> const & shape) {
     OwnerX xOwner = detail::FFTWTraits<T>::allocateX(shape.product());
     return Array<ElementX,M,M>(external(xOwner.get(), shape, ROW_MAJOR, xOwner));
 }
@@ -24,8 +24,8 @@ FourierTransform<T,N>::initializeX(Vector<int,M> const & shape) {
 template <typename T, int N> 
 template <int M>
 Array<typename FourierTransform<T,N>::ElementK,M,M>
-FourierTransform<T,N>::initializeK(Vector<int,M> const & shape) {
-    Vector<int,M> kShape(shape);
+FourierTransform<T,N>::initializeK(Vector<Size,M> const & shape) {
+    Vector<Size,M> kShape(shape);
     kShape[M-1] = detail::FourierTraits<T>::computeLastDimensionSize(shape[M-1]);
     OwnerK kOwner = detail::FFTWTraits<T>::allocateK(kShape.product());
     return Array<ElementK,M,M>(external(kOwner.get(), kShape, ROW_MAJOR, kOwner));
@@ -35,7 +35,7 @@ template <typename T, int N>
 template <int M>
 void
 FourierTransform<T,N>::initialize(
-    Vector<int,M> const & shape, 
+    Vector<Size,M> const & shape, 
     Array<ElementX,M,M> & x,
     Array<ElementK,M,M> & k
 ) {
@@ -53,10 +53,11 @@ FourierTransform<T,N>::planForward(
     typename FourierTransform<T,N>::ArrayK & k
 ) {
     initialize(shape,x,k);
+    Vector<int,N> s = shape.template cast<int>();
     return Ptr(
         new FourierTransform(
             detail::FFTWTraits<T>::forward(
-                N, shape.begin(), 1,
+                N, s.begin(), 1,
                 x.getData(), NULL, 1, 0,
                 k.getData(), NULL, 1, 0,
                 FFTW_MEASURE | FFTW_DESTROY_INPUT
@@ -75,10 +76,11 @@ FourierTransform<T,N>::planInverse(
     typename FourierTransform<T,N>::ArrayX & x
 ) {
     initialize(shape,x,k);
+    Vector<int,N> s = shape.template cast<int>();
     return Ptr(
         new FourierTransform(
             detail::FFTWTraits<T>::inverse(
-                N, shape.begin(), 1,
+                N, s.begin(), 1,
                 k.getData(), NULL, 1, 0,
                 x.getData(), NULL, 1, 0,
                 FFTW_MEASURE | FFTW_DESTROY_INPUT
@@ -97,10 +99,11 @@ FourierTransform<T,N>::planMultiplexForward(
     typename FourierTransform<T,N>::MultiplexArrayK & k
 ) {
     initialize(shape,x,k);
+    Vector<int,N+1> s = shape.template cast<int>();
     return Ptr(
         new FourierTransform(
             detail::FFTWTraits<T>::forward(
-                N, shape.begin()+1, shape[0],
+                N, s.begin()+1, s[0],
                 x.getData(), NULL, 1, x.template getStride<0>(),
                 k.getData(), NULL, 1, k.template getStride<0>(),
                 FFTW_MEASURE | FFTW_DESTROY_INPUT
@@ -119,10 +122,11 @@ FourierTransform<T,N>::planMultiplexInverse(
     typename FourierTransform<T,N>::MultiplexArrayX & x
 ) {
     initialize(shape,x,k);
+    Vector<int,N+1> s = shape.template cast<int>();
     return Ptr(
         new FourierTransform(
             detail::FFTWTraits<T>::inverse(
-                N, shape.begin()+1, shape[0],
+                N, s.begin()+1, s[0],
                 k.getData(), NULL, 1, k.template getStride<0>(),
                 x.getData(), NULL, 1, x.template getStride<0>(),
                 FFTW_MEASURE | FFTW_DESTROY_INPUT

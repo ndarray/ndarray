@@ -48,7 +48,7 @@ public:
     typedef typename ArrayTraits<T,N,C>::Value Value;
     typedef typename ArrayTraits<T,N,C>::Reference Reference;
     
-    Reference operator[](int n) const {
+    Reference operator[](Size n) const {
         Reference r(_ref);
         r._data += n * _stride;
         return r;
@@ -60,7 +60,7 @@ public:
 
     NestedIterator() : _ref(Value()), _stride(0) {}
 
-    NestedIterator(Reference const & ref, int stride) : _ref(ref), _stride(stride) {}
+    NestedIterator(Reference const & ref, Offset stride) : _ref(ref), _stride(stride) {}
 
     NestedIterator(NestedIterator const & other) : _ref(other._ref), _stride(other._stride) {}
 
@@ -94,10 +94,10 @@ private:
 
     void increment() { _ref._data += _stride; }
     void decrement() { _ref._data -= _stride; }
-    void advance(int n) { _ref._data += _stride * n; }
+    void advance(Offset n) { _ref._data += _stride * n; }
 
     template <typename T_, int C_>
-    int distance_to(NestedIterator<T_,N,C_> const & other) const {
+    Offset distance_to(NestedIterator<T_,N,C_> const & other) const {
         return std::distance(_ref._data, other._ref._data) / _stride; 
     }
 
@@ -107,7 +107,7 @@ private:
     }
 
     Reference _ref;
-    int _stride;
+    Offset _stride;
 };
 
 } // namespace detail
