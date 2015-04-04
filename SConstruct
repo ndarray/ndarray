@@ -34,6 +34,7 @@ AddOption("--with-fftw-lib", dest="fftw_lib", type="string", nargs=1, action="st
 building = not GetOption("help") and not GetOption("clean")
 
 env = makeEnvironment(variables)
+env.Tool('m4')
 env.AppendUnique(CPPPATH=["#include"])
 
 if building:
