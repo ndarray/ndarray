@@ -13,7 +13,6 @@
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE views
 #include "boost/test/unit_test.hpp"
-#include "cxxabi.h"
 
 template <typename T, int N, int C>
 int templateC(ndarray::ArrayRef<T,N,C> const &) { return C; }
