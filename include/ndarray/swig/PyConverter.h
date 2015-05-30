@@ -254,7 +254,19 @@ struct PyIntConverter<T,true,1> : public PyIntConverterBase<T> {
 
     static bool fromPythonStage2(PyPtr const & input, T & output) {
         NDARRAY_ASSERT(input);
-        output = PyLong_AsUnsignedLongLong(input.get());
+#ifndef _MSC_VER
+        output = static_cast<T>(PyLong_AsUnsignedLongLong(input.get()));
+#else
+        // Christoph Lassner reports that the above segfaults on Windows; until we have a better idea
+        // what triggers that, it's safer just to use PyLong_AsLongLong and just not support the full
+        // range of unsigned long long values.
+        PY_LONG_LONG tmp = PyLong_AsLongLong(input.get());
+        if (tmp < 0) {
+            PyErr_SetString(PyExc_OverflowError, "Negative integer in conversion to unsigned");
+        } else {
+            output = static_cast<T>(tmp);
+        }
+#endif
         if (PyErr_Occurred()) return false; // could get OverflowError here.
         return true;
     }
