@@ -48,10 +48,10 @@ public:
     typedef typename detail::FourierTraits<T>::ElementX ElementX; ///< Real-space array data type;
     typedef typename detail::FourierTraits<T>::ElementK ElementK; ///< Fourier-space array data type;
 
-    typedef Vector<int,N> Index; ///< Shape type for arrays.
+    typedef Vector<Size,N> Index; ///< Shape type for arrays.
     typedef Array<ElementX,N,N> ArrayX; ///< Real-space array type.
     typedef Array<ElementK,N,N> ArrayK; ///< Fourier-space array type.
-    typedef Vector<int,N+1> MultiplexIndex; ///< Shape type for multiplexed arrays.
+    typedef Vector<Size,N+1> MultiplexIndex; ///< Shape type for multiplexed arrays.
     typedef Array<ElementX,N+1,N+1> MultiplexArrayX; ///< Real-space multiplexed array type.
     typedef Array<ElementK,N+1,N+1> MultiplexArrayK; ///< Fourier-space multiplexed array type.
 
@@ -105,11 +105,11 @@ public:
 
     /// @brief Create a new real-space array with the given real-space shape.
     template <int M>
-    static Array<ElementX,M,M> initializeX(Vector<int,M> const & shape);
+    static Array<ElementX,M,M> initializeX(Vector<Size,M> const & shape);
 
     /// @brief Create a new Fourier-space array with the given real-space shape.
     template <int M>
-    static Array<ElementK,M,M> initializeK(Vector<int,M> const & shape);
+    static Array<ElementK,M,M> initializeK(Vector<Size,M> const & shape);
 
     /** 
      *  @brief Initialize, as necessary, a pair of arrays with the given real-space shape.
@@ -117,7 +117,7 @@ public:
      *  If either array is not empty, it must be consistent with the given shape.
      */
     template <int M>
-    static void initialize(Vector<int,M> const & shape, Array<ElementX,M,M> & x, Array<ElementK,M,M> & k);
+    static void initialize(Vector<Size,M> const & shape, Array<ElementX,M,M> & x, Array<ElementK,M,M> & k);
 
     /// @brief Execute the FFTW plan.
     void execute();

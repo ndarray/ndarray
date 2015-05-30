@@ -18,7 +18,7 @@ static boost::mt19937 engine;
 static boost::uniform_int<> random_int(2, 5);
 
 template <typename T, int N, int C>
-ndarray::Array<T,N,C> makeArray(ndarray::Vector<int,N> const & shape) {
+ndarray::Array<T,N,C> makeArray(ndarray::Vector<ndarray::Size,N> const & shape) {
     ndarray::Array<typename boost::remove_const<T>::type,N,N> a = ndarray::allocate(shape);
     ndarray::Array<typename boost::remove_const<T>::type,1,1> flat = ndarray::flatten<1>(a);
     for (int n=0; n < flat.template getSize<0>(); ++n) {
@@ -28,8 +28,8 @@ ndarray::Array<T,N,C> makeArray(ndarray::Vector<int,N> const & shape) {
 }
 
 template <int N>
-ndarray::Vector<int,N> makeShape() {
-    ndarray::Vector<int,N> shape;
+ndarray::Vector<ndarray::Size,N> makeShape() {
+    ndarray::Vector<ndarray::Size,N> shape;
     for (int n=0; n<N; ++n) {
         shape[n] = random_int(engine);
     }

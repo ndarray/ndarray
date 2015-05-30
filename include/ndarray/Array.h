@@ -86,7 +86,7 @@ public:
      *
      *  This is implemented in initialization.h.
      */
-    explicit Array(int n1, int n2=1, int n3=1, int n4=1, int n5=1, int n6=1, int n7=1, int n8=1);
+    explicit Array(Size n1, Size n2=1, Size n3=1, Size n4=1, Size n5=1, Size n6=1, Size n7=1, Size n8=1);
 
     /**
      *  @brief Non-converting shallow assignment.

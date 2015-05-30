@@ -169,9 +169,9 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
             return false;
         }
         if (C > 0) {
-            int requiredStride = sizeof(Element);
+            Offset requiredStride = sizeof(Element);
             for (int i = 0; i < C; ++i) {
-                int actualStride = PyArray_STRIDE(p.get(), N-i-1);
+                Offset actualStride = PyArray_STRIDE(p.get(), N-i-1);
                 if (actualStride != requiredStride) {
                     PyErr_SetString(
                         PyExc_ValueError,
@@ -184,7 +184,7 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
         } else if (C < 0) {
             int requiredStride = sizeof(Element);
             for (int i = 0; i < -C; ++i) {
-                int actualStride = PyArray_STRIDE(p.get(), i);
+                Offset actualStride = PyArray_STRIDE(p.get(), i);
                 if (actualStride != requiredStride) {
                     PyErr_SetString(
                         PyExc_ValueError,
@@ -218,7 +218,7 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
             PyErr_SetString(PyExc_TypeError, "unaligned arrays cannot be converted to C++");
             return false;
         }
-        int itemsize = sizeof(Element);
+        Offset itemsize = sizeof(Element);
         for (int i = 0; i < N; ++i) {
             if ((PyArray_DIM(input.get(), i) > 1) && (PyArray_STRIDE(input.get(), i) % itemsize != 0)) {
                 PyErr_SetString(
@@ -228,8 +228,8 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
                 return false;
             }
         }
-        Vector<int,N> shape;
-        Vector<int,N> strides;
+        Vector<Size,N> shape;
+        Vector<Offset,N> strides;
         std::copy(PyArray_DIMS(input.get()), PyArray_DIMS(input.get()) + N, shape.begin());
         std::copy(PyArray_STRIDES(input.get()), PyArray_STRIDES(input.get()) + N , strides.begin());
         for (int i = 0; i < N; ++i) strides[i] /= sizeof(Element);
@@ -261,8 +261,8 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
         if (writeable) flags |= NPY_WRITEABLE;
         npy_intp outShape[N];
         npy_intp outStrides[N];
-        Vector<int,N> inShape = m.getShape();
-        Vector<int,N> inStrides = m.getStrides();
+        Vector<Size,N> inShape = m.getShape();
+        Vector<Offset,N> inStrides = m.getStrides();
         std::copy(inShape.begin(), inShape.end(), outShape);
         for (int i = 0; i < N; ++i) outStrides[i] = inStrides[i] * sizeof(Element);
         PyPtr array(

@@ -44,7 +44,7 @@ struct FourierTraits<T,false> {
     typedef std::complex<T> ElementK;
     typedef std::complex<T> ValueK;
 
-    static inline int computeLastDimensionSize(int n) { return n/2 + 1; }
+    static inline Size computeLastDimensionSize(Size n) { return n/2 + 1; }
 };
 
 template <typename T>
@@ -54,7 +54,7 @@ struct FourierTraits<T,true> {
     typedef std::complex<ValueX> ValueK;
     typedef ValueK const ElementK;
 
-    static inline int computeLastDimensionSize(int n) { return n/2 + 1; }
+    static inline Size computeLastDimensionSize(Size n) { return n/2 + 1; }
 };
 
 template <typename U>
@@ -64,7 +64,7 @@ struct FourierTraits<std::complex<U>,false> {
     typedef std::complex<U> ValueX;
     typedef std::complex<U> ValueK;
 
-    static inline int computeLastDimensionSize(int n) { return n; }
+    static inline Size computeLastDimensionSize(Size n) { return n; }
 };
 
 template <typename U>
@@ -74,7 +74,7 @@ struct FourierTraits<std::complex<U> const,true> {
     typedef std::complex<U> ValueX;
     typedef std::complex<U> ValueK;
 
-    static inline int computeLastDimensionSize(int n) { return n; }
+    static inline Size computeLastDimensionSize(Size n) { return n; }
 };
 
 /// \endcond

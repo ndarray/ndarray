@@ -67,7 +67,7 @@ ndarray::Array<double const,1,1> returnConstArray1() {
 ndarray::Array<double,3> returnArray3() {
     ndarray::Array<double,3,3> r(ndarray::allocate(ndarray::makeVector(4,3,2)));
     ndarray::Array<double,1,1> f = ndarray::flatten<1>(r);
-    for (int n = 0; n < f.getSize<0>(); ++n) {
+    for (ndarray::Size n = 0; n < f.getSize<0>(); ++n) {
         f[n] = n;
     }
     return r;
@@ -103,10 +103,10 @@ bool acceptArray3(ndarray::Array<double,3> const & a1) {
 #ifndef GCC_45
     return ndarray::all(ndarray::equal(a1, a2));
 #else
-    for (int i = 0; i < a1.getSize<0>(); ++i) {
-      for (int j = 0; j < a1.getSize<1>(); ++j) {
-	if (!std::equal(a1[i][j].begin(), a1[i][j].end(), a2[i][j].begin())) return false;
-      }
+    for (ndarray::Size i = 0; i < a1.getSize<0>(); ++i) {
+        for (ndarray::Size j = 0; j < a1.getSize<1>(); ++j) {
+            if (!std::equal(a1[i][j].begin(), a1[i][j].end(), a2[i][j].begin())) return false;
+        }
     }
     return true;
 #endif
