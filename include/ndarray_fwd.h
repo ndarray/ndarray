@@ -30,6 +30,7 @@
 #include <boost/type_traits/is_const.hpp>
 #include <boost/type_traits/add_const.hpp>
 #include <boost/type_traits/remove_const.hpp>
+#include <boost/mpl/bool.hpp>
 #include <cassert>
 
 #ifdef __GNUC__
