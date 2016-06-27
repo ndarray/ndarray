@@ -22,6 +22,7 @@
 #include <boost/type_traits/add_const.hpp>
 #include <boost/type_traits/remove_const.hpp>
 #include <boost/mpl/comparison.hpp>
+#include <boost/utility/enable_if.hpp>
 #include <boost/static_assert.hpp>
 
 namespace ndarray {
@@ -145,6 +146,18 @@ flatten(Array<T,N,C> const & input) {
     Vector<Offset,Nf> newStrides = input.getStrides().template first<Nf>();
     newStrides[Nf-1] = 1;
     return Access::construct(input.getData(), Core::create(newShape, newStrides, input.getManager()));
+}
+
+/**
+ *  @brief Create a view into an array with trailing contiguous dimensions merged.
+ *
+ *  The first template parameter sets the dimension of the output array and must
+ *  be specified directly.  Only row-major contiguous dimensions can be flattened.
+ */
+template <int Nf, typename T, int N, int C>
+inline typename boost::enable_if_c< ((C+Nf-N)>=1), ArrayRef<T,Nf,(C+Nf-N)> >::type
+flatten(ArrayRef<T,N,C> const & input) {
+    return flatten<Nf>(input.shallow());
 }
 
 /// @}

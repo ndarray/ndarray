@@ -69,7 +69,6 @@ public:
     Target apply() const {
         typedef detail::ArrayAccess< Target > Access;
         typedef typename Access::Core Core;
-        typedef typename Access::Element Element;
         Manager::Ptr manager;
         if (!boost::is_same<Owner,NullOwner>::value) {
             manager = makeManager(_owner);

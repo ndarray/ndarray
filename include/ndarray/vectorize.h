@@ -19,6 +19,7 @@
 #include "ndarray/detail/UnaryOp.h"
 
 #include <boost/mpl/and.hpp>
+#include <boost/utility/enable_if.hpp>
 
 namespace ndarray {
 namespace result_of {
