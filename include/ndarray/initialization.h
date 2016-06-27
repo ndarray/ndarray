@@ -181,8 +181,8 @@ inline detail::ExternalInitializer<T,N,Owner> external(
 ) {
     return detail::ExternalInitializer<T,N,Owner>(
         data,
-        Vector<Size,N>(shape),
-        Vector<Offset,N>(strides),
+        Vector<Size,N>(shape.template cast<Size>()),
+        Vector<Offset,N>(strides.template cast<Offset>()),
         owner
     );
 }
@@ -235,8 +235,8 @@ inline detail::ExternalInitializer<T,N,Owner> external(
 ) {
     return detail::ExternalInitializer<T,N,Owner>(
         data,
-        Vector<Size,N>(shape),
-        computeStrides(shape, order),
+        Vector<Size,N>(shape.template cast<Size>()),
+        computeStrides(shape.template cast<Size>(), order),
         owner
     );
 }
@@ -261,8 +261,8 @@ inline detail::ExternalInitializer<T,N,detail::NullOwner> external(
 ) {
     return detail::ExternalInitializer<T,N,detail::NullOwner>(
         data,
-        Vector<Size,N>(shape),
-        computeStrides(shape, order),
+        Vector<Size,N>(shape.template cast<Size>()),
+        computeStrides(shape.template cast<Size>(), order),
         detail::NullOwner()
     );
 }
