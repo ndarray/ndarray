@@ -89,6 +89,14 @@ public:
     explicit Array(Size n1, Size n2=1, Size n3=1, Size n4=1, Size n5=1, Size n6=1, Size n7=1, Size n8=1);
 
     /**
+     *  @brief Construct an array with the given dimensions and allocated but uninitialized memory.
+     *
+     *  This is implemented in initialization.h.
+     */
+    template <typename U>
+    explicit Array(Vector<U,N> const & shape);
+
+    /**
      *  @brief Non-converting shallow assignment.
      */
     Array & operator=(Array const & other) {

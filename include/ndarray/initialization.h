@@ -286,8 +286,22 @@ Array<T,N,C>::Array(Size n1, Size n2, Size n3, Size n4, Size n5, Size n6, Size n
 }
 
 template <typename T, int N, int C>
+template <typename U>
+Array<T,N,C>::Array(Vector<U,N> const & shape)
+    : Super(0, CorePtr())
+{
+    this->operator=(ndarray::allocate(shape.template cast<U>()));
+}
+
+template <typename T, int N, int C>
 ArrayRef<T,N,C>::ArrayRef(Size n1, Size n2, Size n3, Size n4, Size n5, Size n6, Size n7, Size n8)
     : Super(Array<T,N,C>(n1, n2, n3, n4, n5, n6, n7, n8))
+{}
+
+template <typename T, int N, int C>
+template <typename U>
+ArrayRef<T,N,C>::ArrayRef(Vector<U,N> const & shape)
+    : Super(Array<T,N,C>(shape))
 {}
 
 } // namespace ndarray

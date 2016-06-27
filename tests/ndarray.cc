@@ -88,7 +88,20 @@ BOOST_AUTO_TEST_CASE(allocation) {
     BOOST_CHECK_EQUAL(c.getStride<1>(), 5);
     BOOST_CHECK_EQUAL(c.getStride<2>(), 5*6);
     BOOST_CHECK_EQUAL(c.getStrides(), ndarray::makeVector(1, 5, 5*6));
-    
+
+    ndarray::Array<float,3,3> d(shape);
+    BOOST_CHECK_EQUAL(d.getStrides(), shape);
+    BOOST_CHECK_EQUAL(d.getStrides(), a.getStrides());
+    ndarray::Array<float,3,-3> e(shape);
+    BOOST_CHECK_EQUAL(e.getStrides(), shape);
+    BOOST_CHECK_EQUAL(e.getStrides(), c.getStrides());
+    ndarray::Vector<ndarray::Offset,3> shape2(shape);
+    ndarray::Array<float,3,3> f(shape2);
+    BOOST_CHECK_EQUAL(f.getStrides(), shape);
+    BOOST_CHECK_EQUAL(f.getStrides(), a.getStrides());
+    ndarray::Array<float,3,-3> g(shape2);
+    BOOST_CHECK_EQUAL(g.getStrides(), shape);
+    BOOST_CHECK_EQUAL(g.getStrides(), c.getStrides());
 }
 
 BOOST_AUTO_TEST_CASE(external) {
