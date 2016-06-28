@@ -18,6 +18,11 @@
  *  \note This file is not included by the main "ndarray.h" header file.
  */
 
+#if defined __GNUC__ && __GNUC__>=6
+ #pragma GCC diagnostic ignored "-Wignored-attributes"
+ #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
 #include "Eigen/Core"
 #include "ndarray.h"
 #include "ndarray/eigen_fwd.h"

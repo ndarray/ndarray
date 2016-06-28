@@ -11,6 +11,11 @@
 #ifndef NDARRAY_EIGEN_BP_ReturnInternal_h_INCLUDED
 #define NDARRAY_EIGEN_BP_ReturnInternal_h_INCLUDED
 
+#if defined __GNUC__ && __GNUC__>=6
+ #pragma GCC diagnostic ignored "-Wignored-attributes"
+ #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
 #include "boost/numpy.hpp"
 #include <Eigen/Core>
 
