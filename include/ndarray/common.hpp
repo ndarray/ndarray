@@ -16,33 +16,39 @@
 namespace ndarray {
 
 typedef std::uint8_t byte_t;
-typedef std::uint32_t dtype_size;
-typedef std::int32_t dtype_offset;
 typedef std::size_t size_t;
 typedef std::ptrdiff_t offset_t;
 
 enum class MemoryOrder {
     ROW_MAJOR,
-    COL_MAJOR;
+    COL_MAJOR
 };
 
 namespace detail {
 
-template <int N> class layout;
+template <int N> class Layout;
 
-template <typename T, int N> struct array_traits;
+template <typename T, int N> struct ArrayTraits;
+
+template <typename T, int N> struct IterTraits;
+
+template <typename T, int N> class ArrayImpl;
+
+template <typename T, int N> class IterImpl;
 
 } // namespace detail
 
-template <typename T, int N> class array;
+template <typename T, int N> class ArrayBase;
 
-template <typename T, int N> class array_val;
+template <typename T, int N> class Array;
 
-template <typename T, int N> class array_ref;
+template <typename T, int N> class ArrayRef;
 
-template <typename T> class dtype;
+template <typename T, int N> class Iter;
 
-class manager;
+template <typename T> class DType;
+
+class Manager;
 
 template <typename T> class record;
 

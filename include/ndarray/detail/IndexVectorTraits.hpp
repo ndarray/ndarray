@@ -8,8 +8,10 @@
  * of the source distribution, or alternately available at:
  * https://github.com/ndarray/ndarray
  */
-#ifndef NDARRAY_detail_index_vector_traits_hpp_INCLUDED
-#define NDARRAY_detail_index_vector_traits_hpp_INCLUDED
+#ifndef NDARRAY_detail_IndexVectorTraits_hpp_INCLUDED
+#define NDARRAY_detail_IndexVectorTraits_hpp_INCLUDED
+
+#include <array>
 
 #include "ndarray/common.hpp"
 
@@ -17,25 +19,25 @@ namespace ndarray {
 namespace detail {
 
 template <typename T>
-struct index_vector_traits {
+struct IndexVectorTraits {
 
     template <std::size_t M>
     static void check_dims(T const & v) {
         assert(M == v.size());
     }
 
-    static Size get_size(T const & v, std::size_t n) {
+    static size_t get_size(T const & v, std::size_t n) {
         return v[n];
     }
 
-    static Offset get_offset(T const & v, std::size_t n) {
+    static offset_t get_offset(T const & v, std::size_t n) {
         return v[n];
     }
 
 };
 
 template <typename U, std::size_t N>
-struct index_vector_traits<std::array<U,N>> {
+struct IndexVectorTraits<std::array<U,N>> {
 
     template <std::size_t M>
     static void check_dims(std::array<U,N> const & v) {
@@ -45,18 +47,18 @@ struct index_vector_traits<std::array<U,N>> {
         );
     }
 
-    static Size get_size(std::array<U,N> const & v, std::size_t n) {
+    static size_t get_size(std::array<U,N> const & v, std::size_t n) {
         return v[n];
     }
 
-    static Offset get_offset(std::array<U,N> const & v, std::size_t n) {
+    static offset_t get_offset(std::array<U,N> const & v, std::size_t n) {
         return v[n];
     }
 
 };
 
 template <typename U>
-struct index_vector_traits<std::initializer_list<U>> {
+struct IndexVectorTraits<std::initializer_list<U>> {
 
     template <std::size_t M>
     static void check_dims(std::initializer_list<U> const & v) {
@@ -70,11 +72,11 @@ struct index_vector_traits<std::initializer_list<U>> {
 #endif
     }
 
-    Size get_size(std::initializer_list<U> const & v, std::size_t n) const {
+    static size_t get_size(std::initializer_list<U> const & v, std::size_t n) {
         return v.begin()[n];
     }
 
-    Offset get_offset(std::initializer_list<U> const & v, std::size_t n) const {
+    static offset_t get_offset(std::initializer_list<U> const & v, std::size_t n) {
         return v.begin()[n];
     }
 
@@ -83,4 +85,4 @@ struct index_vector_traits<std::initializer_list<U>> {
 } // namespace detail
 } // ndarray
 
-#endif // !NDARRAY_detail_index_vector_traits_hpp_INCLUDED
+#endif // !NDARRAY_detail_IndexVectorTraits_hpp_INCLUDED
