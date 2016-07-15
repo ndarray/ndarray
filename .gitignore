@@ -7,3 +7,4 @@ meson-private
 .ninja*
 compile_commands.json
 build.ninja
+*/tests/Layout
