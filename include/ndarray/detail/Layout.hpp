@@ -48,6 +48,9 @@ public:
 
 protected:
 
+    // Zero shape, zero strides.
+    constexpr Layout() {}
+
     // Explicit shape and strides.
     template <typename ShapeVector, typename StridesVector, int M>
     constexpr Layout(
@@ -117,6 +120,9 @@ public:
                 return nullptr;
         }
     }
+
+    // Zero shape, zero strides.
+    Layout() {}
 
     // Constructor from explicit shape and strides.
     // Should only be called by make().
