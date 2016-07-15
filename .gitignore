@@ -2,3 +2,8 @@
 *.o
 *.os
 *.so
+meson-logs
+meson-private
+.ninja*
+compile_commands.json
+build.ninja
