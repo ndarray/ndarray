@@ -76,10 +76,44 @@ public:
         base_t(impl_t(shape, order, dtype))
     {}
 
+    Array(
+        std::initializer_list<size_t> shape,
+        MemoryOrder order=MemoryOrder::ROW_MAJOR,
+        dtype_t const & dtype=dtype_t()
+    ) :
+        base_t(impl_t(shape, order, dtype))
+    {}
+
     template <typename ShapeVector, typename StridesVector>
     Array(
         ShapeVector const & shape,
         StridesVector const & strides,
+        dtype_t const & dtype=dtype_t()
+    ) :
+        base_t(impl_t(shape, strides, dtype))
+    {}
+
+    template <typename ShapeVector>
+    Array(
+        ShapeVector const & shape,
+        std::initializer_list<offset_t> strides,
+        dtype_t const & dtype=dtype_t()
+    ) :
+        base_t(impl_t(shape, strides, dtype))
+    {}
+
+    template <typename StridesVector>
+    Array(
+        std::initializer_list<size_t> shape,
+        StridesVector const & strides,
+        dtype_t const & dtype=dtype_t()
+    ) :
+        base_t(impl_t(shape, strides, dtype))
+    {}
+
+    Array(
+        std::initializer_list<size_t> shape,
+        std::initializer_list<offset_t> strides,
         dtype_t const & dtype=dtype_t()
     ) :
         base_t(impl_t(shape, strides, dtype))
