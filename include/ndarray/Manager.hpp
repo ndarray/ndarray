@@ -88,10 +88,11 @@ std::pair<byte_t*,std::shared_ptr<Manager>>
 manage_new(size_t size, DType<T> dtype) {
     size_t nbytes = dtype.nbytes() * size;
     std::unique_ptr<byte_t[]> owner(new byte_t[nbytes]);
+    byte_t * buffer = owner.get();
     auto manager = std::make_shared<detail::PrimaryManager<T,std::unique_ptr<byte_t[]>>>(
         std::move(dtype), std::move(owner), nbytes
     );
-    return std::pair<byte_t*,std::shared_ptr<Manager>>(owner.get(), std::move(manager));
+    return std::pair<byte_t*,std::shared_ptr<Manager>>(buffer, std::move(manager));
 }
 
 template <typename T, typename Owner>
