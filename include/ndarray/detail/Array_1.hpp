@@ -24,6 +24,7 @@ class Array<T const,N> : public ArrayBase<T const,N> {
     typedef detail::ArrayTraits<T const,N> traits_t;
     typedef typename traits_t::impl_t impl_t;
     template <typename U, int M> friend struct detail::ArrayTraits;
+    template <typename U, int M> friend class Array;
 public:
 
     Array() : base_t() {}
@@ -61,6 +62,7 @@ class Array : public ArrayBase<T,N> {
     typedef detail::ArrayTraits<T,N> traits_t;
     typedef typename traits_t::impl_t impl_t;
     template <typename U, int M> friend struct detail::ArrayTraits;
+    template <typename U, int M> friend class Array;
 public:
 
     typedef typename base_t::dtype_t dtype_t;
