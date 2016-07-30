@@ -49,6 +49,8 @@ public:
 
     element * data() const { return reinterpret_cast<T*>(_impl.buffer); }
 
+    bool empty() const { return !_layout(); }
+
     size_t size() const { return _layout()->size(); }
 
     offset_t stride() const { return _layout()->stride(); }

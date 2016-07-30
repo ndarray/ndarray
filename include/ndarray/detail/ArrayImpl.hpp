@@ -36,7 +36,7 @@ public:
 
     ArrayImpl() :
         buffer(nullptr),
-        _dtype_and_layout(dtype_t(), std::make_shared<Layout<N>>()),
+        _dtype_and_layout(dtype_t(), std::shared_ptr<Layout<N>>()),
         _manager(nullptr)
     {}
 

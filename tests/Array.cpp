@@ -7,22 +7,18 @@ namespace ndd = ndarray::detail;
 namespace nd = ndarray;
 
 TEST_CASE(
-    "default-constructed Arrays behave appropriately",
-    "[array-default-ctor]"
+    "default-constructed and post-move Arrays behave appropriately",
+    "[array-empty]"
 ) {
     nd::Array<float,3> empty;
     CHECK( empty.data() == nullptr );
     CHECK( empty.manager() == nullptr );
-    CHECK( empty.stride() == 0 );
-    CHECK( empty.size() == 0);
-    CHECK( empty.full_size() == 0);
-    CHECK( empty.stride<0>() == 0 );
-    CHECK( empty.size<0>() == 0);
-    CHECK( empty.stride<1>() == 0 );
-    CHECK( empty.size<1>() == 0);
-    CHECK( empty.stride<2>() == 0 );
-    CHECK( empty.size<2>() == 0);
-    CHECK( std::distance(empty.begin(), empty.end()) == 0 );
+    CHECK( empty.empty() );
+    nd::Array<float,3> full({4, 3, 2});
+    empty = std::move(full);
+    // No check for data()==nullptr; this is not guaranteed.
+    CHECK( full.manager() == nullptr );
+    CHECK( full.empty() );
 }
 
 TEST_CASE(
@@ -104,4 +100,17 @@ TEST_CASE(
     CHECK( h.stride<0>() == 4 );
     CHECK( h.stride<1>() == 16 );
     CHECK( h.stride<2>() == 80 );
+}
+
+TEST_CASE(
+    "Arrays equality comparison is shallow and requires exact equivalence.",
+    "[array-comparison]"
+) {
+    nd::Array<float,3> a({4, 5, 2});
+    nd::Array<float,3> b({4, 5, 2});
+    CHECK( a != b );
+    nd::Array<float,3> c(a);
+    CHECK( a == c );
+    b = a;
+    CHECK( a == b );
 }
