@@ -68,7 +68,7 @@ public:
     Array() : base_t() {}
 
     template <typename ShapeVector>
-    Array(
+    explicit Array(
         ShapeVector const & shape,
         MemoryOrder order=MemoryOrder::ROW_MAJOR,
         dtype_t const & dtype=dtype_t()
@@ -76,7 +76,7 @@ public:
         base_t(impl_t(shape, order, dtype))
     {}
 
-    Array(
+    explicit Array(
         std::initializer_list<size_t> shape,
         MemoryOrder order=MemoryOrder::ROW_MAJOR,
         dtype_t const & dtype=dtype_t()
