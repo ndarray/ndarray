@@ -122,7 +122,7 @@ public:
     }
 
     // Zero shape, zero strides.
-    Layout() {}
+    Layout() : _size(0), _stride(0) {}
 
     // Constructor from explicit shape and strides.
     // Should only be called by make().
