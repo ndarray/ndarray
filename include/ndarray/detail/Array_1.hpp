@@ -86,37 +86,45 @@ public:
 
     template <typename ShapeVector, typename StridesVector>
     Array(
+        byte_t * buffer,
         ShapeVector const & shape,
         StridesVector const & strides,
+        std::shared_ptr<Manager> manager=std::shared_ptr<Manager>(),
         dtype_t const & dtype=dtype_t()
     ) :
-        base_t(impl_t(shape, strides, dtype))
+        base_t(impl_t(buffer, shape, strides, std::move(manager), dtype))
     {}
 
     template <typename ShapeVector>
     Array(
+        byte_t * buffer,
         ShapeVector const & shape,
         std::initializer_list<offset_t> strides,
+        std::shared_ptr<Manager> manager=std::shared_ptr<Manager>(),
         dtype_t const & dtype=dtype_t()
     ) :
-        base_t(impl_t(shape, strides, dtype))
+        base_t(impl_t(buffer, shape, strides, std::move(manager), dtype))
     {}
 
     template <typename StridesVector>
     Array(
+        byte_t * buffer,
         std::initializer_list<size_t> shape,
         StridesVector const & strides,
+        std::shared_ptr<Manager> manager=std::shared_ptr<Manager>(),
         dtype_t const & dtype=dtype_t()
     ) :
-        base_t(impl_t(shape, strides, dtype))
+        base_t(impl_t(buffer, shape, strides, std::move(manager), dtype))
     {}
 
     Array(
+        byte_t * buffer,
         std::initializer_list<size_t> shape,
         std::initializer_list<offset_t> strides,
+        std::shared_ptr<Manager> manager=std::shared_ptr<Manager>(),
         dtype_t const & dtype=dtype_t()
     ) :
-        base_t(impl_t(shape, strides, dtype))
+        base_t(impl_t(buffer, shape, strides, std::move(manager), dtype))
     {}
 
     Array(Array const &) = default;

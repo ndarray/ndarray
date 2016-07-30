@@ -29,9 +29,9 @@ ArrayTraits<T,N>::make_reference_at(
     return ArrayRef<T,N-1>(
         typename ArrayTraits<T,N-1>::impl_t(
             self._impl.buffer,
-            self._impl.dtype(),
             self._impl.layout(),
-            self._impl.manager()
+            self._impl.manager(),
+            self._impl.dtype()
         )
     );
 }

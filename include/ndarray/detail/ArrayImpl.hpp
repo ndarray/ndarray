@@ -55,26 +55,26 @@ public:
 
     template <typename ShapeVector, typename StridesVector>
     ArrayImpl(
+        byte_t * buffer_,
         ShapeVector const & shape,
         StridesVector const & strides,
+        std::shared_ptr<Manager> manager,
         dtype_t const & dtype
     ) :
-        buffer(nullptr),
+        buffer(buffer_),
         _dtype_and_layout(dtype, layout_t::make(shape, strides)),
-        _manager(nullptr)
-    {
-        std::tie(buffer, _manager) = manage_new(layout()->full_size(), dtype);
-    }
+        _manager(std::move(manager))
+    {}
 
     ArrayImpl(
         byte_t * buffer_,
-        dtype_t dtype_,
         std::shared_ptr<layout_t> layout_,
-        std::shared_ptr<Manager> manager_
+        std::shared_ptr<Manager> manager,
+        dtype_t const & dtype
     ) :
         buffer(buffer_),
-        _dtype_and_layout(std::move(dtype_), std::move(layout_)),
-        _manager(std::move(manager_))
+        _dtype_and_layout(dtype, std::move(layout_)),
+        _manager(std::move(manager))
     {}
 
     ArrayImpl(ArrayImpl const &) = default;
