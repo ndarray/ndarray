@@ -86,47 +86,74 @@ public:
         base_t(impl_t(shape, order, dtype))
     {}
 
+    template <typename ShapeVector>
+    explicit Array(
+        T * data,
+        ShapeVector const & shape,
+        MemoryOrder order=MemoryOrder::ROW_MAJOR,
+        std::shared_ptr<Manager> manager=std::shared_ptr<Manager>(),
+        dtype_t const & dtype=dtype_t()
+    ) :
+        base_t(impl_t(reinterpret_cast<byte_t*>(data), shape, order,
+                      std::move(manager), dtype))
+    {}
+
+    explicit Array(
+        T * data,
+        std::initializer_list<size_t> shape,
+        MemoryOrder order=MemoryOrder::ROW_MAJOR,
+        std::shared_ptr<Manager> manager=std::shared_ptr<Manager>(),
+        dtype_t const & dtype=dtype_t()
+    ) :
+        base_t(impl_t(reinterpret_cast<byte_t*>(data), shape, order,
+                      std::move(manager), dtype))
+    {}
+
     template <typename ShapeVector, typename StridesVector>
     Array(
-        byte_t * buffer,
+        T * data,
         ShapeVector const & shape,
         StridesVector const & strides,
         std::shared_ptr<Manager> manager=std::shared_ptr<Manager>(),
         dtype_t const & dtype=dtype_t()
     ) :
-        base_t(impl_t(buffer, shape, strides, std::move(manager), dtype))
+        base_t(impl_t(reinterpret_cast<byte_t*>(data), shape, strides,
+                      std::move(manager), dtype))
     {}
 
     template <typename ShapeVector>
     Array(
-        byte_t * buffer,
+        T * data,
         ShapeVector const & shape,
         std::initializer_list<offset_t> strides,
         std::shared_ptr<Manager> manager=std::shared_ptr<Manager>(),
         dtype_t const & dtype=dtype_t()
     ) :
-        base_t(impl_t(buffer, shape, strides, std::move(manager), dtype))
+        base_t(impl_t(reinterpret_cast<byte_t*>(data), shape, strides,
+                      std::move(manager), dtype))
     {}
 
     template <typename StridesVector>
     Array(
-        byte_t * buffer,
+        T * data,
         std::initializer_list<size_t> shape,
         StridesVector const & strides,
         std::shared_ptr<Manager> manager=std::shared_ptr<Manager>(),
         dtype_t const & dtype=dtype_t()
     ) :
-        base_t(impl_t(buffer, shape, strides, std::move(manager), dtype))
+        base_t(impl_t(reinterpret_cast<byte_t*>(data), shape, strides,
+                      std::move(manager), dtype))
     {}
 
     Array(
-        byte_t * buffer,
+        T * data,
         std::initializer_list<size_t> shape,
         std::initializer_list<offset_t> strides,
         std::shared_ptr<Manager> manager=std::shared_ptr<Manager>(),
         dtype_t const & dtype=dtype_t()
     ) :
-        base_t(impl_t(buffer, shape, strides, std::move(manager), dtype))
+        base_t(impl_t(reinterpret_cast<byte_t*>(data), shape, strides,
+                      std::move(manager), dtype))
     {}
 
     Array(Array const &) = default;

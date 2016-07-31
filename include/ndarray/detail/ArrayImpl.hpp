@@ -53,6 +53,19 @@ public:
         std::tie(buffer, _manager) = manage_new(layout()->full_size(), dtype);
     }
 
+    template <typename ShapeVector>
+    ArrayImpl(
+        byte_t * buffer,
+        ShapeVector const & shape,
+        MemoryOrder order,
+        std::shared_ptr<Manager> manager,
+        dtype_t const & dtype
+    ) :
+        buffer(buffer),
+        _dtype_and_layout(dtype, layout_t::make(shape, dtype.nbytes(), order)),
+        _manager(std::move(manager))
+    {}
+
     template <typename ShapeVector, typename StridesVector>
     ArrayImpl(
         byte_t * buffer_,
