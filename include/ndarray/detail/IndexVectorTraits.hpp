@@ -14,6 +14,7 @@
 #include <array>
 
 #include "ndarray/common.hpp"
+#include "ndarray/Vector.hpp"
 
 namespace ndarray {
 namespace detail {
@@ -83,14 +84,7 @@ struct IndexVectorTraits<std::initializer_list<U>> {
 
     template <std::size_t M>
     static void check_dims(std::initializer_list<U> const & v) {
-#if __cplusplus >= 201402L
-        static_assert(
-            M == v.size(),
-            "Index vector has wrong number of elements."
-        );
-#else // initializer_list::size is not constexpr until C++14
         assert(M == v.size());
-#endif
     }
 
     static size_t get_size(std::initializer_list<U> const & v, std::size_t n) {
