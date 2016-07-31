@@ -46,6 +46,8 @@ template <typename T, size_t N> class ArrayRef;
 
 template <typename T, size_t N> class Iter;
 
+template <typename T, size_t N> class Vector;
+
 template <typename T> class DType;
 
 class Manager;

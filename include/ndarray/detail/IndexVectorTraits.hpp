@@ -37,6 +37,27 @@ struct IndexVectorTraits {
 };
 
 template <typename U, std::size_t N>
+struct IndexVectorTraits<Vector<U,N>> {
+
+    template <std::size_t M>
+    static void check_dims(Vector<U,N> const & v) {
+        static_assert(
+            M == N,
+            "Index vector has wrong number of elements."
+        );
+    }
+
+    static size_t get_size(Vector<U,N> const & v, std::size_t n) {
+        return v[n];
+    }
+
+    static offset_t get_offset(Vector<U,N> const & v, std::size_t n) {
+        return v[n];
+    }
+
+};
+
+template <typename U, std::size_t N>
 struct IndexVectorTraits<std::array<U,N>> {
 
     template <std::size_t M>

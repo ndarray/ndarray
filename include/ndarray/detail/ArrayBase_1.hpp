@@ -40,6 +40,8 @@ public:
     typedef typename traits_t::reference reference;
     typedef typename traits_t::pointer pointer;
     typedef typename traits_t::iterator iterator;
+    typedef Vector<size_t,N> shape_t;
+    typedef Vector<offset_t,N> strides_t;
 
     iterator begin() const;
 
@@ -60,6 +62,10 @@ public:
 
     template <size_t M>
     offset_t stride() const { return detail::get_dim<M>(*_layout()).stride(); }
+
+    shape_t shape() const { return _layout()->shape(); }
+
+    strides_t strides() const { return _layout()->strides(); }
 
     size_t full_size() const { return _layout()->full_size(); }
 

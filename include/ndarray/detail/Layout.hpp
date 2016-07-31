@@ -15,6 +15,7 @@
 
 #include "ndarray/common.hpp"
 #include "ndarray/detail/IndexVectorTraits.hpp"
+#include "ndarray/Vector.hpp"
 
 namespace ndarray {
 namespace detail {
@@ -78,6 +79,13 @@ protected:
     ) {}
 
     static constexpr size_t last_stride(size_t nbytes) { return nbytes; }
+
+    template <size_t M>
+    void fillShape(Vector<size_t,M> & shape) const {}
+
+    template <size_t M>
+    void fillStrides(Vector<offset_t,M> & strides) const {}
+
 };
 
 // Storage for the shape and strides of an Array.
@@ -162,6 +170,18 @@ public:
         )
     {}
 
+    Vector<size_t,N> shape() const {
+        Vector<size_t,N> result;
+        fillShape(result);
+        return result;
+    }
+
+    Vector<offset_t,N> strides() const {
+        Vector<offset_t,N> result;
+        fillStrides(result);
+        return result;
+    }
+
     // Return the size of this dimension (in elements, not bytes).
     size_t size() const { return _size; }
 
@@ -226,6 +246,20 @@ protected:
     {}
 
     static constexpr size_t last_stride(size_t nbytes) { return 1; }
+
+    template <size_t M>
+    void fillShape(Vector<size_t,M> & shape) const {
+        static_assert(M >= N, "Layout not large enough to fill shape vector.");
+        shape[M-N] = _size;
+        base_t::fillShape(shape);
+    }
+
+    template <size_t M>
+    void fillStrides(Vector<offset_t,M> & strides) const {
+        static_assert(M >= N, "Layout not large enough to fill strides vector.");
+        strides[M-N] = _stride;
+        base_t::fillStrides(strides);
+    }
 
 private:
     size_t _size;

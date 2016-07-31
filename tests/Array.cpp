@@ -123,4 +123,12 @@ TEST_CASE(
                          a.manager(), a.dtype());
     CHECK( a != e ); // same data, strides; different shape
 }
+
+TEST_CASE(
+    "Arrays provide access to shape and strides as containers.",
+    "[array-shape-and-strides]"
+) {
+    nd::Array<float,3> a({4, 5, 2});
+    CHECK( a.shape().equals({4, 5, 2}) );
+    CHECK( a.strides().equals({40, 8, 4}) );
 }
