@@ -21,9 +21,9 @@
 namespace ndarray {
 namespace detail {
 
-template <typename T, int N>
+template <typename T, size_t N>
 class IterImpl {
-    template <typename U, int M> friend class IterTraits;
+    template <typename U, size_t M> friend struct IterTraits;
 public:
 
     typedef DType<T> dtype_t;
@@ -67,7 +67,7 @@ private:
 
 template <typename T>
 class IterImpl<T,1> {
-    template <typename U, int M> friend class IterTraits;
+    template <typename U, size_t M> friend struct IterTraits;
 public:
 
     typedef DType<T> dtype_t;

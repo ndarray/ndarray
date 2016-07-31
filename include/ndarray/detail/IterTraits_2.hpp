@@ -23,7 +23,7 @@
 namespace ndarray {
 namespace detail {
 
-template <typename T, int N>
+template <typename T, size_t N>
 inline ArrayRef<T,N-1> IterTraits<T,N>::make_reference_at(
     byte_t * buffer,
     Iter<T,N> const & self
@@ -31,21 +31,21 @@ inline ArrayRef<T,N-1> IterTraits<T,N>::make_reference_at(
     return ArrayTraits<T,N>::make_reference_at(buffer, self._current);
 }
 
-template <typename T, int N>
+template <typename T, size_t N>
 inline ArrayRef<T,N-1> const & IterTraits<T,N>::make_reference(
     Iter<T,N> const & self
 ) {
     return self._impl._current;
 }
 
-template <typename T, int N>
+template <typename T, size_t N>
 inline Array<T,N-1> const * IterTraits<T,N>::make_pointer(
     Iter<T,N> const & self
 ) {
     return &self._impl._current;
 }
 
-template <typename T, int N>
+template <typename T, size_t N>
 inline Iter<T,N> IterTraits<T,N>::make_iterator_at(
     byte_t * buffer,
     ArrayBase<T,N> const & parent

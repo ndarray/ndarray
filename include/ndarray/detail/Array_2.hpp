@@ -20,34 +20,34 @@ namespace ndarray {
 
 #ifdef NDARRAY_FAST_CONVERSIONS
 
-    template <typename T, int N>
+    template <typename T, size_t N>
     inline ArrayRef<T const,N> const & Array<T const,N>::operator*() const {
         return *reinterpret_cast<ArrayRef<T const,N> const *>(this);
     }
 
-    template <typename T, int N>
+    template <typename T, size_t N>
     inline ArrayRef<T,N> const & Array<T,N>::operator*() const {
         return *reinterpret_cast<ArrayRef<T,N> const *>(this);
     }
 
-    template <typename T, int N>
+    template <typename T, size_t N>
     inline Array<T,N>::operator Array<T const,N> const & () const {
         return *reinterpret_cast<Array<T const,N> const *>(this);
     }
 
 #else
 
-    template <typename T, int N>
+    template <typename T, size_t N>
     inline ArrayRef<T const,N> Array<T const,N>::operator*() const {
         return ArrayRef<T const,N>(this->_impl);
     }
 
-    template <typename T, int N>
+    template <typename T, size_t N>
     inline ArrayRef<T,N> Array<T,N>::operator*() const{
         return ArrayRef<T,N>(this->_impl);
     }
 
-    template <typename T, int N>
+    template <typename T, size_t N>
     inline Array<T,N>::operator Array<T const,N>() const {
         return Array<T const,N>(this->_impl);
     }

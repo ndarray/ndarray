@@ -20,7 +20,7 @@
 namespace ndarray {
 namespace detail {
 
-template <typename T, int N>
+template <typename T, size_t N>
 typename ArrayTraits<T,N>::reference
 ArrayTraits<T,N>::make_reference_at(
     byte_t * buffer,

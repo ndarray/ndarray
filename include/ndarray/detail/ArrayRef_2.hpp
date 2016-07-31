@@ -17,14 +17,14 @@
 
 namespace ndarray {
 
-template <typename T, int N>
+template <typename T, size_t N>
 inline ArrayRef<T,N> const &
 ArrayRef<T,N>::operator=(Array<T const,N> const & other) const {
     std::copy(other.begin(), other.end(), this->begin());
     return *this;
 }
 
-template <typename T, int N>
+template <typename T, size_t N>
 inline ArrayRef<T,N> const &
 ArrayRef<T,N>::operator=(Array<T,N> && other) const {
     std::move(other.begin(), other.end(), this->begin());
@@ -33,7 +33,7 @@ ArrayRef<T,N>::operator=(Array<T,N> && other) const {
 
 #ifndef NDARRAY_FAST_CONVERSIONS
 
-    template <typename T, int N>
+    template <typename T, size_t N>
     inline ArrayRef const &
     ArrayRef<T>::operator=(Array<T,N> const & other) const {
         std::copy(other.begin(), other.end(), this->begin());

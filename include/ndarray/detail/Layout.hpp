@@ -52,28 +52,28 @@ protected:
     constexpr Layout() {}
 
     // Explicit shape and strides.
-    template <typename ShapeVector, typename StridesVector, int M>
+    template <typename ShapeVector, typename StridesVector, size_t M>
     constexpr Layout(
         ShapeVector const * shape,
         StridesVector const * strides,
-        std::integral_constant<int,M> * full_dim
+        std::integral_constant<size_t,M> * full_dim
     ) {}
 
     // Row-major strides.
-    template <typename ShapeVector, int M>
+    template <typename ShapeVector, size_t M>
     constexpr Layout(
         ShapeVector const * shape,
         size_t nbytes,
-        std::integral_constant<int,M> * full_dim,
+        std::integral_constant<size_t,M> * full_dim,
         std::true_type * is_row_major
     ) {}
 
     // Column-major strides.
-    template <typename ShapeVector, int M>
+    template <typename ShapeVector, size_t M>
     constexpr Layout(
         ShapeVector const * shape,
         offset_t stride,
-        std::integral_constant<int,M> * full_dim,
+        std::integral_constant<size_t,M> * full_dim,
         std::false_type * is_row_major
     ) {}
 
@@ -83,7 +83,7 @@ protected:
 // Storage for the shape and strides of an Array.
 //
 // See comments Layout<0> for more information.
-template <int N>
+template <size_t N>
 class Layout : public Layout<N-1> {
 public:
 
@@ -131,7 +131,7 @@ public:
         ShapeVector const & shape,
         StridesVector const & strides
     ) :
-        Layout(&shape, &strides, (std::integral_constant<int,N>*)nullptr)
+        Layout(&shape, &strides, (std::integral_constant<size_t,N>*)nullptr)
     {}
 
     // Constructor from shape with automatic row-major strides.
@@ -143,7 +143,7 @@ public:
         std::true_type* is_row_major
     ) :
         Layout(
-            &shape, nbytes, (std::integral_constant<int,N>*)nullptr,
+            &shape, nbytes, (std::integral_constant<size_t,N>*)nullptr,
             is_row_major
         )
     {}
@@ -157,7 +157,7 @@ public:
         std::false_type* is_row_major
     ) :
         Layout(
-            &shape, nbytes, (std::integral_constant<int,N>*)nullptr,
+            &shape, nbytes, (std::integral_constant<size_t,N>*)nullptr,
             is_row_major
         )
     {}
@@ -183,11 +183,11 @@ public:
 protected:
 
     // Explicit shape and strides, called recursively.
-    template <typename ShapeVector, typename StridesVector, int M>
+    template <typename ShapeVector, typename StridesVector, size_t M>
     Layout(
         ShapeVector const * shape,
         StridesVector const * strides,
-        std::integral_constant<int,M> * full_dim
+        std::integral_constant<std::size_t,M> * full_dim
     ) :
         base_t(shape, strides, full_dim),
         _size(IndexVectorTraits<ShapeVector>::get_size(*shape, M-N)),
@@ -195,11 +195,11 @@ protected:
     {}
 
     // Row-major strides, called recursively.
-    template <typename ShapeVector, int M>
+    template <typename ShapeVector, size_t M>
     Layout(
         ShapeVector const * shape,
         size_t nbytes,
-        std::integral_constant<int,M> * full_dim,
+        std::integral_constant<std::size_t,M> * full_dim,
         std::true_type * is_row_major
     ) :
         base_t(shape, nbytes, full_dim, is_row_major),
@@ -208,11 +208,11 @@ protected:
     {}
 
     // Column-major strides, called recursively.
-    template <typename ShapeVector, int M>
+    template <typename ShapeVector, size_t M>
     Layout(
         ShapeVector const * shape,
         offset_t stride,
-        std::integral_constant<int,M> * full_dim,
+        std::integral_constant<std::size_t,M> * full_dim,
         std::false_type * is_row_major
     ) :
         base_t(
@@ -232,11 +232,11 @@ private:
     offset_t _stride;
 };
 
-template <int P, int N>
+template <int P, size_t N>
 inline Layout<N-P> const &
 get_dim(Layout<N> const & layout) { return layout; }
 
-template <int P, int N>
+template <int P, size_t N>
 inline std::shared_ptr<Layout<N-P>>
 get_dim(std::shared_ptr<Layout<N>> const & layout) { return layout; }
 

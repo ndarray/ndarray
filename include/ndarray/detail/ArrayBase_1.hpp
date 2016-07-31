@@ -17,24 +17,24 @@
 
 namespace ndarray {
 
-template <typename T, int N_>
+template <typename T, size_t N_>
 class ArrayBase {
 
     typedef detail::ArrayTraits<T,N_> traits_t;
     typedef typename traits_t::impl_t impl_t;
     typedef typename traits_t::layout_t layout_t;
 
-    template <typename U, int M> friend class Array;
-    template <typename U, int M> friend class ArrayRef;
-    template <typename U, int M> friend struct detail::IterImpl;
-    template <typename U, int M> friend struct detail::ArrayTraits;
+    template <typename U, size_t M> friend class Array;
+    template <typename U, size_t M> friend class ArrayRef;
+    template <typename U, size_t M> friend class detail::IterImpl;
+    template <typename U, size_t M> friend struct detail::ArrayTraits;
 
     std::shared_ptr<layout_t> const & _layout() const { return _impl.layout(); }
 
 public:
 
     typedef T element;
-    static constexpr int N = N_;
+    static constexpr size_t N = N_;
     typedef typename traits_t::dtype_t dtype_t;
     typedef typename traits_t::value_type value_type;
     typedef typename traits_t::reference reference;
@@ -55,10 +55,10 @@ public:
 
     offset_t stride() const { return _layout()->stride(); }
 
-    template <int M>
+    template <size_t M>
     size_t size() const { return detail::get_dim<M>(*_layout()).size(); }
 
-    template <int M>
+    template <size_t M>
     offset_t stride() const { return detail::get_dim<M>(*_layout()).stride(); }
 
     size_t full_size() const { return _layout()->full_size(); }
@@ -100,12 +100,12 @@ private:
 };
 
 
-template <int M, typename T, int N>
+template <size_t M, typename T, size_t N>
 inline size_t get_size(ArrayBase<T,N> const & x) {
     return x.template size<M>();
 }
 
-template <int M, typename T, int N>
+template <size_t M, typename T, size_t N>
 inline offset_t get_stride(ArrayBase<T,N> const & x) {
     return x.template stride<M>();
 }

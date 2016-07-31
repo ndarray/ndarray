@@ -19,7 +19,7 @@
 namespace ndarray {
 namespace detail {
 
-template <typename T, int N>
+template <typename T, size_t N>
 struct IterTraits : public ArrayTraits<T,N> {
     typedef IterImpl<typename std::remove_const<T>::type,N> impl_t;
     typedef std::input_iterator_tag category;

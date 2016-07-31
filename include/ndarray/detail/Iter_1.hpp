@@ -20,11 +20,11 @@
 
 namespace ndarray {
 
-template <typename T, int N>
+template <typename T, size_t N>
 class Iter<T const,N> {
     typedef detail::IterTraits<T const,N> traits_t;
     typedef typename traits_t::impl_t impl_t;
-    template <typename U, int M> friend class detail::IterTraits;
+    template <typename U, size_t M> friend struct detail::IterTraits;
 public:
     typedef typename traits_t::value_type value_type;
     typedef typename traits_t::reference reference;
@@ -118,31 +118,31 @@ protected:
     impl_t _impl;
 };
 
-template <typename T, int N>
+template <typename T, size_t N>
 Iter<T const,N> operator+(Iter<T const,N> const & it, offset_t n) {
     Iter<T const,N> r(it);
     r += n;
     return r;
 }
 
-template <typename T, int N>
+template <typename T, size_t N>
 Iter<T const,N> operator-(Iter<T const,N> const & it, offset_t n) {
     Iter<T const,N> r(it);
     r -= n;
     return r;
 }
 
-template <typename T, int N>
+template <typename T, size_t N>
 Iter<T const,N> operator+(offset_t n, Iter<T const,N> const & it) {
     return it + n;
 }
 
-template <typename T, int N>
+template <typename T, size_t N>
 class Iter : public Iter<T const,N> {
     typedef detail::IterTraits<T,N> traits_t;
     typedef typename traits_t::impl_t impl_t;
     typedef Iter<T const,N> base_t;
-    template <typename U, int M> friend class detail::IterTraits;
+    template <typename U, size_t M> friend struct detail::IterTraits;
 public:
     typedef typename traits_t::value_type value_type;
     typedef typename traits_t::reference reference;
@@ -207,21 +207,21 @@ private:
 
 };
 
-template <typename T, int N>
+template <typename T, size_t N>
 Iter<T,N> operator+(Iter<T,N> const & it, offset_t n) {
     Iter<T,N> r(it);
     r += n;
     return r;
 }
 
-template <typename T, int N>
+template <typename T, size_t N>
 Iter<T,N> operator-(Iter<T,N> const & it, offset_t n) {
     Iter<T,N> r(it);
     r -= n;
     return r;
 }
 
-template <typename T, int N>
+template <typename T, size_t N>
 Iter<T,N> operator+(offset_t n, Iter<T,N> const & it) {
     return it + n;
 }

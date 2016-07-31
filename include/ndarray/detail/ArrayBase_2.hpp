@@ -19,7 +19,7 @@
 
 namespace ndarray {
 
-template <typename T, int N>
+template <typename T, size_t N>
 inline typename ArrayBase<T,N>::iterator ArrayBase<T,N>::begin() const {
     return detail::IterTraits<T,N>::make_iterator_at(
         this->_impl.buffer,
@@ -27,7 +27,7 @@ inline typename ArrayBase<T,N>::iterator ArrayBase<T,N>::begin() const {
     );
 }
 
-template <typename T, int N>
+template <typename T, size_t N>
 inline typename ArrayBase<T,N>::iterator ArrayBase<T,N>::end() const {
     return detail::IterTraits<T,N>::make_iterator_at(
         this->_impl.buffer + this->stride()*this->size(),
@@ -35,7 +35,7 @@ inline typename ArrayBase<T,N>::iterator ArrayBase<T,N>::end() const {
     );
 }
 
-template <typename T, int N>
+template <typename T, size_t N>
 inline typename ArrayBase<T,N>::reference
 ArrayBase<T,N>::operator[](size_t n) const {
     return traits_t::make_reference(

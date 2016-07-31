@@ -26,25 +26,25 @@ enum class MemoryOrder {
 
 namespace detail {
 
-template <int N> class Layout;
+template <size_t N> class Layout;
 
-template <typename T, int N> struct ArrayTraits;
+template <typename T, size_t N> struct ArrayTraits;
 
-template <typename T, int N> struct IterTraits;
+template <typename T, size_t N> struct IterTraits;
 
-template <typename T, int N> class ArrayImpl;
+template <typename T, size_t N> class ArrayImpl;
 
-template <typename T, int N> class IterImpl;
+template <typename T, size_t N> class IterImpl;
 
 } // namespace detail
 
-template <typename T, int N> class ArrayBase;
+template <typename T, size_t N> class ArrayBase;
 
-template <typename T, int N> class Array;
+template <typename T, size_t N> class Array;
 
-template <typename T, int N> class ArrayRef;
+template <typename T, size_t N> class ArrayRef;
 
-template <typename T, int N> class Iter;
+template <typename T, size_t N> class Iter;
 
 template <typename T> class DType;
 

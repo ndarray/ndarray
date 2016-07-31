@@ -18,12 +18,12 @@
 
 namespace ndarray {
 
-template <typename T, int N>
+template <typename T, size_t N>
 class ArrayRef<T const,N> : public Array<T const,N> {
     typedef Array<T const,N> base_t;
     typedef detail::ArrayTraits<T const,N> traits_t;
     typedef typename traits_t::impl_t impl_t;
-    template <typename U, int M> friend struct detail::ArrayTraits;
+    template <typename U, size_t M> friend struct detail::ArrayTraits;
 public:
 
     ArrayRef() : base_t() {}
@@ -43,12 +43,12 @@ private:
     explicit ArrayRef(impl_t && impl) : base_t(std::move(impl)) {}
 };
 
-template <typename T, int N>
+template <typename T, size_t N>
 class ArrayRef : public Array<T,N> {
     typedef Array<T,N> base_t;
     typedef detail::ArrayTraits<T,N> traits_t;
     typedef typename traits_t::impl_t impl_t;
-    template <typename U, int M> friend struct detail::ArrayTraits;
+    template <typename U, size_t M> friend struct detail::ArrayTraits;
 public:
 
     typedef typename base_t::dtype_t dtype_t;

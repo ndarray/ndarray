@@ -20,10 +20,10 @@
 namespace ndarray {
 namespace detail {
 
-template <typename T, int N_>
+template <typename T, size_t N_>
 struct ArrayTraits {
     typedef T element;
-    static constexpr int N = N_;
+    static constexpr size_t N = N_;
     typedef get_dtype_t<T> dtype_t;
     typedef Layout<N> layout_t;
     typedef ArrayImpl<typename std::remove_const<T>::type,N> impl_t;
@@ -41,7 +41,7 @@ struct ArrayTraits {
 template <typename T>
 struct ArrayTraits<T,1> {
     typedef T element;
-    static constexpr int N = 1;
+    static constexpr size_t N = 1;
     typedef get_dtype_t<T> dtype_t;
     typedef ArrayImpl<T,1> impl_t;
     typedef Layout<1> layout_t;
@@ -61,7 +61,7 @@ struct ArrayTraits<T,1> {
 template <typename T>
 struct ArrayTraits<T const,1> {
     typedef T const element;
-    static constexpr int N = 1;
+    static constexpr size_t N = 1;
     typedef get_dtype_t<T const> dtype_t;
     typedef ArrayImpl<T,1> impl_t;
     typedef Layout<1> layout_t;
