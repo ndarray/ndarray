@@ -9,3 +9,4 @@ compile_commands.json
 build.ninja
 */tests/Layout
 */tests/Array
+*/tests/formatting

@@ -9,3 +9,9 @@ test_Array = executable(
     include_directories : inc,
 )
 test('Array', test_Array)
+
+test_formatting = executable(
+    'formatting', 'formatting.cpp',
+    include_directories : inc,
+)
+test('formatting', test_formatting)
