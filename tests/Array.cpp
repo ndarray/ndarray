@@ -14,11 +14,14 @@ TEST_CASE(
     CHECK( empty.data() == nullptr );
     CHECK( empty.manager() == nullptr );
     CHECK( empty.empty() );
+    nd::Array<float,3> b;
+    CHECK( empty == b );
     nd::Array<float,3> full({4, 3, 2});
+    CHECK( empty != full );
     empty = std::move(full);
     // No check for data()==nullptr; this is not guaranteed.
-    CHECK( full.manager() == nullptr );
     CHECK( full.empty() );
+    CHECK( full.manager() == nullptr );
 }
 
 TEST_CASE(
@@ -108,9 +111,16 @@ TEST_CASE(
 ) {
     nd::Array<float,3> a({4, 5, 2});
     nd::Array<float,3> b({4, 5, 2});
-    CHECK( a != b );
+    CHECK( a != b );  // different data, same shape and strides
     nd::Array<float,3> c(a);
     CHECK( a == c );
     b = a;
     CHECK( a == b );
+    nd::Array<float,3> d(a.data(), a.shape(), nd::MemoryOrder::COL_MAJOR,
+                         a.manager(), a.dtype());
+    CHECK( a != d ); // same data, shape; different strides
+    nd::Array<float,3> e(a.data(), a.shape().reversed(), a.strides(),
+                         a.manager(), a.dtype());
+    CHECK( a != e ); // same data, strides; different shape
+}
 }

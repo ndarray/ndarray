@@ -119,8 +119,9 @@ public:
 
     bool operator==(ArrayImpl const & other) const {
         return buffer == other.buffer &&
-            (layout() == other.layout() || *layout() == *other.layout()) &&
-            dtype() == other.dtype();
+            (layout() == other.layout()
+                || ((layout() && other.layout()) && *layout() == *other.layout()))
+            && dtype() == other.dtype();
     }
 
     bool operator!=(ArrayImpl const & other) const {
