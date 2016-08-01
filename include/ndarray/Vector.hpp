@@ -15,6 +15,7 @@
 #include <array>
 
 #include "ndarray/common.hpp"
+#include "ndarray/detail/utils.hpp"
 
 namespace ndarray {
 
@@ -88,6 +89,14 @@ public:
         return std::equal(cbegin(), cend(), other.begin());
     }
 
+    bool operator==(Vector const & other) const {
+        return std::equal(cbegin(), cend(), other.cbegin());
+    }
+
+    bool operator!=(Vector const & other) const {
+        return !(*this == other);
+    }
+
     value_type dot(Vector const & other) const {
         return std::inner_product(
             cbegin(), cend(),
@@ -100,6 +109,51 @@ public:
         Vector result;
         std::copy(crbegin(), crend(), result.begin());
         return result;
+    }
+
+    template <typename U>
+    Vector & operator=(Vector<U,N> const & other) {
+        std::copy(other.cbegin(), other.cend(), begin());
+        return *this;
+    }
+
+    template <typename U>
+    Vector & operator+=(Vector<U,N> const & other) {
+        detail::for_each_zip(begin(), end(), other.begin(),
+                             [](reference a, const_reference b) { a += b; });
+        return *this;
+    }
+
+    template <typename U>
+    Vector & operator-=(Vector<U,N> const & other) {
+        detail::for_each_zip(begin(), end(), other.begin(),
+                             [](reference a, const_reference b) { a -= b; });
+        return *this;
+    }
+
+    Vector & operator=(value_type scalar) {
+        _impl.fill(scalar);
+        return *this;
+    }
+
+    Vector & operator+=(value_type scalar) {
+        std::for_each(begin(), end(), [](reference r){ r += scalar; });
+        return *this;
+    }
+
+    Vector & operator-=(value_type scalar) {
+        std::for_each(begin(), end(), [](reference r){ r -= scalar; });
+        return *this;
+    }
+
+    Vector & operator*=(value_type scalar) {
+        std::for_each(begin(), end(), [](reference r){ r *= scalar; });
+        return *this;
+    }
+
+    Vector & operator/=(value_type scalar) {
+        std::for_each(begin(), end(), [](reference r){ r /= scalar; });
+        return *this;
     }
 
 private:
