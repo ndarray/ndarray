@@ -42,5 +42,13 @@ ArrayRef<T,N>::operator=(Array<T,N> && other) const {
 
 #endif
 
+template <typename T, size_t N>
+inline ArrayRef<T,N> const & ArrayRef<T,N>::operator=(T scalar) const {
+    std::fill(this->begin(), this->end(), scalar);
+    return *this;
+}
+
+
 } // namespace ndarray
 
+#endif // !NDARRAY_ArrayRef_2_hpp_INCLUDED

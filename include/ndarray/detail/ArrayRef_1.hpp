@@ -81,6 +81,8 @@ public:
     operator ArrayRef<T const,N>() const;
 #endif
 
+    ArrayRef const & operator=(T scalar) const;
+
 private:
     explicit ArrayRef(impl_t const & impl) : base_t(impl) {}
     explicit ArrayRef(impl_t && impl) : base_t(std::move(impl)) {}
