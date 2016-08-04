@@ -174,13 +174,9 @@ public:
 
 #ifdef NDARRAY_FAST_CONVERSIONS
     ArrayRef<T,N> const & operator*() const;
-#else
-    ArrayRef<T,N> operator*() const;
-#endif
-
-#ifdef NDARRAY_FAST_CONVERSIONS
     operator Array<T const,N> const & () const;
 #else
+    ArrayRef<T,N> operator*() const;
     operator Array<T const,N>() const;
 #endif
 
