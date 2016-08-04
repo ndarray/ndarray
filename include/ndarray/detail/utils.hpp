@@ -18,9 +18,9 @@ namespace detail {
 
 template <typename Iterator1, typename Iterator2, typename Function>
 void for_each_zip(
-    Iterator first1,
-    Iterator last1,
-    Iterator first2,
+    Iterator1 first1,
+    Iterator1 last1,
+    Iterator2 first2,
     Function binary_op
 ) {
     while (first1 != last1) {

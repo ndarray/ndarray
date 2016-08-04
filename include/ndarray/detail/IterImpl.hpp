@@ -72,10 +72,10 @@ public:
 
     typedef DType<T> dtype_t;
 
-    IterImpl() : _buffer(nullptr), _dtype_and_stride() {}
+    IterImpl() : _holder(dtype_t(), std::make_pair(nullptr, 0)) {}
 
     IterImpl(byte_t * buffer, dtype_t dtype_, offset_t stride) :
-        _buffer(buffer), _dtype_and_stride(std::move(dtype_), stride)
+        _holder(std::move(dtype_), std::make_pair(buffer, stride))
     {}
 
     IterImpl(IterImpl const & other) = default;
@@ -86,19 +86,18 @@ public:
 
     IterImpl & operator=(IterImpl && other) = default;
 
-    byte_t * buffer() const { return _buffer; }
+    byte_t * buffer() const { return _holder.second().first; }
 
-    dtype_t const & dtype() const { return _dtype_and_stride.first(); }
+    dtype_t const & dtype() const { return _holder.first(); }
 
-    offset_t stride() const { return _dtype_and_stride().second(); }
+    offset_t stride() const { return _holder.second().second; }
 
     void advance(offset_t n) {
-        _buffer += n*stride();
+        _holder.second().first += n*stride();
     }
 
 private:
-    byte_t * _buffer;
-    CompressedPair<dtype_t,offset_t> _dtype_and_stride;
+    CompressedPair<dtype_t,std::pair<byte_t*, offset_t>> _holder;
 };
 
 } // namespace detail

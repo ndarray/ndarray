@@ -38,7 +38,7 @@ inline typename ArrayBase<T,N>::iterator ArrayBase<T,N>::end() const {
 template <typename T, size_t N>
 inline typename ArrayBase<T,N>::reference
 ArrayBase<T,N>::operator[](size_t n) const {
-    return traits_t::make_reference(
+    return traits_t::make_reference_at(
         this->_impl.buffer + this->stride()*n,
         *this
     );

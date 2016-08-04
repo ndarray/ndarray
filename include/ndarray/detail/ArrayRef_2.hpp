@@ -8,8 +8,8 @@
  * of the source distribution, or alternately available at:
  * https://github.com/ndarray/ndarray
  */
-#ifndef NDARRAY_Array_hpp_INCLUDED
-#define NDARRAY_Array_hpp_INCLUDED
+#ifndef NDARRAY_ArrayRef_2_hpp_INCLUDED
+#define NDARRAY_ArrayRef_2_hpp_INCLUDED
 
 #include "ndarray/common.hpp"
 #include "ndarray/detail/ArrayRef_1.hpp"
@@ -34,8 +34,8 @@ ArrayRef<T,N>::operator=(Array<T,N> && other) const {
 #ifndef NDARRAY_FAST_CONVERSIONS
 
     template <typename T, size_t N>
-    inline ArrayRef const &
-    ArrayRef<T>::operator=(Array<T,N> const & other) const {
+    inline ArrayRef<T,N> const &
+    ArrayRef<T,N>::operator=(Array<T,N> const & other) const {
         std::copy(other.begin(), other.end(), this->begin());
         return *this;
     }
@@ -44,4 +44,3 @@ ArrayRef<T,N>::operator=(Array<T,N> && other) const {
 
 } // namespace ndarray
 
-#endif // !NDARRAY_Array_hpp_INCLUDED

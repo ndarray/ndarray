@@ -137,22 +137,22 @@ public:
     }
 
     Vector & operator+=(value_type scalar) {
-        std::for_each(begin(), end(), [](reference r){ r += scalar; });
+        std::for_each(begin(), end(), [scalar](reference r){ r += scalar; });
         return *this;
     }
 
     Vector & operator-=(value_type scalar) {
-        std::for_each(begin(), end(), [](reference r){ r -= scalar; });
+        std::for_each(begin(), end(), [scalar](reference r){ r -= scalar; });
         return *this;
     }
 
     Vector & operator*=(value_type scalar) {
-        std::for_each(begin(), end(), [](reference r){ r *= scalar; });
+        std::for_each(begin(), end(), [scalar](reference r){ r *= scalar; });
         return *this;
     }
 
     Vector & operator/=(value_type scalar) {
-        std::for_each(begin(), end(), [](reference r){ r /= scalar; });
+        std::for_each(begin(), end(), [scalar](reference r){ r /= scalar; });
         return *this;
     }
 

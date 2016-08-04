@@ -24,6 +24,7 @@ class ArrayRef<T const,N> : public Array<T const,N> {
     typedef detail::ArrayTraits<T const,N> traits_t;
     typedef typename traits_t::impl_t impl_t;
     template <typename U, size_t M> friend struct detail::ArrayTraits;
+    template <typename U, size_t M> friend class Array;
 public:
 
     ArrayRef() : base_t() {}
@@ -49,6 +50,7 @@ class ArrayRef : public Array<T,N> {
     typedef detail::ArrayTraits<T,N> traits_t;
     typedef typename traits_t::impl_t impl_t;
     template <typename U, size_t M> friend struct detail::ArrayTraits;
+    template <typename U, size_t M> friend class Array;
 public:
 
     typedef typename base_t::dtype_t dtype_t;
