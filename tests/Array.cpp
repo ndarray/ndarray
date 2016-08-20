@@ -132,3 +132,77 @@ TEST_CASE(
     CHECK( a.shape().equals({4, 5, 2}) );
     CHECK( a.strides().equals({40, 8, 4}) );
 }
+
+TEST_CASE(
+    "Arrays are dereferenced to ArrayRefs, allowing value assignment.",
+    "[array-dereference]"
+) {
+    nd::Array<float,1> a({2});
+    *a = 4.0;
+    CHECK ( a[0] == 4.0 );
+    CHECK ( a[1] == 4.0 );
+}
+
+TEST_CASE(
+    "Non-const arrays are implicitly convertible to const, yielding views.",
+    "[array-const-conversion]"
+) {
+    nd::Array<float,1> a({2});
+    auto func = [a](nd::Array<float const,1> x) { return a == x; };
+    CHECK( func(a) );
+}
+
+TEST_CASE(
+    "Test nested iteration over higher-dimensional arrays",
+    "[array-iteration"
+) {
+    std::array<int,24> data;
+    std::iota(data.begin(), data.end(), 0);
+    nd::Array<int,3> a(data.data(), {2, 3, 4});
+    int i = 0;
+    int bn = 0;
+    for (auto const & b : a) {
+        int cn = 0;
+        for (auto const & c : b) {
+            int dn = 0;
+            for (auto const & d : c) {
+                CHECK( d == i );
+                ++dn;
+                ++i;
+            }
+            CHECK(dn == 4);
+            ++cn;
+        }
+        CHECK(cn == 3);
+        ++bn;
+    }
+    CHECK(bn == 2);
+}
+
+TEST_CASE(
+    "Test nested iteration over higher-dimensional arrays",
+    "[array-iteration"
+) {
+    std::array<int,24> data;
+    std::iota(data.begin(), data.end(), 0);
+    nd::Array<int,3> a(data.data(), {2, 3, 4});
+    int i = 0;
+    int bn = 0;
+    for (auto const & b : a) {
+        int cn = 0;
+        for (auto const & c : b) {
+            int dn = 0;
+            for (auto const & d : c) {
+                CHECK( d == i );
+                ++dn;
+                ++i;
+            }
+            CHECK(dn == 4);
+            ++cn;
+        }
+        CHECK(cn == 3);
+        ++bn;
+    }
+    CHECK(bn == 2);
+}
+
