@@ -178,31 +178,3 @@ TEST_CASE(
     }
     CHECK(bn == 2);
 }
-
-TEST_CASE(
-    "Test nested iteration over higher-dimensional arrays",
-    "[array-iteration"
-) {
-    std::array<int,24> data;
-    std::iota(data.begin(), data.end(), 0);
-    nd::Array<int,3> a(data.data(), {2, 3, 4});
-    int i = 0;
-    int bn = 0;
-    for (auto const & b : a) {
-        int cn = 0;
-        for (auto const & c : b) {
-            int dn = 0;
-            for (auto const & d : c) {
-                CHECK( d == i );
-                ++dn;
-                ++i;
-            }
-            CHECK(dn == 4);
-            ++cn;
-        }
-        CHECK(cn == 3);
-        ++bn;
-    }
-    CHECK(bn == 2);
-}
-
