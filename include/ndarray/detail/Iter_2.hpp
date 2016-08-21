@@ -22,40 +22,40 @@
 
 namespace ndarray {
 
-template <typename T, size_t N>
-typename detail::IterTraits<T const,N>::actual_ref
-Iter<T const,N>::operator*() const {
+template <typename T, size_t N, offset_t C>
+typename detail::IterTraits<T const,N,C>::actual_ref
+Iter<T const,N,C>::operator*() const {
     return traits_t::make_reference(*this);
 }
 
-template <typename T, size_t N>
-typename detail::IterTraits<T const,N>::actual_ptr
-Iter<T const,N>::operator->() const {
+template <typename T, size_t N, offset_t C>
+typename detail::IterTraits<T const,N,C>::actual_ptr
+Iter<T const,N,C>::operator->() const {
     return traits_t::make_pointer(*this);
 }
 
-template <typename T, size_t N>
-typename detail::IterTraits<T const,N>::reference
-Iter<T const,N>::operator[](difference_type n) const {
+template <typename T, size_t N, offset_t C>
+typename detail::IterTraits<T const,N,C>::reference
+Iter<T const,N,C>::operator[](difference_type n) const {
     return traits_t::make_reference_at(
         _impl.buffer() + n*_impl.stride(),
         *this
     );
 }
 
-template <typename T, size_t N>
-typename detail::IterTraits<T,N>::actual_ref Iter<T,N>::operator*() const {
+template <typename T, size_t N, offset_t C>
+typename detail::IterTraits<T,N,C>::actual_ref Iter<T,N,C>::operator*() const {
     return traits_t::make_reference(*this);
 }
 
-template <typename T, size_t N>
-typename detail::IterTraits<T,N>::actual_ptr Iter<T,N>::operator->() const {
+template <typename T, size_t N, offset_t C>
+typename detail::IterTraits<T,N,C>::actual_ptr Iter<T,N,C>::operator->() const {
     return traits_t::make_pointer(*this);
 }
 
-template <typename T, size_t N>
-typename detail::IterTraits<T,N>::reference
-Iter<T,N>::operator[](difference_type n) const {
+template <typename T, size_t N, offset_t C>
+typename detail::IterTraits<T,N,C>::reference
+Iter<T,N,C>::operator[](difference_type n) const {
     return traits_t::make_reference_at(
         this->_impl.buffer() + n*this->_impl.stride(),
         *this

@@ -24,9 +24,9 @@ TEST_CASE(
     );
     CHECK(
         std::regex_match(
-            nd::type_string<ndarray::Array<float,2>>(),
+            nd::type_string<ndarray::Array<float,2,2>>(),
             std::regex(
-                "ndarray::Array<float, ?2u?l?>",
+                "ndarray::Array<float, ?2u?l?, ?2l?>",
                 std::regex_constants::egrep
             )
         )

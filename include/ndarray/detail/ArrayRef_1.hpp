@@ -18,13 +18,13 @@
 
 namespace ndarray {
 
-template <typename T, size_t N>
-class ArrayRef<T const,N> : public Array<T const,N> {
-    typedef Array<T const,N> base_t;
-    typedef detail::ArrayTraits<T const,N> traits_t;
+template <typename T, size_t N, offset_t C>
+class ArrayRef<T const,N,C> : public Array<T const,N,C> {
+    typedef Array<T const,N,C> base_t;
+    typedef detail::ArrayTraits<T const,N,C> traits_t;
     typedef typename traits_t::impl_t impl_t;
-    template <typename U, size_t M> friend struct detail::ArrayTraits;
-    template <typename U, size_t M> friend class Array;
+    template <typename U, size_t M, offset_t D> friend struct detail::ArrayTraits;
+    template <typename U, size_t M, offset_t D> friend class Array;
 public:
 
     ArrayRef() : base_t() {}
@@ -37,20 +37,32 @@ public:
 
     ArrayRef & operator=(ArrayRef &&) = delete;
 
-    Array<T const,N> & shallow() { return *this; }
+    Array<T const,N,C> & shallow() { return *this; }
+
+#ifdef NDARRAY_FAST_CONVERSIONS
+
+    template <offset_t D>
+    operator ArrayRef<T const,N,D> const & () const;
+
+#else
+
+    template <offset_t D>
+    operator ArrayRef<T const,N,D>() const;
+
+#endif
 
 private:
     explicit ArrayRef(impl_t const & impl) : base_t(impl) {}
     explicit ArrayRef(impl_t && impl) : base_t(std::move(impl)) {}
 };
 
-template <typename T, size_t N>
-class ArrayRef : public Array<T,N> {
-    typedef Array<T,N> base_t;
-    typedef detail::ArrayTraits<T,N> traits_t;
+template <typename T, size_t N, offset_t C>
+class ArrayRef : public Array<T,N,C> {
+    typedef Array<T,N,C> base_t;
+    typedef detail::ArrayTraits<T,N,C> traits_t;
     typedef typename traits_t::impl_t impl_t;
-    template <typename U, size_t M> friend struct detail::ArrayTraits;
-    template <typename U, size_t M> friend class Array;
+    template <typename U, size_t M, offset_t D> friend struct detail::ArrayTraits;
+    template <typename U, size_t M, offset_t D> friend class Array;
 public:
 
     typedef typename base_t::dtype_t dtype_t;
@@ -65,20 +77,28 @@ public:
 
     ArrayRef & operator=(ArrayRef &&) = delete;
 
-    ArrayRef const & operator=(Array<T const,N> const & other) const;
+    ArrayRef const & operator=(Array<T const,N,C> const & other) const;
 
-    ArrayRef const & operator=(Array<T,N> && other) const;
+    ArrayRef const & operator=(Array<T,N,C> && other) const;
 
-#ifndef NDARRAY_FAST_CONVERSIONS
-    ArrayRef const & operator=(Array<T,N> const & other) const;
-#endif
-
-    Array<T,N> & shallow() { return *this; }
+    Array<T,N,C> & shallow() { return *this; }
 
 #ifdef NDARRAY_FAST_CONVERSIONS
-    operator ArrayRef<T const,N> const & () const;
+
+    template <offset_t D>
+    operator ArrayRef<T,N,D> const & () const;
+
+    template <offset_t D>
+    operator ArrayRef<T const,N,D> const & () const;
+
 #else
-    operator ArrayRef<T const,N>() const;
+
+    template <offset_t D>
+    operator ArrayRef<T,N,D>() const;
+
+    template <offset_t D>
+    operator ArrayRef<T const,N,D>() const;
+
 #endif
 
     ArrayRef const & operator=(T scalar) const;

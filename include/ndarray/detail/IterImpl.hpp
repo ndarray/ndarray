@@ -17,20 +17,23 @@
 #include "ndarray/detail/ArrayImpl.hpp"
 #include "ndarray/detail/Array_1.hpp"
 #include "ndarray/detail/ArrayRef_1.hpp"
+#include "ndarray/detail/ArrayTraits_1.hpp"
 
 namespace ndarray {
 namespace detail {
 
-template <typename T, size_t N>
+template <typename T, size_t N, offset_t C>
 class IterImpl {
-    template <typename U, size_t M> friend struct IterTraits;
+    template <typename U, size_t M, offset_t D> friend struct IterTraits;
+    static_assert(N != 1, "IterImpl not defined for N==1 unless C==0; use T*");
+    typedef typename ArrayTraits<T,N,C>::reference internal_t;
 public:
 
     typedef DType<T> dtype_t;
 
     IterImpl() : _current(), _stride() {}
 
-    IterImpl(ArrayRef<T,N-1> current, offset_t stride) :
+    IterImpl(internal_t current, offset_t stride) :
         _current(std::move(current)), _stride(stride)
     {}
 
@@ -61,13 +64,13 @@ public:
     }
 
 private:
-    ArrayRef<T,N-1> _current;
+    internal_t _current;
     offset_t _stride;
 };
 
 template <typename T>
-class IterImpl<T,1> {
-    template <typename U, size_t M> friend struct IterTraits;
+class IterImpl<T,1,0> {
+    template <typename U, size_t M, offset_t D> friend struct IterTraits;
 public:
 
     typedef DType<T> dtype_t;

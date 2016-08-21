@@ -23,64 +23,50 @@
 namespace ndarray {
 namespace detail {
 
-template <typename T, size_t N>
-inline ArrayRef<T,N-1> IterTraits<T,N>::make_reference_at(
+template <typename T, size_t N, offset_t C>
+inline typename IterTraits<T,N,C>::offset_ref
+IterTraits<T,N,C>::make_reference_at(
     byte_t * buffer,
-    Iter<T,N> const & self
+    Iter<T,N,C> const & self
 ) {
-    return ArrayTraits<T,N>::make_reference_at(buffer, self._current);
+    return ArrayTraits<T,N,C>::make_reference_at(buffer, self._current);
 }
 
-template <typename T, size_t N>
-inline ArrayRef<T,N-1> const & IterTraits<T,N>::make_reference(
-    Iter<T,N> const & self
+template <typename T, size_t N, offset_t C>
+inline typename IterTraits<T,N,C>::actual_ref
+IterTraits<T,N,C>::make_reference(
+    Iter<T,N,C> const & self
 ) {
     return self._impl._current;
 }
 
-template <typename T, size_t N>
-inline Array<T,N-1> const * IterTraits<T,N>::make_pointer(
-    Iter<T,N> const & self
+template <typename T, size_t N, offset_t C>
+inline typename IterTraits<T,N,C>::actual_ptr
+IterTraits<T,N,C>::make_pointer(
+    Iter<T,N,C> const & self
 ) {
     return &self._impl._current;
 }
 
-template <typename T, size_t N>
-inline Iter<T,N> IterTraits<T,N>::make_iterator_at(
-    byte_t * buffer,
-    ArrayBase<T,N> const & parent
-) {
-    return Iter<T,N>(
-        impl_t(make_reference_at(buffer, parent), parent.stride())
-    );
-}
-
 template <typename T>
-inline T & IterTraits<T,1>::make_reference_at(
+inline typename IterTraits<T,1,0>::offset_ref
+IterTraits<T,1,0>::make_reference_at(
     byte_t * buffer,
-    Iter<T,1> const & self
+    Iter<T,1,0> const & self
 ) {
     return *reinterpret_cast<T*>(buffer);
 }
 
 template <typename T>
-inline T & IterTraits<T,1>::make_reference(Iter<T,1> const & self) {
+inline typename IterTraits<T,1,0>::actual_ref
+IterTraits<T,1,0>::make_reference(Iter<T,1,0> const & self) {
     return *reinterpret_cast<T*>(self._impl.buffer());
 }
 
 template <typename T>
-inline T * IterTraits<T,1>::make_pointer(Iter<T,1> const & self) {
+inline typename IterTraits<T,1,0>::actual_ptr
+IterTraits<T,1,0>::make_pointer(Iter<T,1,0> const & self) {
     return reinterpret_cast<T*>(self._impl.buffer());
-}
-
-template <typename T>
-inline Iter<T,1> IterTraits<T,1>::make_iterator_at(
-    byte_t * buffer,
-    ArrayBase<T,1> const & parent
-) {
-    return Iter<T,1>(
-        impl_t(buffer, parent.dtype(), parent.stride())
-    );
 }
 
 } // namespace detail

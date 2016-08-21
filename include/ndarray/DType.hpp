@@ -47,9 +47,7 @@ public:
     typedef T & reference;
     typedef T const & const_reference;
     typedef T * pointer;
-    typedef T const & const_pointer;
-    typedef Iter<T,1> iterator;
-    typedef Iter<T const,1> const_iterator;
+    typedef T const * const_pointer;
     typedef std::is_pod<T> is_pod;
 
     DType() {}
