@@ -52,12 +52,6 @@ template <typename T> class DType;
 
 class Manager;
 
-template <typename T> class record;
-
-template <typename T> class record_ref;
-
-class schema;
-
 } // ndarray
 
 #endif // !NDARRAY_common_hpp_INCLUDED
