@@ -85,8 +85,7 @@ TEST_CASE(
     CHECK( f.stride<1>() == 8 );
     CHECK( f.stride<2>() == 4 );
     // std::array for shape, automatic column-major strides
-    nd::Array<float,3> g(std::array<long,3>{4, 5, 2},
-                         nd::MemoryOrder::COL_MAJOR);
+    nd::Array<float,3,-2> g(std::array<long,3>{4, 5, 2});
     CHECK( g.data() != nullptr );
     CHECK( g.size<0>() == 4 );
     CHECK( g.size<1>() == 5 );
@@ -95,7 +94,7 @@ TEST_CASE(
     CHECK( g.stride<1>() == 16 );
     CHECK( g.stride<2>() == 80 );
     // initializer_list for shape, automatic column-major strides
-    nd::Array<float,3> h({4, 5, 2}, nd::MemoryOrder::COL_MAJOR);
+    nd::Array<float,3,-1> h({4, 5, 2});
     CHECK( h.data() != nullptr );
     CHECK( h.size<0>() == 4 );
     CHECK( h.size<1>() == 5 );
@@ -116,8 +115,7 @@ TEST_CASE(
     CHECK( a == c );
     b = a;
     CHECK( a == b );
-    nd::Array<float,3> d(a.data(), a.shape(), nd::MemoryOrder::COL_MAJOR,
-                         a.manager(), a.dtype());
+    nd::Array<float,3,-3> d(a.data(), a.shape(), a.manager(), a.dtype());
     CHECK( a != d ); // same data, shape; different strides
     nd::Array<float,3> e(a.data(), a.shape().reversed(), a.strides(),
                          a.manager(), a.dtype());

@@ -47,6 +47,12 @@ public:
     constexpr bool operator==(Layout const & other) const { return true; }
     constexpr bool operator!=(Layout const & other) const { return false; }
 
+    template <typename F>
+    void for_each_dim(F & func) const {}
+
+    template <typename F>
+    void for_each_dim_r(F & func) const {}
+
 protected:
 
     // Zero shape, zero strides.
@@ -200,6 +206,18 @@ public:
         return !(*this == other);
     }
 
+    template <typename F>
+    void for_each_dim(F & func) const {
+        func(*this);
+        Layout<N-1>::for_each_dim(func);
+    }
+
+    template <typename F>
+    void for_each_dim_r(F & func) const {
+        Layout<N-1>::for_each_dim_r(func);
+        func(*this);
+    }
+
 protected:
 
     // Explicit shape and strides, called recursively.
@@ -273,6 +291,51 @@ get_dim(Layout<N> const & layout) { return layout; }
 template <int P, size_t N>
 inline std::shared_ptr<Layout<N-P>>
 get_dim(std::shared_ptr<Layout<N>> const & layout) { return layout; }
+
+
+struct AccumulateStrides {
+
+    explicit AccumulateStrides(size_t nbytes) :
+        n_contiguous_dims(0),
+        current_dim(0),
+        stride(nbytes)
+    {}
+
+    template <size_t N>
+    void operator()(Layout<N> const & layout) {
+        if (n_contiguous_dims == current_dim && stride == layout.stride()) {
+            ++n_contiguous_dims;
+        }
+        stride *= layout.size();
+        ++current_dim;
+    }
+
+    size_t n_contiguous_dims;
+    size_t current_dim;
+    offset_t stride;
+};
+
+
+template <size_t N, offset_t C>
+inline void check_contiguousness(Layout<N> const & layout, size_t nbytes) {
+    static_assert(
+        offset_t(N) >= C && -offset_t(N) <= C,
+        "Cannot have more contiguous dimensions than total dimensions."
+    );
+    if (C == 0) return;
+    AccumulateStrides func(nbytes);
+    if (C > 0) {
+        layout.for_each_dim_r(func);
+        if (size_t(C) > func.n_contiguous_dims) {
+            throw NoncontiguousError(func.n_contiguous_dims, C);
+        }
+    } else if (C < 0) {
+        layout.for_each_dim(func);
+        if (size_t(-C) > func.n_contiguous_dims) {
+            throw NoncontiguousError(func.n_contiguous_dims, C);
+        }
+    }
+}
 
 } // namespace detail
 } // ndarray

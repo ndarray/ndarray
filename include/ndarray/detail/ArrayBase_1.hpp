@@ -31,11 +31,17 @@ class ArrayBase {
 
     std::shared_ptr<layout_t> const & _layout() const { return _impl.layout(); }
 
+    static_assert(
+        offset_t(N_) >= C_ && -offset_t(N_) <= C_,
+        "Cannot have more contiguous dimensions than total dimensions."
+    );
+
 public:
 
     typedef T element;
     static constexpr size_t N = N_;
     static constexpr size_t C = C_;
+    static constexpr size_t Contiguousness = C_;
     typedef typename traits_t::dtype_t dtype_t;
     typedef typename traits_t::value_type value_type;
     typedef typename traits_t::reference reference;
