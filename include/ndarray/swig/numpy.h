@@ -16,6 +16,7 @@
  *  @brief Python C-API conversions between ndarray and numpy.
  */
 
+#include "Python.h"
 #include "ndarray.h"
 #include "ndarray/swig/PyConverter.h"
 
@@ -116,8 +117,9 @@ template <> struct NumpyTraits<std::complex<long double> > {
  *  @internal @ingroup ndarrayPythonInternalGroup
  *  @brief A destructor for a Python CObject that owns a shared_ptr.
  */
-inline void destroyCObject(void * p) {
-    ndarray::Manager::Ptr * b = reinterpret_cast<ndarray::Manager::Ptr*>(p);
+inline void destroyCapsule(PyObject * p) {
+    void * m = PyCapsule_GetPointer(p, "ndarray.Manager");
+    ndarray::Manager::Ptr * b = reinterpret_cast<ndarray::Manager::Ptr*>(m);
     delete b;
 }
 
@@ -283,7 +285,11 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
             if (owner != NULL) {
                 Py_INCREF(owner);
             } else {
-                owner = PyCObject_FromVoidPtr(new Manager::Ptr(m.getManager()), detail::destroyCObject);
+                owner = PyCapsule_New(
+                    new Manager::Ptr(m.getManager()),
+                    "ndarray.Manager",
+                    detail::destroyCapsule
+                );
             }
             reinterpret_cast<PyArrayObject*>(array.get())->base = owner;
         }

@@ -16,6 +16,15 @@
 #pragma GCC diagnostic ignored "-Wuninitialized"
 #endif
 
+/* Define macros for things that changed between Python V2.7 and V3.2 */
+#if PY_MAJOR_VERSION >= 3
+#define MOD_INIT(name) PyMODINIT_FUNC PyInit_##name(void)
+#define RETURN(value) return value
+#else
+#define MOD_INIT(name) PyMODINIT_FUNC init##name(void)
+#define RETURN(value) return
+#endif
+
 template <typename T, int N>
 static PyObject * passVector(PyObject * self, PyObject * args) {
     ndarray::Vector<T,N> vector;
@@ -63,10 +72,27 @@ static PyMethodDef methods[] = {
     {NULL}
 };
 
-extern "C"
-PyMODINIT_FUNC
-initpython_test_mod(void) {
+/* Describe the properties of the module. */
+#if PY_MAJOR_VERSION >= 3
+static struct PyModuleDef testmodule = {
+   PyModuleDef_HEAD_INIT,
+   "ndarray_python_test",
+   "Test the ndarray python interface",
+   -1,
+   methods,
+   NULL, NULL, NULL, NULL
+};
+#endif
+
+MOD_INIT(ndarray_python_test) {
     import_array();
     PyObject * module = Py_InitModule("python_test_mod",methods);
     if (module == NULL) return;
+#if PY_MAJOR_VERSION >= 3
+    PyObject * module;
+    module = PyModule_Create(&testmodule);
+#else
+    Py_InitModule3("ndarray_python_test", methods, "Test ndarray python interface");
+#endif
+    RETURN(module);
 }

@@ -17,36 +17,36 @@ class TestNDArray(unittest.TestCase):
     def testIntArrayConversion(self):
         a1 = numpy.zeros((5,3,4),dtype=numpy.int32)
         a2 = a1[:,:,:2]
-        self.assert_(a1.flags["WRITEABLE"])
-        self.assert_(a2.flags["WRITEABLE"])
+        self.assertTrue(a1.flags["WRITEABLE"])
+        self.assertTrue(a2.flags["WRITEABLE"])
 
         ua1 = numpy.zeros((5,3,4),dtype=numpy.uint32)
-        self.assert_(ua1.flags["WRITEABLE"])
+        self.assertTrue(ua1.flags["WRITEABLE"])
 
         b1 = python_test_mod.passIntArray33(a1)
-        self.assert_(b1.flags["WRITEABLE"])
+        self.assertTrue(b1.flags["WRITEABLE"])
         self.assertEqual(a1.shape,b1.shape)
         self.assertEqual(a1.strides,b1.strides)
 
         ub1 = python_test_mod.passUIntArray33(ua1)
-        self.assert_(ub1.flags["WRITEABLE"])
+        self.assertTrue(ub1.flags["WRITEABLE"])
         self.assertEqual(a1.shape,ub1.shape)
         self.assertEqual(a1.strides,ub1.strides)
 
         c1 = python_test_mod.passIntArray30(a1)
-        self.assert_(c1.flags["WRITEABLE"])
+        self.assertTrue(c1.flags["WRITEABLE"])
         self.assertEqual(a1.shape,c1.shape)
         self.assertEqual(a1.strides,c1.strides)
 
         d1 = python_test_mod.passConstIntArray33(a1)
         self.assertEqual(a1.shape,d1.shape)
         self.assertEqual(a1.strides,d1.strides)
-        self.assert_(not d1.flags.writeable)
+        self.assertTrue(not d1.flags.writeable)
 
         self.assertRaises(ValueError, python_test_mod.passIntArray33, a2)
 
         c2 = python_test_mod.passIntArray30(a2)
-        self.assert_(c2.flags["WRITEABLE"])
+        self.assertTrue(c2.flags["WRITEABLE"])
         self.assertEqual(a2.shape,c2.shape)
         self.assertEqual(a2.strides,c2.strides)
 
@@ -65,29 +65,29 @@ class TestNDArray(unittest.TestCase):
     def testArrayConversion(self):
         a1 = numpy.zeros((5,3,4),dtype=float)
         a2 = a1[:,:,:2]
-        self.assert_(a1.flags["WRITEABLE"])
-        self.assert_(a2.flags["WRITEABLE"])
+        self.assertTrue(a1.flags["WRITEABLE"])
+        self.assertTrue(a2.flags["WRITEABLE"])
 
         b1 = python_test_mod.passFloatArray33(a1)
-        self.assert_(b1.flags["WRITEABLE"])
+        self.assertTrue(b1.flags["WRITEABLE"])
         self.assertEqual(a1.shape,b1.shape)
         self.assertEqual(a1.strides,b1.strides)
 
 
         c1 = python_test_mod.passFloatArray30(a1)
-        self.assert_(c1.flags["WRITEABLE"])
+        self.assertTrue(c1.flags["WRITEABLE"])
         self.assertEqual(a1.shape,c1.shape)
         self.assertEqual(a1.strides,c1.strides)
 
         d1 = python_test_mod.passConstFloatArray33(a1)
         self.assertEqual(a1.shape,d1.shape)
         self.assertEqual(a1.strides,d1.strides)
-        self.assert_(not d1.flags.writeable)
+        self.assertTrue(not d1.flags.writeable)
 
         self.assertRaises(ValueError, python_test_mod.passFloatArray33, a2)
 
         c2 = python_test_mod.passFloatArray30(a2)
-        self.assert_(c2.flags["WRITEABLE"])
+        self.assertTrue(c2.flags["WRITEABLE"])
         self.assertEqual(a2.shape,c2.shape)
         self.assertEqual(a2.strides,c2.strides)
 
