@@ -23,6 +23,16 @@ From there, you'll be able to build ndarray and (optionally)
 Boost.NumPy together just by running "scons" from the root of the
 ndarray clone.
 
+A partial cmake build has also recently been added, and we expect it to
+eventually replace SCons as the recommended approach, but it does not yet
+support building against Boost.NumPy to provide bindings for Boost.Python.  To
+build with cmake, do:
+
+    mkdir build
+    cd build
+    cmake ..
+    make
+
 
 BUILDING FROM COMPRESSED SOURCE
 
