@@ -103,7 +103,12 @@ template <typename T>
 struct PyIntConverterBase : public PyConverterBase<T> {
 
     static bool fromPythonStage1(PyPtr & input) {
-        if (!PyInt_Check(input.get()) && !PyLong_Check(input.get())) {
+        if (
+#if PY_MAJOR_VERSION <= 2
+            !PyInt_Check(input.get()) &&
+#endif
+            !PyLong_Check(input.get())
+        ) {
             PyPtr s(PyObject_Repr(input.get()));
             if (!s) return false;
             char * cs = PyString_AsString(s.get());
@@ -139,16 +144,16 @@ struct PyIntConverter<T,false,-1> : public PyIntConverterBase<T> {
 
     static bool fromPythonStage2(PyPtr const & input, T & output) {
         NDARRAY_ASSERT(input);
-        output = PyInt_AsLong(input.get());
+        output = PyLong_AsLong(input.get());
         if (PyErr_Occurred()) return false; // could get OverflowError here.
         return true;
     }
 
     static PyObject * toPython(T input) {
-        return PyInt_FromLong(input);
+        return PyLong_FromLong(input);
     }
 
-    static PyTypeObject const * getPyType() { return &PyInt_Type; }
+    static PyTypeObject const * getPyType() { return &PyLong_Type; }
 
 };
 
@@ -162,16 +167,16 @@ struct PyIntConverter<T,true,-1> : public PyIntConverterBase<T> {
 
     static bool fromPythonStage2(PyPtr const & input, T & output) {
         NDARRAY_ASSERT(input);
-        output = PyInt_AsLong(input.get());
+        output = PyLong_AsLong(input.get());
         if (PyErr_Occurred()) return false; // could get OverflowError here.
         return true;
     }
 
     static PyObject * toPython(T input) {
-        return PyInt_FromLong(input);
+        return PyLong_FromLong(input);
     }
 
-    static PyTypeObject const * getPyType() { return &PyInt_Type; }
+    static PyTypeObject const * getPyType() { return &PyLong_Type; }
 
 };
 
@@ -185,16 +190,16 @@ struct PyIntConverter<T,false,0> : public PyIntConverterBase<T> {
 
     static bool fromPythonStage2(PyPtr const & input, T & output) {
         NDARRAY_ASSERT(input);
-        output = PyInt_AsLong(input.get());
+        output = PyLong_AsLong(input.get());
         if (PyErr_Occurred()) return false; // could get OverflowError here.
         return true;
     }
 
     static PyObject * toPython(T input) {
-        return PyInt_FromLong(input);
+        return PyLong_FromLong(input);
     }
 
-    static PyTypeObject const * getPyType() { return &PyInt_Type; }
+    static PyTypeObject const * getPyType() { return &PyLong_Type; }
 
 };
 
@@ -475,16 +480,16 @@ struct PyConverter< std::string > : public detail::PyConverterBase<std::string> 
         NDARRAY_ASSERT(input);
         char * buf = 0;
         Py_ssize_t size = 0;
-        if (PyString_AsStringAndSize(input.get(),&buf,&size) == -1) return false;
+        if (PyBytes_AsStringAndSize(input.get(),&buf,&size) == -1) return false;
         output = std::string(buf,size);
         return true;
     }
 
     static PyObject * toPython(std::string const & input) {
-        return PyString_FromStringAndSize(input.data(),input.size());
+        return PyBytes_FromStringAndSize(input.data(),input.size());
     }
     
-    static PyTypeObject const * getPyType() { return &PyString_Type; }
+    static PyTypeObject const * getPyType() { return &PyBytes_Type; }
 };
 
 /// \endcond
