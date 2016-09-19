@@ -8,19 +8,19 @@
  * of the source distribution, or alternately available at:
  * https://github.com/ndarray/ndarray
  */
-#ifndef NDARRAY_SWIG_ufunctors_h_INCLUDED
-#define NDARRAY_SWIG_ufunctors_h_INCLUDED
+#ifndef NDARRAY_CONVERTER_ufunctors_h_INCLUDED
+#define NDARRAY_CONVERTER_ufunctors_h_INCLUDED
 
-/** 
- *  \file ndarray/swig/ufunctors.h
+/**
+ *  \file ndarray/converter/ufunctors.h
  *  @brief Python wrappers to create numpy ufunc objects from C++ function objects.
  */
 
-#include "ndarray/swig/numpy.h"
+#include "ndarray/converter/numpy.h"
 
 namespace ndarray {
 
-template <typename TUnaryFunctor, 
+template <typename TUnaryFunctor,
           typename TArgument=typename TUnaryFunctor::argument_type,
           typename TResult=typename TUnaryFunctor::result_type>
 struct PyUnaryUFunctor {
@@ -59,17 +59,17 @@ struct PyUnaryUFunctor {
         Py_DECREF(iter);
         return PyArray_Return(reinterpret_cast<PyArrayObject*>(output_array));
     }
-    
+
 };
 
 
-template <typename TBinaryFunctor, 
+template <typename TBinaryFunctor,
           typename TArgument1=typename TBinaryFunctor::first_argument_type,
           typename TArgument2=typename TBinaryFunctor::second_argument_type,
           typename TResult=typename TBinaryFunctor::result_type>
 struct PyBinaryUFunctor {
 
-    static PyObject* _call_(TBinaryFunctor const& self, PyObject* input1, PyObject* input2, 
+    static PyObject* _call_(TBinaryFunctor const& self, PyObject* input1, PyObject* input2,
                               PyObject* output) {
         PyObject* input1_array = PyArray_FROM_OTF(input1,detail::NumpyTraits<TArgument1>::getCode(),
                                                   NPY_ALIGNED);
@@ -121,9 +121,9 @@ struct PyBinaryUFunctor {
         Py_DECREF(iter);
         return PyArray_Return(reinterpret_cast<PyArrayObject*>(output_array));
     }
-    
+
 };
 
 } // namespace ndarray
 
-#endif // !NDARRAY_SWIG_ufunctors_h_INCLUDED
+#endif // !NDARRAY_CONVERTER_ufunctors_h_INCLUDED

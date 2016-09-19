@@ -8,17 +8,17 @@
  * of the source distribution, or alternately available at:
  * https://github.com/ndarray/ndarray
  */
-#ifndef NDARRAY_SWIG_eigen_h_INCLUDED
-#define NDARRAY_SWIG_eigen_h_INCLUDED
+#ifndef NDARRAY_CONVERTER_eigen_h_INCLUDED
+#define NDARRAY_CONVERTER_eigen_h_INCLUDED
 
 /**
- *  @file ndarray/swig/eigen.h
+ *  @file ndarray/converter/eigen.h
  *  @brief Python C-API conversions for Eigen matrices.
  */
 
 #include "ndarray/eigen.h"
-#include "ndarray/swig.h"
-#include "ndarray/swig/eigen.h"
+#include "ndarray/converter.h"
+#include "ndarray/converter/eigen.h"
 
 namespace ndarray {
 
@@ -28,7 +28,7 @@ namespace ndarray {
  */
 template <typename T, int N, int C, typename XprKind_, int Rows_, int Cols_>
 struct PyConverter< EigenView<T,N,C,XprKind_,Rows_,Cols_> > {
-    
+
     static bool fromPythonStage1(PyPtr & p) {
         // add or remove dimensions with size one so we have the right number of dimensions
         if (PyArray_Check(p.get())) {
@@ -131,7 +131,7 @@ public:
  */
 template <typename Scalar, int Rows, int Cols, int Options, int MaxRows, int MaxCols>
 struct PyConverter< Eigen::Matrix<Scalar,Rows,Cols,Options,MaxRows,MaxCols> >
-    : public detail::EigenPyConverter< Eigen::Matrix<Scalar,Rows,Cols,Options,MaxRows,MaxCols> > 
+    : public detail::EigenPyConverter< Eigen::Matrix<Scalar,Rows,Cols,Options,MaxRows,MaxCols> >
 {};
 
 /**
@@ -140,9 +140,9 @@ struct PyConverter< Eigen::Matrix<Scalar,Rows,Cols,Options,MaxRows,MaxCols> >
  */
 template <typename Scalar, int Rows, int Cols, int Options, int MaxRows, int MaxCols>
 struct PyConverter< Eigen::Array<Scalar,Rows,Cols,Options,MaxRows,MaxCols> >
-    : public detail::EigenPyConverter< Eigen::Array<Scalar,Rows,Cols,Options,MaxRows,MaxCols> > 
+    : public detail::EigenPyConverter< Eigen::Array<Scalar,Rows,Cols,Options,MaxRows,MaxCols> >
 {};
 
 } // namespace ndarray
 
-#endif // !NDARRAY_SWIG_eigen_h_INCLUDED
+#endif // !NDARRAY_CONVERTER_eigen_h_INCLUDED

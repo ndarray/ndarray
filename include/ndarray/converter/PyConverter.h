@@ -8,11 +8,11 @@
  * of the source distribution, or alternately available at:
  * https://github.com/ndarray/ndarray
  */
-#ifndef NDARRAY_SWIG_PyConverter_h_INCLUDED
-#define NDARRAY_SWIG_PyConverter_h_INCLUDED
+#ifndef NDARRAY_CONVERTER_PyConverter_h_INCLUDED
+#define NDARRAY_CONVERTER_PyConverter_h_INCLUDED
 
 /**
- *  @file ndarray/swig/PyConverter.h
+ *  @file ndarray/converter/PyConverter.h
  *  @brief Python C-API conversions for standard numeric types.
  */
 #include <Python.h>
@@ -44,15 +44,15 @@ namespace detail {
  */
 template <typename T>
 struct PyConverterBase {
-    
+
     /**
      *  @brief Check if a Python object might be convertible to T.
      *
-     *  \return true if the conversion may be successful, and 
+     *  \return true if the conversion may be successful, and
      *  false if it definitely is not.  Will not raise a Python
      *  exception.
      *
-     *  This is mostly useful for wrapper generators like SWIG or
+     *  This is mostly useful for wrapper generators like CONVERTER or
      *  Boost.Python, which could use matches() to check if an
      *  Python arguments match a particular signature for an
      *  overloaded C++ function.
@@ -90,7 +90,7 @@ struct PyConverterBase {
         if (!PyConverter<T>::fromPythonStage1(p)) return false;
         return PyConverter<T>::fromPythonStage2(arg,*output);
     }
-    
+
 };
 
 /**
@@ -111,7 +111,7 @@ struct PyIntConverterBase : public PyConverterBase<T> {
         ) {
             PyPtr s(PyObject_Repr(input.get()));
             if (!s) return false;
-            char * cs = PyString_AsString(s.get());
+            char * cs = PyBytes_AsString(s.get());
             if (!cs) return false;
             PyErr_Format(PyExc_TypeError, "'%s' is not a valid C++ integer value.", cs);
         }
@@ -296,7 +296,7 @@ struct PyIntConverter<T,true,1> : public PyIntConverterBase<T> {
 template <typename T>
 struct PyConverter : public detail::PyConverterBase<T> {
 
-    /** 
+    /**
      *  @brief Convert a C++ object to a new Python object.
      *
      *  \return A new Python object, or NULL on failure (with
@@ -350,7 +350,7 @@ struct PyConverter<bool> : public detail::PyConverterBase<bool> {
         if (!PyBool_Check(input.get())) {
             PyPtr s(PyObject_Repr(input.get()));
             if (!s) return false;
-            char * cs = PyString_AsString(s.get());
+            char * cs = PyBytes_AsString(s.get());
             if (!cs) return false;
             PyErr_Format(PyExc_TypeError,"'%s' is not a valid C++ bool value.",cs);
         }
@@ -387,7 +387,7 @@ struct PyConverter<float> : public detail::PyConverterBase<float> {
         if (!PyFloat_Check(input.get())) {
             PyPtr s(PyObject_Repr(input.get()));
             if (!s) return false;
-            char * cs = PyString_AsString(s.get());
+            char * cs = PyBytes_AsString(s.get());
             if (!cs) return false;
             PyErr_Format(PyExc_TypeError,"'%s' is not a valid C++ float value.",cs);
         }
@@ -403,7 +403,7 @@ struct PyConverter<float> : public detail::PyConverterBase<float> {
     static PyObject * toPython(float input) {
         return PyFloat_FromDouble(input);
     }
-    
+
     static PyTypeObject const * getPyType() { return &PyFloat_Type; }
 };
 
@@ -414,7 +414,7 @@ struct PyConverter<double> : public detail::PyConverterBase<double> {
         if (!PyFloat_Check(input.get())) {
             PyPtr s(PyObject_Repr(input.get()));
             if (!s) return false;
-            char * cs = PyString_AsString(s.get());
+            char * cs = PyBytes_AsString(s.get());
             if (!cs) return false;
             PyErr_Format(PyExc_TypeError,"'%s' is not a valid C++ double value.",cs);
         }
@@ -430,7 +430,7 @@ struct PyConverter<double> : public detail::PyConverterBase<double> {
     static PyObject * toPython(double input) {
         return PyFloat_FromDouble(input);
     }
-    
+
     static PyTypeObject const * getPyType() { return &PyFloat_Type; }
 };
 
@@ -441,7 +441,7 @@ struct PyConverter< std::complex<U> > : public detail::PyConverterBase< std::com
         if (!PyComplex_Check(input.get())) {
             PyPtr s(PyObject_Repr(input.get()));
             if (!s) return false;
-            char * cs = PyString_AsString(s.get());
+            char * cs = PyBytes_AsString(s.get());
             if (!cs) return false;
             PyErr_Format(PyExc_TypeError,"'%s' is not a valid C++ complex value.",cs);
         }
@@ -458,7 +458,7 @@ struct PyConverter< std::complex<U> > : public detail::PyConverterBase< std::com
     static PyObject * toPython(std::complex<U> const & input) {
         return PyComplex_FromDoubles(input.real(),input.imag());
     }
-    
+
     static PyTypeObject const * getPyType() { return &PyComplex_Type; }
 };
 
@@ -466,10 +466,10 @@ template <>
 struct PyConverter< std::string > : public detail::PyConverterBase<std::string> {
 
     static bool fromPythonStage1(PyPtr & input) {
-        if (!PyString_Check(input.get())) {
+        if (!PyBytes_Check(input.get())) {
             PyPtr s(PyObject_Repr(input.get()));
             if (!s) return false;
-            char * cs = PyString_AsString(s.get());
+            char * cs = PyBytes_AsString(s.get());
             if (!cs) return false;
             PyErr_Format(PyExc_TypeError,"'%s' is not a valid C++ string value.",cs);
         }
@@ -488,7 +488,7 @@ struct PyConverter< std::string > : public detail::PyConverterBase<std::string> 
     static PyObject * toPython(std::string const & input) {
         return PyBytes_FromStringAndSize(input.data(),input.size());
     }
-    
+
     static PyTypeObject const * getPyType() { return &PyBytes_Type; }
 };
 
@@ -496,4 +496,4 @@ struct PyConverter< std::string > : public detail::PyConverterBase<std::string> 
 
 } // namespace ndarray
 
-#endif // !NDARRAY_SWIG_PyConverter_h_INCLUDED
+#endif // !NDARRAY_CONVERTER_PyConverter_h_INCLUDED

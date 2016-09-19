@@ -16,15 +16,15 @@ add_test(test_ndarray-fft ndarray-fft)
 add_test(test_ndarray_eigen ndarray-eigen)
 
 if(NDARRAY_SWIG)
-	find_package(SWIG)
 	include(${SWIG_USE_FILE})
 
 	set_property(SOURCE swig_test_mod.i PROPERTY CPLUSPLUS ON)
 	swig_add_module(swig_test_mod python swig_test_mod.i)
+
 	if (APPLE)
 		swig_link_libraries(swig_test_mod "-undefined dynamic_lookup")
 	else ()
-		swig_link_libraries(swig_test_mod ${PYTHON_LIBRARY})
+		swig_link_libraries(swig_test_mod "-shared")
 	endif()
 
 	find_package(PythonInterp REQUIRED)
@@ -33,3 +33,20 @@ if(NDARRAY_SWIG)
 		COMMAND ${PYTHON_EXECUTABLE}
 		${CMAKE_CURRENT_BINARY_DIR}/swig_test.py)
 endif(NDARRAY_SWIG)
+
+if(NDARRAY_PYBIND11)
+	add_library(pybind11_test_mod.so MODULE pybind11_test_mod.cc)
+	set_target_properties(pybind11_test_mod.so PROPERTIES PREFIX "${PYTHON_MODULE_PREFIX}")
+	set_target_properties(pybind11_test_mod.so PROPERTIES SUFFIX "${PYTHON_MODULE_EXTENSION}")
+
+	if (APPLE)
+		target_link_libraries(pybind11_test_mod.so PRIVATE "-undefined dynamic_lookup")
+	else ()
+		target_link_libraries(pybind11_test_mod.so "-shared")
+	endif()
+
+	configure_file(pybind11_test.py pybind11_test.py COPYONLY)
+	add_test(NAME pybind11_test
+		COMMAND ${PYTHON_EXECUTABLE}
+		${CMAKE_CURRENT_BINARY_DIR}/pybind11_test.py)
+endif(NDARRAY_PYBIND11)

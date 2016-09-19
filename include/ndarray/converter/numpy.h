@@ -8,31 +8,31 @@
  * of the source distribution, or alternately available at:
  * https://github.com/ndarray/ndarray
  */
-#ifndef NDARRAY_SWIG_numpy_h_INCLUDED
-#define NDARRAY_SWIG_numpy_h_INCLUDED
+#ifndef NDARRAY_CONVERTER_numpy_h_INCLUDED
+#define NDARRAY_CONVERTER_numpy_h_INCLUDED
 
-/** 
- *  @file ndarray/swig/numpy.h
+/**
+ *  @file ndarray/converter/numpy.h
  *  @brief Python C-API conversions between ndarray and numpy.
  */
 
 #include "Python.h"
 #include "ndarray.h"
-#include "ndarray/swig/PyConverter.h"
+#include "ndarray/converter/PyConverter.h"
 
 namespace ndarray {
 namespace detail {
 
-/** 
+/**
  *  @internal @ingroup ndarrayPythonInternalGroup
- *  @brief Traits class that specifies Numpy typecodes for numeric types. 
+ *  @brief Traits class that specifies Numpy typecodes for numeric types.
  */
-template <typename T> struct NumpyTraits { 
-    static int getCode(); 
+template <typename T> struct NumpyTraits {
+    static int getCode();
 };
 
 /// \cond SPECIALIZATIONS
-    
+
 template <> struct NumpyTraits<bool> {
     static int getCode() {
 	if (sizeof(bool)==sizeof(npy_bool)) return NPY_BOOL;
@@ -96,24 +96,24 @@ template <> struct NumpyTraits<npy_cfloat> { static int getCode() { return NPY_C
 template <> struct NumpyTraits<npy_cdouble> { static int getCode() { return NPY_CDOUBLE; } };
 template <> struct NumpyTraits<npy_clongdouble> { static int getCode() { return NPY_CLONGDOUBLE; } };
 
-template <> struct NumpyTraits<std::complex<float> > { 
+template <> struct NumpyTraits<std::complex<float> > {
     static int getCode() { assert(sizeof(std::complex<float>)==sizeof(npy_cfloat)); return NPY_CFLOAT; }
 };
 
-template <> struct NumpyTraits<std::complex<double> > { 
+template <> struct NumpyTraits<std::complex<double> > {
     static int getCode() { assert(sizeof(std::complex<double>)==sizeof(npy_cdouble)); return NPY_CDOUBLE; }
 };
 
-template <> struct NumpyTraits<std::complex<long double> > { 
-    static int getCode() { 
-	assert(sizeof(std::complex<long double>)==sizeof(npy_clongdouble)); 
-	return NPY_CLONGDOUBLE; 
+template <> struct NumpyTraits<std::complex<long double> > {
+    static int getCode() {
+	assert(sizeof(std::complex<long double>)==sizeof(npy_clongdouble));
+	return NPY_CLONGDOUBLE;
     }
 };
 
 /// \endcond
 
-/** 
+/**
  *  @internal @ingroup ndarrayPythonInternalGroup
  *  @brief A destructor for a Python CObject that owns a shared_ptr.
  */
@@ -202,7 +202,7 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
 
     /**
      *  @brief Complete a Python to C++ conversion begun with fromPythonStage1().
-     * 
+     *
      *  The copy will be shallow if possible and deep if necessary to meet the data type
      *  and contiguousness requirements.  If a non-const array is required, the copy will
      *  always be shallow; if this is not possible, ValueError will be raised.
@@ -302,4 +302,4 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
 
 } // namespace ndarray
 
-#endif // !NDARRAY_SWIG_numpy_h_INCLUDED
+#endif // !NDARRAY_CONVERTER_numpy_h_INCLUDED

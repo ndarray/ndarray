@@ -31,8 +31,8 @@
 
 #include "Python.h"
 #include "ndarray.h"
-#include "ndarray/swig/numpy.h"
-#include "ndarray/swig/ufunctors.h"
-#include "ndarray/swig/Vector.h"
+#include "ndarray/converter/numpy.h"
+#include "ndarray/converter/ufunctors.h"
+#include "ndarray/converter/Vector.h"
 
 #endif // !NDARRAY_swig_h_INCLUDED
