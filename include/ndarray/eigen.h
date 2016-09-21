@@ -353,8 +353,10 @@ public:
     Array<T,N,C> const & shallow() const { return _array; }
     ArrayRef<T,N,C> deep() const { return _array.deep(); }
 
-    void reset(Array<T,N,C> const & array) { _array = array; checkDimensions(); }
+    void reset(Array<T,N,C> const & array = Array<T,N,C>()) { _array = array; checkDimensions(); }
     void reset(ArrayRef<T,N,C> const & array) { reset(array.shallow()); }
+
+    void swap(EigenView & other) { _array.swap(other._array); }
 
 private:
     Array<T,N,C> _array;
