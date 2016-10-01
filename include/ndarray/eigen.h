@@ -358,6 +358,8 @@ public:
 
     void swap(EigenView & other) { _array.swap(other._array); }
 
+    using Base::swap;
+
 private:
     Array<T,N,C> _array;
 };
