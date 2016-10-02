@@ -16,6 +16,8 @@
 #include "ndarray/detail/IterTraits_2.hpp"
 #include "ndarray/detail/Iter_2.hpp"
 #include "ndarray/detail/ArrayBase_2.hpp"
+#include "ndarray/detail/IndexVectorTraits.hpp"
+#include "ndarray/detail/Layout.hpp"
 
 namespace ndarray {
 
@@ -41,6 +43,19 @@ ArrayBase<T,N,C>::operator[](size_t n) const {
     return traits_t::make_reference_at(
         this->_impl.buffer + this->stride()*n,
         *this
+    );
+}
+
+template <typename T, size_t N, offset_t C>
+template <typename IndexVector>
+inline typename ArrayBase<T,N,C>::element
+ArrayBase<T,N,C>::_at(IndexVector const & index) const {
+    detail::IndexVectorTraits<IndexVector>::template check_dims<N>(index);
+    detail::StrideInnerProduct<IndexVector> func(index);
+    this->_layout()->for_each_dim(func);
+    return this->dtype().make_reference_at(
+        this->_impl.buffer + func.offset,
+        this->manager()
     );
 }
 

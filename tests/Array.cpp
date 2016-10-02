@@ -152,7 +152,7 @@ TEST_CASE(
 
 TEST_CASE(
     "Test nested iteration over higher-dimensional arrays",
-    "[array-iteration"
+    "[array-iteration]"
 ) {
     std::array<int,24> data;
     std::iota(data.begin(), data.end(), 0);
@@ -175,4 +175,19 @@ TEST_CASE(
         ++bn;
     }
     CHECK(bn == 2);
+}
+
+TEST_CASE(
+    "Test indexing with integers and index arrays.",
+    "[array-indexing]"
+) {
+    std::array<int,12> data;
+    std::iota(data.begin(), data.end(), 0);
+    nd::Array<int,2> a(data.data(), {3, 4});
+
+    CHECK( a[2][0] == 8 );
+    CHECK( a[1][1] == 5 );
+
+    CHECK( (a[{1, 3}]) == 7 );
+    CHECK( (a[{2, 1}]) == 9 );
 }

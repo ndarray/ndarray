@@ -337,6 +337,25 @@ inline void check_contiguousness(Layout<N> const & layout, size_t nbytes) {
     }
 }
 
+
+template <typename IndexVector>
+struct StrideInnerProduct {
+
+    explicit StrideInnerProduct(IndexVector const & op_) :
+        op(op_), dim(0), offset(0)
+    {}
+
+    template <size_t N>
+    void operator()(Layout<N> const & layout) {
+        offset += IndexVectorTraits<IndexVector>::get_size(op, dim++)
+            * layout.stride();
+    }
+
+    IndexVector const & op;
+    size_t dim;
+    offset_t offset;
+};
+
 } // namespace detail
 } // ndarray
 

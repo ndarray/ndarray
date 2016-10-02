@@ -11,6 +11,8 @@
 #ifndef NDARRAY_ArrayBase_1_hpp_INCLUDED
 #define NDARRAY_ArrayBase_1_hpp_INCLUDED
 
+#include <type_traits>
+
 #include "ndarray/common.hpp"
 #include "ndarray/detail/ArrayTraits_1.hpp"
 #include "ndarray/detail/ArrayImpl.hpp"
@@ -55,6 +57,19 @@ public:
     iterator end() const;
 
     reference operator[](size_t n) const;
+
+    element operator[](std::initializer_list<std::size_t> const & index) const {
+        return _at(index);
+    }
+
+    template <typename IndexVector>
+    typename std::enable_if<
+        detail::IndexVectorTraits<IndexVector>::is_specialized,
+        element
+    >::type
+    operator[](IndexVector const & index) const {
+        return _at(index);
+    }
 
     element * data() const { return reinterpret_cast<T*>(_impl.buffer); }
 
@@ -107,6 +122,9 @@ protected:
     ArrayBase & operator=(ArrayBase const &) = default;
 
     ArrayBase & operator=(ArrayBase &&) = default;
+
+    template <typename ShapeVector>
+    element _at(ShapeVector const & index) const;
 
 private:
     impl_t _impl;

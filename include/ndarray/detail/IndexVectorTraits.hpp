@@ -22,23 +22,14 @@ namespace detail {
 template <typename T>
 struct IndexVectorTraits {
 
-    template <std::size_t M>
-    static void check_dims(T const & v) {
-        assert(M == v.size());
-    }
-
-    static size_t get_size(T const & v, std::size_t n) {
-        return v[n];
-    }
-
-    static offset_t get_offset(T const & v, std::size_t n) {
-        return v[n];
-    }
+    static constexpr bool is_specialized = false;
 
 };
 
 template <typename U, std::size_t N>
 struct IndexVectorTraits<Vector<U,N>> {
+
+    static constexpr bool is_specialized = true;
 
     template <std::size_t M>
     static void check_dims(Vector<U,N> const & v) {
@@ -61,6 +52,8 @@ struct IndexVectorTraits<Vector<U,N>> {
 template <typename U, std::size_t N>
 struct IndexVectorTraits<std::array<U,N>> {
 
+    static constexpr bool is_specialized = true;
+
     template <std::size_t M>
     static void check_dims(std::array<U,N> const & v) {
         static_assert(
@@ -82,6 +75,8 @@ struct IndexVectorTraits<std::array<U,N>> {
 template <typename U>
 struct IndexVectorTraits<std::initializer_list<U>> {
 
+    static constexpr bool is_specialized = true;
+
     template <std::size_t M>
     static void check_dims(std::initializer_list<U> const & v) {
         assert(M == v.size());
@@ -96,6 +91,27 @@ struct IndexVectorTraits<std::initializer_list<U>> {
     }
 
 };
+
+template <typename U>
+struct IndexVectorTraits<std::vector<U>> {
+
+    static constexpr bool is_specialized = true;
+
+    template <std::size_t M>
+    static void check_dims(std::vector<U> const & v) {
+        assert(M == v.size());
+    }
+
+    static size_t get_size(std::vector<U> const & v, std::size_t n) {
+        return v[n];
+    }
+
+    static offset_t get_offset(std::vector<U> const & v, std::size_t n) {
+        return v[n];
+    }
+
+};
+
 
 } // namespace detail
 } // ndarray
