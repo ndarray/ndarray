@@ -73,6 +73,20 @@ public:
     bool operator==(DType const & other) const { return true; }
     bool operator!=(DType const & other) const { return false; }
 
+    reference make_reference_at(
+        byte_t * buffer,
+        std::shared_ptr<Manager> const &
+    ) const {
+        return *reinterpret_cast<T*>(buffer);
+    }
+
+    const_reference make_const_reference_at(
+        byte_t const * buffer,
+        std::shared_ptr<Manager> const &
+    ) const {
+        return *reinterpret_cast<T*>(buffer);
+    }
+
 };
 
 } // ndarray

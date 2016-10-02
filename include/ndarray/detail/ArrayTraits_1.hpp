@@ -66,7 +66,7 @@ struct ArrayTraits<T,1,1> {
         byte_t * buffer,
         ArrayBase<T,1,1> const & self
     ) {
-        return *reinterpret_cast<T*>(buffer);
+        return self.dtype().make_reference_at(buffer, self.manager());
     }
 
     static iterator make_iterator_at(
@@ -95,7 +95,7 @@ struct ArrayTraits<T,1,-1> {
         byte_t * buffer,
         ArrayBase<T,1,-1> const & self
     ) {
-        return *reinterpret_cast<T*>(buffer);
+        return self.dtype().make_reference_at(buffer, self.manager());
     }
 
     static iterator make_iterator_at(
@@ -124,7 +124,7 @@ struct ArrayTraits<T,1,0> {
         byte_t * buffer,
         ArrayBase<T,1,0> const & self
     ) {
-        return *reinterpret_cast<T*>(buffer);
+        return self.dtype().make_reference_at(buffer, self.manager());
     }
 
     static iterator make_iterator_at(
@@ -151,7 +151,7 @@ struct ArrayTraits<T const,1,1> {
         byte_t * buffer,
         ArrayBase<T const,1,1> const & self
     ) {
-        return *reinterpret_cast<T const*>(buffer);
+        return self.dtype().make_const_reference_at(buffer, self.manager());
     }
 
     static iterator make_iterator_at(
@@ -180,7 +180,7 @@ struct ArrayTraits<T const,1,-1> {
         byte_t * buffer,
         ArrayBase<T const,1,-1> const & self
     ) {
-        return *reinterpret_cast<T const*>(buffer);
+        return self.dtype().make_const_reference_at(buffer, self.manager());
     }
 
     static iterator make_iterator_at(
@@ -208,7 +208,7 @@ struct ArrayTraits<T const,1,0> {
         byte_t * buffer,
         ArrayBase<T const,1,0> const & self
     ) {
-        return *reinterpret_cast<T const*>(buffer);
+        return self.dtype().make_const_reference_at(buffer, self.manager());
     }
 
     static iterator make_iterator_at(
