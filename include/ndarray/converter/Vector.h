@@ -8,15 +8,15 @@
  * of the source distribution, or alternately available at:
  * https://github.com/ndarray/ndarray
  */
-#ifndef NDARRAY_SWIG_Vector_h_INCLUDED
-#define NDARRAY_SWIG_Vector_h_INCLUDED
+#ifndef NDARRAY_CONVERTER_Vector_h_INCLUDED
+#define NDARRAY_CONVERTER_Vector_h_INCLUDED
 
-/** 
- *  @file ndarray/swig/Vector.h
+/**
+ *  @file ndarray/converter/Vector.h
  *  @brief Python C-API conversions for Vector.
 */
 
-#include "ndarray/swig/PyConverter.h"
+#include "ndarray/converter/PyConverter.h"
 
 namespace ndarray {
 
@@ -27,7 +27,7 @@ namespace ndarray {
 template <typename T, int N>
 struct PyConverter< Vector<T,N> > : public detail::PyConverterBase< Vector<T,N> > {
 
-    /** 
+    /**
      *  @brief Convert a Vector to a new Python object.
      *
      *  \return A new Python object, or NULL on failure (with
@@ -102,4 +102,4 @@ struct PyConverter< Vector<T,N> > : public detail::PyConverterBase< Vector<T,N> 
 
 } // namespace ndarray
 
-#endif // !NDARRAY_SWIG_Vector_h_INCLUDED
+#endif // !NDARRAY_CONVERTER_Vector_h_INCLUDED

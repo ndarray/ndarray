@@ -13,7 +13,7 @@
 #define PY_ARRAY_UNIQUE_SYMBOL LSST_SWIG_TEST_NUMPY_ARRAY_API
 #include "numpy/arrayobject.h"
 #include "ndarray/swig.h"
-#include "ndarray/swig/eigen.h"
+#include "ndarray/converter/eigen.h"
 #ifdef __GNUC__
 #pragma GCC diagnostic ignored "-Wuninitialized"
 #endif

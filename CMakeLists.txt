@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.11)
 
 project(ndarray)
 
@@ -31,6 +31,14 @@ else()
 	set(EIGEN3_INCLUDE_DIR ${EIGEN3_INCLUDE_DIR}/include)
 endif(NOT EIGEN3_INCLUDE_DIR)
 
+if (NDARRAY_SWIG)
+	find_package(SWIG REQUIRED)
+endif (NDARRAY_SWIG)
+
+if (NDARRAY_PYBIND11)
+	find_package(Pybind11 REQUIRED)
+endif (NDARRAY_PYBIND11)
+
 include_directories(
 	${PROJECT_SOURCE_DIR}/include
 	${PYTHON_INCLUDE_DIRS}
@@ -38,6 +46,7 @@ include_directories(
 	${Boost_INCLUDE_DIRS}
 	${FFTW_INCLUDES}
 	${EIGEN3_INCLUDE_DIR}
+	${PYBIND11_INCLUDE_DIR}
 	)
 
 add_subdirectory(include)
