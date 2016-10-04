@@ -19,46 +19,56 @@
 namespace ndarray {
 namespace detail {
 
-template <typename T, size_t N, offset_t C>
-struct IterTraits : public ArrayTraits<T,N,C> {
-    typedef IterImpl<typename std::remove_const<T>::type,N,C> impl_t;
-    typedef std::input_iterator_tag category;
-    using ArrayTraits<T,N,C>::nestedC;
-    typedef typename ArrayTraits<T,N,C>::reference offset_ref;
-    typedef ArrayRef<T,N-1,nestedC> const & actual_ref;
-    typedef Array<T,N-1,nestedC> const * actual_ptr;
+template <typename T>
+struct IterTraits {
+    typedef byte_t * storage;
+    typedef typename std::remove_const<T>::type value_type;
+    typedef T & reference;
+    typedef T * pointer;
+    typedef reference actual_ref;
+    typedef pointer actual_ptr;
+    typedef std::random_access_iterator_tag category;
 
-    using ArrayTraits<T,N,C>::make_reference_at;
+    static void reset(storage & s, storage & other) { s = other; }
 
-    static offset_ref make_reference_at(
-        byte_t * buffer,
-        Iter<T,N,C> const & self
-    );
+    static actual_ref dereference(storage s) {
+        return *reinterpret_cast<T*>(s);
+    }
 
-    static actual_ref make_reference(Iter<T,N,C> const & self);
+    static actual_ptr get_pointer(storage s) {
+        return reinterpret_cast<T*>(s);
+    }
 
-    static actual_ptr make_pointer(Iter<T,N,C> const & self);
+    static void advance(storage & s, offset_t nbytes) {
+        s += nbytes;
+    }
+
+    static byte_t * buffer(storage s) {
+        return s;
+    }
 
 };
 
-template <typename T>
-struct IterTraits<T,1,0> : public ArrayTraits<T,1,0> {
-    typedef IterImpl<typename std::remove_const<T>::type,1,0> impl_t;
-    typedef std::random_access_iterator_tag category;
-    typedef T & offset_ref;
-    typedef T & actual_ref;
-    typedef T * actual_ptr;
+template <typename T, size_t N, offset_t C>
+struct IterTraits<Array<T,N,C>> {
+    typedef ArrayRef<T,N,C> storage;
+    typedef Array<T,N,C> value_type;
+    typedef ArrayRef<T,N,C> reference;
+    typedef Array<T,N,C> const * pointer;
+    typedef ArrayRef<T,N,C> const & actual_ref;
+    typedef Array<T,N,C> const * actual_ptr;
+    typedef std::input_iterator_tag category;
 
-    using ArrayTraits<T,1,0>::make_reference_at;
+    template <typename Other>
+    static void reset(storage & s, Other const & other);
 
-    static offset_ref make_reference_at(
-        byte_t * buffer,
-        Iter<T,1,0> const & self
-    );
+    static actual_ref dereference(storage const & s);
 
-    static actual_ref make_reference(Iter<T,1,0> const & self);
+    static actual_ptr get_pointer(storage const & s);
 
-    static actual_ptr make_pointer(Iter<T,1,0> const & self);
+    static void advance(storage & s, offset_t nbytes);
+
+    static byte_t * buffer(storage const & s);
 
 };
 

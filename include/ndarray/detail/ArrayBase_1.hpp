@@ -28,7 +28,7 @@ class ArrayBase {
 
     template <typename U, size_t M, offset_t D> friend class Array;
     template <typename U, size_t M, offset_t D> friend class ArrayRef;
-    template <typename U, size_t M, offset_t D> friend class detail::IterImpl;
+    template <typename U> friend class detail::IterTraits;
     template <typename U, size_t M, offset_t D> friend struct detail::ArrayTraits;
 
     std::shared_ptr<layout_t> const & _layout() const { return _impl.layout(); }

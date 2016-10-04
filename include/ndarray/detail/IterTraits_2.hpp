@@ -15,59 +15,41 @@
 #include "ndarray/detail/ArrayBase_1.hpp"
 #include "ndarray/detail/Array_1.hpp"
 #include "ndarray/detail/ArrayRef_1.hpp"
-#include "ndarray/detail/ArrayTraits_2.hpp"
-#include "ndarray/detail/IterImpl.hpp"
-#include "ndarray/detail/Iter_1.hpp"
 #include "ndarray/detail/IterTraits_1.hpp"
 
 namespace ndarray {
 namespace detail {
 
 template <typename T, size_t N, offset_t C>
-inline typename IterTraits<T,N,C>::offset_ref
-IterTraits<T,N,C>::make_reference_at(
-    byte_t * buffer,
-    Iter<T,N,C> const & self
-) {
-    return ArrayTraits<T,N,C>::make_reference_at(buffer, self._current);
+template <typename Other>
+inline void IterTraits<Array<T,N,C>>::reset(storage & s, Other const & other) {
+    s.shallow() = other;
 }
 
 template <typename T, size_t N, offset_t C>
-inline typename IterTraits<T,N,C>::actual_ref
-IterTraits<T,N,C>::make_reference(
-    Iter<T,N,C> const & self
-) {
-    return self._impl._current;
+inline auto IterTraits<Array<T,N,C>>::dereference(
+    storage const & s
+) -> actual_ref {
+    return s;
 }
 
 template <typename T, size_t N, offset_t C>
-inline typename IterTraits<T,N,C>::actual_ptr
-IterTraits<T,N,C>::make_pointer(
-    Iter<T,N,C> const & self
-) {
-    return &self._impl._current;
+inline auto IterTraits<Array<T,N,C>>::get_pointer(
+    storage const & s
+) ->actual_ptr {
+    return &s;
 }
 
-template <typename T>
-inline typename IterTraits<T,1,0>::offset_ref
-IterTraits<T,1,0>::make_reference_at(
-    byte_t * buffer,
-    Iter<T,1,0> const & self
-) {
-    return *reinterpret_cast<T*>(buffer);
+template <typename T, size_t N, offset_t C>
+inline void IterTraits<Array<T,N,C>>::advance(storage & s, offset_t nbytes) {
+    s._impl.buffer += nbytes;
 }
 
-template <typename T>
-inline typename IterTraits<T,1,0>::actual_ref
-IterTraits<T,1,0>::make_reference(Iter<T,1,0> const & self) {
-    return *reinterpret_cast<T*>(self._impl.buffer());
+template <typename T, size_t N, offset_t C>
+inline byte_t * IterTraits<Array<T,N,C>>::buffer(storage const & s) {
+    return s._impl.buffer;
 }
 
-template <typename T>
-inline typename IterTraits<T,1,0>::actual_ptr
-IterTraits<T,1,0>::make_pointer(Iter<T,1,0> const & self) {
-    return reinterpret_cast<T*>(self._impl.buffer());
-}
 
 } // namespace detail
 } // namespace ndarray

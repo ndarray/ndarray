@@ -8,8 +8,8 @@
  * of the source distribution, or alternately available at:
  * https://github.com/ndarray/ndarray
  */
-#ifndef NDARRAY_Array_1_hpp_INCLUDED
-#define NDARRAY_Array_1_hpp_INCLUDED
+#ifndef NDARRAY_detail_Array_1_hpp_INCLUDED
+#define NDARRAY_detail_Array_1_hpp_INCLUDED
 
 #include "ndarray/common.hpp"
 #include "ndarray/detail/ArrayTraits_1.hpp"
@@ -282,4 +282,4 @@ protected:
 
 } // namespace ndarray
 
-#endif // !NDARRAY_Array_1_hpp_INCLUDED
+#endif // !NDARRAY_detail_Array_1_hpp_INCLUDED

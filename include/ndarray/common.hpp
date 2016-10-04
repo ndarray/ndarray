@@ -32,11 +32,9 @@ template <size_t N> class Layout;
 
 template <typename T, size_t N, offset_t C> struct ArrayTraits;
 
-template <typename T, size_t N, offset_t C> struct IterTraits;
+template <typename T> struct IterTraits;
 
 template <typename T, size_t N> class ArrayImpl;
-
-template <typename T, size_t N, offset_t C> class IterImpl;
 
 } // namespace detail
 
@@ -46,7 +44,7 @@ template <typename T, size_t N, offset_t C=1> class Array;
 
 template <typename T, size_t N, offset_t C=1> class ArrayRef;
 
-template <typename T, size_t N, offset_t C> class Iter;
+template <typename T> class Iter;
 
 template <typename T, size_t N> class Vector;
 

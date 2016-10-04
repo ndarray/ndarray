@@ -49,6 +49,7 @@ public:
     typedef T * pointer;
     typedef T const * const_pointer;
     typedef std::is_pod<T> is_pod;
+    typedef std::false_type is_proxy;
 
     DType() {}
 
@@ -59,7 +60,7 @@ public:
     DType(DType<U> const & other) {
         static_assert(
             std::is_convertible<U*,T*>::value || (is_pod::value && DType<U>::is_pod::value),
-            "Cannot reinterpet types unless both are POD"
+            "Cannot reinterpret types unless both are POD"
         );
     }
 

@@ -15,7 +15,6 @@
 #include "ndarray/detail/ArrayRef_2.hpp"
 #include "ndarray/detail/Array_1.hpp"
 #include "ndarray/detail/Array_2.hpp"
-#include "ndarray/detail/Iter_1.hpp"
-#include "ndarray/detail/Iter_2.hpp"
+#include "ndarray/detail/Iter.hpp"
 
 #endif // NDARRAY_Array_hpp_INCLUDED

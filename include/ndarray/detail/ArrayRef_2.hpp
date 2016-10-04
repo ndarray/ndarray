@@ -8,12 +8,12 @@
  * of the source distribution, or alternately available at:
  * https://github.com/ndarray/ndarray
  */
-#ifndef NDARRAY_ArrayRef_2_hpp_INCLUDED
-#define NDARRAY_ArrayRef_2_hpp_INCLUDED
+#ifndef NDARRAY_detail_ArrayRef_2_hpp_INCLUDED
+#define NDARRAY_detail_ArrayRef_2_hpp_INCLUDED
 
 #include "ndarray/common.hpp"
 #include "ndarray/detail/ArrayRef_1.hpp"
-#include "ndarray/detail/Iter_2.hpp"
+#include "ndarray/detail/Array_2.hpp"
 
 namespace ndarray {
 
@@ -110,4 +110,4 @@ inline ArrayRef<T,N,C> const & ArrayRef<T,N,C>::operator=(T scalar) const {
 
 } // namespace ndarray
 
-#endif // !NDARRAY_ArrayRef_2_hpp_INCLUDED
+#endif // !NDARRAY_detail_ArrayRef_2_hpp_INCLUDED

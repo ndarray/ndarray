@@ -8,21 +8,21 @@
  * of the source distribution, or alternately available at:
  * https://github.com/ndarray/ndarray
  */
-#ifndef NDARRAY_ArrayBase_2_hpp_INCLUDED
-#define NDARRAY_ArrayBase_2_hpp_INCLUDED
+#ifndef NDARRAY_detail_ArrayBase_2_hpp_INCLUDED
+#define NDARRAY_detail_ArrayBase_2_hpp_INCLUDED
 
 #include "ndarray/common.hpp"
 #include "ndarray/detail/ArrayRef_1.hpp"
+#include "ndarray/detail/Iter.hpp"
 #include "ndarray/detail/IterTraits_2.hpp"
-#include "ndarray/detail/Iter_2.hpp"
-#include "ndarray/detail/ArrayBase_2.hpp"
+#include "ndarray/detail/ArrayTraits_2.hpp"
 #include "ndarray/detail/IndexVectorTraits.hpp"
 #include "ndarray/detail/Layout.hpp"
 
 namespace ndarray {
 
 template <typename T, size_t N, offset_t C>
-inline typename ArrayBase<T,N,C>::iterator ArrayBase<T,N,C>::begin() const {
+inline auto ArrayBase<T,N,C>::begin() const -> iterator {
     return detail::ArrayTraits<T,N,C>::make_iterator_at(
         this->_impl.buffer,
         *this
@@ -30,7 +30,7 @@ inline typename ArrayBase<T,N,C>::iterator ArrayBase<T,N,C>::begin() const {
 }
 
 template <typename T, size_t N, offset_t C>
-inline typename ArrayBase<T,N,C>::iterator ArrayBase<T,N,C>::end() const {
+inline auto ArrayBase<T,N,C>::end() const -> iterator {
     return detail::ArrayTraits<T,N,C>::make_iterator_at(
         this->_impl.buffer + this->stride()*this->size(),
         *this
@@ -38,8 +38,7 @@ inline typename ArrayBase<T,N,C>::iterator ArrayBase<T,N,C>::end() const {
 }
 
 template <typename T, size_t N, offset_t C>
-inline typename ArrayBase<T,N,C>::reference
-ArrayBase<T,N,C>::operator[](size_t n) const {
+inline auto ArrayBase<T,N,C>::operator[](size_t n) const -> reference {
     return traits_t::make_reference_at(
         this->_impl.buffer + this->stride()*n,
         *this
@@ -48,8 +47,7 @@ ArrayBase<T,N,C>::operator[](size_t n) const {
 
 template <typename T, size_t N, offset_t C>
 template <typename IndexVector>
-inline typename ArrayBase<T,N,C>::element
-ArrayBase<T,N,C>::_at(IndexVector const & index) const {
+inline auto ArrayBase<T,N,C>::_at(IndexVector const & index) const -> element {
     detail::IndexVectorTraits<IndexVector>::template check_dims<N>(index);
     detail::StrideInnerProduct<IndexVector> func(index);
     this->_layout()->for_each_dim(func);
@@ -61,4 +59,4 @@ ArrayBase<T,N,C>::_at(IndexVector const & index) const {
 
 } // namespace ndarray
 
-#endif // !NDARRAY_ArrayBase_2_hpp_INCLUDED
+#endif // !NDARRAY_detail_ArrayBase_2_hpp_INCLUDED
