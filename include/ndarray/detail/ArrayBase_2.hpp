@@ -47,7 +47,9 @@ inline auto ArrayBase<T,N,C>::operator[](size_t n) const -> reference {
 
 template <typename T, size_t N, offset_t C>
 template <typename IndexVector>
-inline auto ArrayBase<T,N,C>::_at(IndexVector const & index) const -> element {
+inline auto ArrayBase<T,N,C>::_at(
+    IndexVector const & index
+) const -> typename dtype_t::reference {
     detail::IndexVectorTraits<IndexVector>::template check_dims<N>(index);
     detail::StrideInnerProduct<IndexVector> func(index);
     this->_layout()->for_each_dim(func);

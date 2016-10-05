@@ -29,14 +29,25 @@ inline void IterTraits<Array<T,N,C>>::reset(storage & s, Other const & other) {
 template <typename T, size_t N, offset_t C>
 inline auto IterTraits<Array<T,N,C>>::dereference(
     storage const & s
-) -> actual_ref {
+) -> reference {
     return s;
+}
+
+
+template <typename T, size_t N, offset_t C>
+inline auto IterTraits<Array<T,N,C>>::dereference_at(
+    storage const & s,
+    offset_t nbytes
+) -> offset_ref {
+    storage copy(s);
+    advance(copy, nbytes);
+    return copy;
 }
 
 template <typename T, size_t N, offset_t C>
 inline auto IterTraits<Array<T,N,C>>::get_pointer(
     storage const & s
-) ->actual_ptr {
+) -> pointer {
     return &s;
 }
 

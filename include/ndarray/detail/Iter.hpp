@@ -23,8 +23,7 @@ template <typename T>
 class Iter {
     typedef detail::IterTraits<T> traits_t;
     typedef typename traits_t::storage storage;
-    typedef typename traits_t::actual_ref actual_ref;
-    typedef typename traits_t::actual_ptr actual_ptr;
+    typedef typename traits_t::offset_ref offset_ref;
     template <typename U> friend class Iter;
 public:
     typedef typename traits_t::value_type value_type;
@@ -83,18 +82,16 @@ public:
         return *this;
     }
 
-    actual_ref operator*() const {
+    reference operator*() const {
         return traits_t::dereference(_storage);
     }
 
-    actual_ptr operator->() const {
+    reference operator->() const {
         return traits_t::get_pointer(_storage);
     }
 
-    reference operator[](difference_type n) const {
-        storage copy(_storage);
-        traits_t::advance(copy, n*_stride);
-        return copy;
+    offset_ref operator[](difference_type n) const {
+        return traits_t::dereference_at(_storage, n*_stride);
     }
 
     Iter & operator++() {

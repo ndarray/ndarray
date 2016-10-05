@@ -58,14 +58,16 @@ public:
 
     reference operator[](size_t n) const;
 
-    element operator[](std::initializer_list<std::size_t> const & index) const {
+    typename dtype_t::reference operator[](
+        std::initializer_list<std::size_t> const & index
+    ) const {
         return _at(index);
     }
 
     template <typename IndexVector>
     typename std::enable_if<
         detail::IndexVectorTraits<IndexVector>::is_specialized,
-        element
+        typename dtype_t::reference
     >::type
     operator[](IndexVector const & index) const {
         return _at(index);
@@ -124,7 +126,7 @@ protected:
     ArrayBase & operator=(ArrayBase &&) = default;
 
     template <typename ShapeVector>
-    element _at(ShapeVector const & index) const;
+    typename dtype_t::reference _at(ShapeVector const & index) const;
 
 private:
     impl_t _impl;
