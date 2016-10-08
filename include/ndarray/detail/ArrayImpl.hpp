@@ -133,6 +133,11 @@ private:
     std::shared_ptr<Manager> _manager;
 };
 
+template <typename T, size_t N>
+void swap(ArrayImpl<T,N> & a, ArrayImpl<T,N> & b) {
+    a.swap(b);
+}
+
 } // namespace detail
 } // namespace ndarray
 

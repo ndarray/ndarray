@@ -37,6 +37,10 @@ public:
 
     Array & operator=(Array &&) = default;
 
+    void swap(Array & other) {
+        this->_impl.swap(other._impl);
+    }
+
     template <offset_t D>
     bool operator==(Array<T,N,D> const & other) const {
         return this->_impl == other._impl;
@@ -233,6 +237,10 @@ public:
 
     Array & operator=(Array &&) = default;
 
+    void swap(Array & other) {
+        this->_impl.swap(other._impl);
+    }
+
     template <offset_t D>
     bool operator==(Array<T,N,D> const & other) const {
         return this->_impl == other._impl;
@@ -279,6 +287,12 @@ protected:
     explicit Array(impl_t const & impl) : base_t(impl) {}
     explicit Array(impl_t && impl) : base_t(std::move(impl)) {}
 };
+
+
+template <typename T, size_t N, offset_t C>
+inline void swap(Array<T,N,C> & a, Array<T,N,C> & b) {
+    a.swap(b);
+}
 
 } // namespace ndarray
 

@@ -36,6 +36,12 @@ public:
 
     CompressedPair & operator=(CompressedPair &&) = default;
 
+    void swap(CompressedPair & other) {
+        using std::swap;
+        swap(first(), other.first());
+        swap(second(), other.second());
+    }
+
     first_type const & first() const { return *this; }
 
     first_type & first() { return *this; }
@@ -45,6 +51,11 @@ public:
     second_type & second() { return *this; }
 
 };
+
+template <typename T1, typename T2>
+inline void swap(CompressedPair<T1,T2> & a, CompressedPair<T1,T2> & b) {
+    a.swap(b);
+}
 
 } // namespace detail
 } // namespace ndarray
