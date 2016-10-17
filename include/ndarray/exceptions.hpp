@@ -12,26 +12,13 @@
 #define NDARRAY_exceptions_hpp_INCLUDED
 
 #include <stdexcept>
-#include <sstream>
 #include "ndarray/common.hpp"
 
 namespace ndarray {
 
 class NoncontiguousError : public std::logic_error {
 
-    std::string format(offset_t actual, offset_t required) {
-        std::ostringstream s;
-        if (required > 0) {
-            s << "Template requires at least " << required
-              << " row-major contiguous dimensions;"
-              << " strides only have " << actual;
-        } else {
-            s << "Template requires at least " << (-required)
-              << " column-major contiguous dimensions;"
-              << " strides only have " << (-actual);
-        }
-        return s.str();
-    }
+    std::string format(offset_t actual, offset_t required);
 
 public:
 
