@@ -90,6 +90,12 @@ public:
 
 };
 
+
+template <typename T>
+void swap(DType<T> & a, DType<T> & b) {
+    a.swap(b);
+}
+
 } // ndarray
 
 #endif // !NDARRAY_dtype_hpp_INCLUDED
