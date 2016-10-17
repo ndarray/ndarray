@@ -74,6 +74,14 @@ public:
     bool operator==(DType const & other) const { return true; }
     bool operator!=(DType const & other) const { return false; }
 
+    void initialize(byte_t * buffer) const {
+        new (buffer) T;
+    }
+
+    void destroy(byte_t * buffer) const {
+        reinterpret_cast<T*>(buffer)->~T();
+    }
+
     reference make_reference_at(
         byte_t * buffer,
         std::shared_ptr<Manager> const &
