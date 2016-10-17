@@ -12,6 +12,7 @@
 #define NDARRAY_detail_Array_1_hpp_INCLUDED
 
 #include "ndarray/common.hpp"
+#include "ndarray/exceptions.hpp"
 #include "ndarray/detail/ArrayTraits_1.hpp"
 #include "ndarray/detail/ArrayImpl.hpp"
 #include "ndarray/detail/ArrayBase_1.hpp"

@@ -14,6 +14,7 @@
 #include <memory>
 
 #include "ndarray/common.hpp"
+#include "ndarray/exceptions.hpp"
 #include "ndarray/detail/IndexVectorTraits.hpp"
 #include "ndarray/Vector.hpp"
 

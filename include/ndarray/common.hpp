@@ -12,8 +12,6 @@
 #define NDARRAY_common_hpp_INCLUDED
 
 #include <cstdint>
-#include <stdexcept>
-#include <sstream>
 
 namespace ndarray {
 
@@ -51,32 +49,6 @@ template <typename T, size_t N> class Vector;
 template <typename T> class DType;
 
 class Manager;
-
-class NoncontiguousError : public std::logic_error {
-
-    std::string format(offset_t actual, offset_t required) {
-        std::ostringstream s;
-        if (required > 0) {
-            s << "Template requires at least " << required
-              << " row-major contiguous dimensions;"
-              << " strides only have " << actual;
-        } else {
-            s << "Template requires at least " << (-required)
-              << " column-major contiguous dimensions;"
-              << " strides only have " << (-actual);
-        }
-        return s.str();
-    }
-
-public:
-
-    explicit NoncontiguousError(char const * msg) : std::logic_error(msg) {}
-
-    explicit NoncontiguousError(offset_t actual, offset_t required) :
-        std::logic_error(format(actual, required))
-    {}
-
-};
 
 } // ndarray
 
