@@ -54,7 +54,7 @@ struct ArrayTraits {
 template <
     typename T,
     offset_t C_,
-    bool has_pointer_iter = !(get_dtype_t<T>::is_proxy::value || C_ == 0)
+    bool has_pointer_iter = (get_dtype_t<T>::is_direct && C_ != 0)
 >
 struct ArrayTraitsBase1d;
 

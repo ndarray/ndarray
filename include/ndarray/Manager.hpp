@@ -26,12 +26,17 @@ class Manager {};
 
 namespace detail {
 
-template <typename T, typename Owner, typename IsPOD=typename DType<T>::is_pod::type>
+template <typename T, typename Owner, bool is_pod=DType<T>::is_pod>
 class PrimaryManager;
 
 template <typename T, typename Owner>
-class PrimaryManager<T,Owner,std::true_type> : public Manager {
+class PrimaryManager<T,Owner,true> : public Manager {
 public:
+
+    static_assert(
+        DType<T>::is_direct,
+        "Cannot construct manager for indirect dtype"
+    );
 
     PrimaryManager(DType<T> dtype, Owner owner, std::size_t nbytes) :
         _owner(std::move(owner))
@@ -42,8 +47,13 @@ protected:
 };
 
 template <typename T, typename Owner>
-class PrimaryManager<T,Owner,std::false_type> : public Manager {
+class PrimaryManager<T,Owner,false> : public Manager {
 public:
+
+    static_assert(
+        DType<T>::is_direct,
+        "Cannot construct manager for indirect dtype"
+    );
 
     PrimaryManager(DType<T> dtype, Owner owner, std::size_t nbytes) :
         _owner(std::move(owner)),

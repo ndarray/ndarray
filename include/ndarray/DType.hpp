@@ -48,8 +48,8 @@ public:
     typedef T const & const_reference;
     typedef T * pointer;
     typedef T const * const_pointer;
-    typedef std::is_pod<T> is_pod;
-    typedef std::false_type is_proxy;
+    static constexpr bool is_pod = std::is_pod<T>::value;
+    static constexpr bool is_direct = true;
 
     DType() {}
 
@@ -59,7 +59,7 @@ public:
     template <typename U>
     DType(DType<U> const & other) {
         static_assert(
-            std::is_convertible<U*,T*>::value || (is_pod::value && DType<U>::is_pod::value),
+            std::is_convertible<U*,T*>::value || (is_pod && DType<U>::is_pod),
             "Cannot reinterpret types unless both are POD"
         );
     }
