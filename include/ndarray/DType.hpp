@@ -15,6 +15,8 @@
 #include <type_traits>
 
 #include "ndarray/common.hpp"
+// TODO: replace type_string magic with explicit specializations
+#include "ndarray/formatting/types.hpp"
 
 namespace ndarray {
 
@@ -69,7 +71,15 @@ public:
 
     void swap(DType & other) {}
 
+    size_t alignment() const { return alignof(T); }
+
     size_t nbytes() const { return sizeof(T); }
+
+    static std::string const & name() {
+        // TODO: replace type_string magic with explicit specializations
+        static std::string x = type_string<T>();
+        return x;
+    }
 
     bool operator==(DType const & other) const { return true; }
     bool operator!=(DType const & other) const { return false; }
