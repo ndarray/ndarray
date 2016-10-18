@@ -12,115 +12,27 @@
 #define NDARRAY_table_Schema_hpp_INCLUDED
 
 #include <memory>
+#include <map>
+#include <vector>
 
 #include "ndarray/common.hpp"
-#include "ndarray/formatting/types.hpp"
+#include "ndarray/table/Key.hpp"
 
 namespace ndarray {
-
-template <typename T>
-struct FieldTraits {
-
-    static constexpr bool is_proxy = false;
-
-    static std::string const & type() {
-        static std::string const _type = type_string<T>();
-        return _type;
-    }
-
-};
-
-
-class TypeError : public std::logic_error {
-
-    std::string format(
-        std::string const & desired,
-        std::string const & actual
-    ) {
-        std::ostringstream s;
-        s << "Key has type '" << actual << "'', not '" << desired << "'.";
-        return s.str();
-    }
-
-public:
-
-    explicit TypeError(char const * msg) : std::logic_error(msg) {}
-
-    explicit TypeError(
-        std::string const & desired,
-        std::string const & actual
-    ) :
-        std::logic_error(format(desired, actual))
-    {}
-
-};
-
-
-template <typename T, bool is_proxy=FieldTraits<T>::is_proxy> class Key;
-
-
-class KeyBase {
-public:
-
-    KeyBase() {}
-
-    KeyBase(KeyBase const &) = delete;
-
-    KeyBase(KeyBase &&) = delete;
-
-    KeyBase & operator=(KeyBase const &) = delete;
-
-    KeyBase & operator=(KeyBase &&) = delete;
-
-    virtual std::string const & type() const = 0;
-
-    template <typename T>
-    operator Key<T> const & () const;
-
-    virtual ~KeyBase() {}
-
-};
-
-
-template <typename T>
-class Key<T,false> : public KeyBase {
-public:
-
-    explicit Key(offset_t offset_) : _offset(offset_) {}
-
-    Key(Key const &) = delete;
-
-    Key(Key &&) = delete;
-
-    Key & operator=(Key const &) = delete;
-
-    Key & operator=(Key &&) = delete;
-
-    virtual std::string const & type() const {
-        return FieldTraits<T>::type();
-    }
-
-    offset_t offset() const { return _offset; }
-
-private:
-    offset_t _offset;
-};
-
-
-template <typename T>
-KeyBase::operator Key<T> const & () const {
-    try {
-        return dynamic_cast<Key<T> const &>(*this);
-    } catch (std::bad_cast &) {
-        return TypeError(FieldTraits<T>::type(), this->type());
-    }
-}
 
 
 class Field {
 public:
 
-    Field(std::string name_, std::string doc_="", std::string unit_="");
+    explicit Field(
+        std::string name_,
+        std::string doc_="",
+        std::string unit_=""
+    ) :
+        _name(std::move(name_)),
+        _doc(std::move(doc_)),
+        _unit(std::move(unit_))
+    {}
 
     Field(Field const &) = default;
 
@@ -154,7 +66,10 @@ private:
 class SchemaField : public Field {
 public:
 
-    SchemaField(Field field, std::unique_ptr<KeyBase> key, bool is_direct_);
+    SchemaField(Field field, std::unique_ptr<KeyBase> key_) :
+        Field(std::move(field)),
+        _key(std::move(key_))
+    {}
 
     SchemaField(SchemaField const &) = delete;
 
@@ -162,7 +77,7 @@ public:
 
     SchemaField & operator=(SchemaField const &) = delete;
 
-    SchemaField & operator=(SchemaField &&) = default;
+    SchemaField & operator=(SchemaField &&);
 
     KeyBase const & key() const { return *_key; }
 
@@ -172,10 +87,7 @@ public:
         );
     }
 
-    bool is_direct() const { return _is_indirect; }
-
 private:
-    bool _is_direct;
     std::unique_ptr<KeyBase> _key;
 };
 
@@ -185,17 +97,151 @@ public:
 
     virtual void start_append_direct(Field const & field) const = 0;
 
-    virtual void start_insert_direct(Field const & field) const = 0;
-
     virtual ~SchemaWatcher() {}
 };
 
 
+template <typename Internal, typename Reference, typename Predicate>
+class SchemaIter {
+    typedef typename std::remove_reference<Reference>::type Target;
+public:
+    typedef SchemaItem value_type;
+    typedef Reference reference;
+    typedef Target * pointer;
+    typedef size_t size_type;
+    typedef offset_t difference_type;
+    typedef std::bidirectional_iterator_tag iterator_category;
+
+    explicit SchemaIter(
+        Internal const & internal=Internal(),
+        Predicate const & predicate=Predicate()
+    ) :
+        _internal_and_predicate(internal, predicate)
+    {}
+
+    SchemaIter(SchemaIter const &) = default;
+
+    SchemaIter(SchemaIter &&) = default;
+
+    template <typename U>
+    SchemaIter(SchemaIter<U,Target> const & other) :
+        _internal_and_predicate(other._internal_and_predicate)
+    {}
+
+    template <typename U>
+    SchemaIter(SchemaIter<U,Target> && other) :
+        _internal_and_predicate(std::move(other._internal_and_predicate))
+    {}
+
+    SchemaIter & operator=(SchemaIter const &) = default;
+
+    SchemaIter & operator=(SchemaIter &&) = default;
+
+    template <typename U>
+    SchemaIter & operator=(SchemaIter<U,Target> const & other) {
+        _internal_and_predicate = other._internal_and_predicate;
+        return *this;
+    }
+
+    template <typename U>
+    SchemaIter & operator=(SchemaIter<U,Target> && other) {
+        _internal_and_predicate = std::move(other._internal_and_predicate);
+        return *this;
+    }
+
+    reference operator*() const {
+        return **_internal_and_predicate.first();
+    }
+
+    pointer operator->() const {
+        return *_internal_and_predicate.first();
+    }
+
+    SchemaIter & operator++() {
+        do {
+            ++_internal_and_predicate.first();
+        } while (predicate_is_false());
+        return *this;
+    }
+
+    SchemaIter operator++(int) {
+        SchemaIter tmp(*this);
+        ++(*this);
+        return tmp;
+    }
+
+    SchemaIter & operator--() {
+        do {
+            --_internal_and_predicate.first();
+        } while (predicate_is_false());
+        return *this;
+    }
+
+    SchemaIter operator--(int) {
+        SchemaIter tmp(*this);
+        --(*this);
+        return tmp;
+    }
+
+    template <typename U>
+    bool operator==(SchemaIter<U,Target> const & other) const {
+        return _internal_and_predicate.first()
+            == other._internal_and_predicate.first();
+    }
+
+    template <typename U>
+    bool operator!=(SchemaIter<U,Target> const & other) const {
+        return _internal_and_predicate.first()
+            != other._internal_and_predicate.first();
+    }
+
+private:
+
+    bool predicate_is_false() const {
+        return !_internal_and_predicate.second()(_internal);
+    }
+
+    detail::CompressedPair<Internal,Predicate> _internal_and_predicate;
+};
+
+
 class Schema {
+    typedef std::vector<SchemaField*> OrderVector;
+    typedef std::unordered_map<std::string,SchemaField> NameMap;
+
+    template <typename Internal>
+    struct NullPredicate {
+        bool operator()(Internal const &) const { return true; }
+    };
+
+    template <typename Internal>
+    struct DirectOnlyPredicate {
+
+        bool operator()(Internal const & internal) const {
+            return internal == _bounds.first || internal == _bounds.second
+                || (**internal).is_direct();
+        }
+
+        std::pair<Internal,Internal> _bounds;
+    }
+
+    template <typename Internal>
+    struct IndirectOnlyPredicate {
+
+        bool operator()(Internal const & internal) const {
+            return internal == _bounds.first || internal == _bounds.second
+                || !(**internal).is_direct();
+        }
+
+        std::pair<Internal,Internal> _bounds;
+    }
+
 public:
 
-    typedef SchemaIter iterator;
-    typedef ConstSchemaIter const_iterator;
+    typedef SchemaIter<OrderVector::iterator, SchemaField &,
+                       NullPredicate> iterator;
+    typedef SchemaIter<OrderVector::const_iterator, SchemaField const &,
+                       NullPredicate> const_iterator;
 
     Schema();
 
@@ -207,138 +253,70 @@ public:
 
     Schema & operator=(Schema &&);
 
-    iterator begin();
-    iterator end();
+    iterator begin() { return iterator(_by_order.begin()); }
+    iterator end() { return iterator(_by_order.end()); }
 
-    const_iterator begin() const;
-    const_iterator end() const;
+    const_iterator begin() const { return const_iterator(_by_order.cbegin(); )}
+    const_iterator end() const { return const_iterator(_by_order.cend(); )}
 
-    const_iterator cbegin() const;
-    const_iterator cend() const;
+    const_iterator cbegin() const { return const_iterator(_by_order.cbegin(); )}
+    const_iterator cend() const { return const_iterator(_by_order.cend(); )}
 
-    std::pair<iterator,iterator> direct_only();
-    std::pair<const_iterator,const_iterator> direct_only() const;
+    size_t size() const { return _by_order.size(); }
+    bool empty() const { return _by_order.empty(); }
 
-    std::pair<iterator,iterator> indirect_only();
-    std::pair<const_iterator,const_iterator> indirect_only() const;
+    SchemaField * get(std::string const & name);
 
-    size_t size() const { return _by_offset.size(); }
-    bool empty() const { return _by_offset.empty(); }
+    SchemaField const * get(std::string const & name) const;
 
-    SchemaField & get(std::string const & name);
+    SchemaField & operator[](std::string const & name);
 
-    SchemaField const & get(std::string const & name) const;
-
-    SchemaField & operator[](std::string const & name) {
-        return get(name);
-    }
-
-    SchemaField const & operator[](std::string const & name) const {
-        return get(name);
-    }
-
-    const_iterator find(std::string const & name) const;
+    SchemaField const & operator[](std::string const & name) const;
 
     iterator find(std::string const & name);
 
-    template <typename T>
-    const_iterator find(Key<T> const & key) const;
+    const_iterator find(std::string const & name) const;
 
-    template <typename T>
-    iterator find(Key<T> const & key);
+    iterator find(KeyBase const & key);
+
+    const_iterator find(KeyBase const & key) const;
 
     bool contains(std::string const & name) const;
 
-    template <typename T>
-    bool contains(Key<T> const & key) const;
+    bool contains(KeyBase const & key) const;
 
     template <typename T>
-    Key<T> const & append(Field field) {
-        static_assert(
-            !FieldTraits<T>::is_proxy,
-            "Proxy types cannot be added directly to a schema."
-        );
+    Key<T> const & append(Field field, DType<T> const & dtype=DType<T>()) {
         return static_cast<Key<T> const &>(
-            append(FieldTraits<T>::type(), std::move(field))
+            append(DType<T>::name(), std::move(field), &dtype)
         );
     }
 
     template <typename T>
     Key<T> const & append(
-        std::string name, std::string doc="", std::string unit=""
+        std::string name, std::string doc="", std::string unit="",
+        DType<T> const & dtype=DType<T>()
     ) {
-        return append<T>(Field(name, doc, unit));
+        return append<T>(Field(name, doc, unit), dtype);
     }
-
-    KeyBase const & append(std::string const & type, Field field);
 
     KeyBase const & append(
-        std::string const & type, std::string name,
-        std::string doc="", std::string unit=""
-    ) {
-        return append(type, Field(name, doc, unit));
-    }
-
-    template <typename T>
-    Key<T> const & append(std::unique_ptr<Key<T>> key, Field field);
-
-    template <typename T>
-    Key<T> const & append(
-        std::unique_ptr<Key<T>> key,
-        std::string name, std::string doc="", std::string unit=""
-    ) {
-        return append<T>(std::move(key), Field(name, doc, unit));
-    }
-
-    KeyBase const & append(std::unique_ptr<KeyBase> key, Field field);
-
-    KeyBase const & append(
-        std::unique_ptr<KeyBase> key, std::string name,
-        std::string doc="", std::string unit=""
-    ) {
-        return append(std::move(key), Field(name, doc, unit));
-    }
-
-    template <typename T>
-    std::pair<iterator,Key<T> const &> insert(iterator pos, Field field);
-
-    template <typename T>
-    std::pair<iterator,Key<T> const &> insert(
-        iterator pos, std::string name, std::string doc="", std::string unit=""
-    ) {
-        return insert<T>(pos, Field(name, doc, unit));
-    }
-
-    iterator insert(iterator const & pos, std::string const & type, Field field);
-
-    iterator insert(
-        iterator const & pos, std::string const & type, std::string name,
-        std::string doc="", std::string unit=""
-    ) {
-        return insert(pos, Field(name, doc, unit));
-    }
-
-    template <typename T>
-    std::pair<iterator,Key<T> const &> insert(
-        iterator const & pos, std::unique_ptr<Key<T>> key, Field field
+        std::string const & type,
+        Field field,
+        void const * dtype=nullptr
     );
 
-    template <typename T>
-    std::pair<iterator,Key<T> const &> insert(
-        iterator const & pos, std::unique_ptr<Key<T>> key,
-        std::string name, std::string doc="", std::string unit=""
+    KeyBase const & append(
+        std::string const & type,
+        std::string name, std::string doc="", std::string unit="",
+        void const * dtype=nullptr
     ) {
-        return insert<T>(pos, std::move(key), Field(name, doc, unit));
+        return append(type, Field(name, doc, unit), dtype);
     }
 
-    iterator insert(iterator const & pos, std::unique_ptr<KeyBase> key, Field field);
+    // TODO: append indirect fields
 
-    iterator insert(
-        iterator const & pos, std::unique_ptr<KeyBase> key, std::string name,
-        std::string doc="", std::string unit=""
-    ) {
-        return insert(pos, std::move(key), Field(name, doc, unit));
-    }
+    // TODO: insert keys
 
     void set(std::string const & name, Field field);
 
@@ -349,9 +327,13 @@ public:
     void rename(iterator iter, std::string const & new_name);
 
 private:
-    std::unordered_map<std::string,SchemaField> _by_name;
-    std::vector<Field*> _by_offset;
+
+    offset_t allocate(size_t alignment, size_t nbytes);
+
+    NameMap _by_name;
+    OrderVector _by_order;
     std::weak_ptr<SchemaWatcher> _watcher;
+    size_t _next_offset;
 };
 
 
