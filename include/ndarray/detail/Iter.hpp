@@ -86,7 +86,7 @@ public:
         return traits_t::dereference(_storage);
     }
 
-    reference operator->() const {
+    pointer operator->() const {
         return traits_t::get_pointer(_storage);
     }
 
