@@ -12,7 +12,6 @@
 #define NDARRAY_table_Schema_hpp_INCLUDED
 
 #include <memory>
-#include <map>
 #include <vector>
 
 #include "ndarray/common.hpp"
@@ -68,7 +67,8 @@ public:
 
     SchemaField(Field field, std::unique_ptr<KeyBase> key_) :
         Field(std::move(field)),
-        _key(std::move(key_))
+        _key(std::move(key_)),
+        _next(nullptr)
     {}
 
     SchemaField(SchemaField const &) = delete;
@@ -79,6 +79,10 @@ public:
 
     SchemaField & operator=(SchemaField &&);
 
+    SchemaField & operator=(Field const &);
+
+    SchemaField & operator=(Field &&);
+
     KeyBase const & key() const { return *_key; }
 
     virtual void set_name(std::string const & name_) {
@@ -88,79 +92,67 @@ public:
     }
 
 private:
+    friend class Schema;
+
+    std::unique_ptr<SchemaField> copy() const;
+
     std::unique_ptr<KeyBase> _key;
+    SchemaField * _next;
 };
 
 
 class SchemaWatcher {
 public:
-
-    virtual void start_append_direct(Field const & field) const = 0;
-
     virtual ~SchemaWatcher() {}
 };
 
-
-template <typename Internal, typename Reference, typename Predicate>
+template <typename Target, typename Incrementer>
 class SchemaIter {
-    typedef typename std::remove_reference<Reference>::type Target;
 public:
-    typedef SchemaItem value_type;
-    typedef Reference reference;
+    typedef typename std::remove_const<Target>::type value_type;
+    typedef Target & reference;
     typedef Target * pointer;
     typedef size_t size_type;
     typedef offset_t difference_type;
-    typedef std::bidirectional_iterator_tag iterator_category;
+    typedef std::forward_iterator_tag iterator_category;
 
-    explicit SchemaIter(
-        Internal const & internal=Internal(),
-        Predicate const & predicate=Predicate()
-    ) :
-        _internal_and_predicate(internal, predicate)
-    {}
+    SchemaIter() : _current_and_incrementer(nullptr, Incrementer()) {}
 
     SchemaIter(SchemaIter const &) = default;
-
     SchemaIter(SchemaIter &&) = default;
 
-    template <typename U>
-    SchemaIter(SchemaIter<U,Target> const & other) :
-        _internal_and_predicate(other._internal_and_predicate)
-    {}
-
-    template <typename U>
-    SchemaIter(SchemaIter<U,Target> && other) :
-        _internal_and_predicate(std::move(other._internal_and_predicate))
-    {}
+    template <typename Target2>
+    SchemaIter(SchemaIter<Target2,Incrementer> const & other) :
+        _current_and_incrementer(other._current_and_incrementer) {}
 
     SchemaIter & operator=(SchemaIter const &) = default;
-
     SchemaIter & operator=(SchemaIter &&) = default;
 
-    template <typename U>
-    SchemaIter & operator=(SchemaIter<U,Target> const & other) {
-        _internal_and_predicate = other._internal_and_predicate;
+    template <typename Target2>
+    SchemaIter & operator=(SchemaIter<Target2,Incrementer> const & other) {
+        _current_and_incrementer.first()
+            = other._current_and_incrementer.first();
         return *this;
     }
 
-    template <typename U>
-    SchemaIter & operator=(SchemaIter<U,Target> && other) {
-        _internal_and_predicate = std::move(other._internal_and_predicate);
-        return *this;
+    void swap(SchemaIter & other) {
+        other._current_and_incrementer.swap(_current_and_incrementer);
     }
 
     reference operator*() const {
-        return **_internal_and_predicate.first();
+        return *_current_and_incrementer.first();
     }
 
     pointer operator->() const {
-        return *_internal_and_predicate.first();
+        return _current_and_incrementer.first();
+    }
+
+    pointer get() const {
+        return _current_and_incrementer.first();
     }
 
     SchemaIter & operator++() {
-        do {
-            ++_internal_and_predicate.first();
-        } while (predicate_is_false());
+        _current_and_incrementer.second()(_current_and_incrementer.first());
         return *this;
     }
 
@@ -170,78 +162,53 @@ public:
         return tmp;
     }
 
-    SchemaIter & operator--() {
-        do {
-            --_internal_and_predicate.first();
-        } while (predicate_is_false());
-        return *this;
+    template <typename Target2, typename Incrementer2>
+    bool operator==(SchemaIter<Target2,Incrementer2> const & other) const {
+        return other._current_and_incrementer.first() ==
+            _current_and_incrementer.first();
     }
 
-    SchemaIter operator--(int) {
-        SchemaIter tmp(*this);
-        --(*this);
-        return tmp;
-    }
-
-    template <typename U>
-    bool operator==(SchemaIter<U,Target> const & other) const {
-        return _internal_and_predicate.first()
-            == other._internal_and_predicate.first();
-    }
-
-    template <typename U>
-    bool operator!=(SchemaIter<U,Target> const & other) const {
-        return _internal_and_predicate.first()
-            != other._internal_and_predicate.first();
+    template <typename Target2, typename Incrementer2>
+    bool operator!=(SchemaIter<Target2,Incrementer2> const & other) const {
+        return other._current_and_incrementer.first() !=
+            _current_and_incrementer.first();
     }
 
 private:
 
-    bool predicate_is_false() const {
-        return !_internal_and_predicate.second()(_internal);
-    }
+    friend class Schema;
 
-    detail::CompressedPair<Internal,Predicate> _internal_and_predicate;
+    explicit SchemaIter(pointer first, Incrementer incrementer=Incrementer()) :
+        _current_and_incrementer(first, std::move(incrementer))
+    {}
+
+    CompressedPair<pointer,Incrementer> _current_and_incrementer;
 };
+
+template <typename Target, typename Incrementer>
+inline void swap(
+    SchemaIter<Target,Incrementer> & a,
+    SchemaIter<Target,Incrementer> & b
+) {
+    a.swap(b);
+}
 
 
 class Schema {
-    typedef std::vector<SchemaField*> OrderVector;
-    typedef std::unordered_map<std::string,SchemaField> NameMap;
 
-    template <typename Internal>
-    struct NullPredicate {
-        bool operator()(Internal const &) const { return true; }
+    struct StandardIncrementer {
+
+        template <typename Target>
+        void operator()(Target * & target) const {
+            target = target->_next;
+        }
+
     };
-
-    template <typename Internal>
-    struct DirectOnlyPredicate {
-
-        bool operator()(Internal const & internal) const {
-            return internal == _bounds.first || internal == _bounds.second
-                || (**internal).is_direct();
-        }
-
-        std::pair<Internal,Internal> _bounds;
-    }
-
-    template <typename Internal>
-    struct IndirectOnlyPredicate {
-
-        bool operator()(Internal const & internal) const {
-            return internal == _bounds.first || internal == _bounds.second
-                || !(**internal).is_direct();
-        }
-
-        std::pair<Internal,Internal> _bounds;
-    }
 
 public:
 
-    typedef SchemaIter<OrderVector::iterator, SchemaField &,
-                       NullPredicate> iterator;
-    typedef SchemaIter<OrderVector::const_iterator, SchemaField const &,
-                       NullPredicate> const_iterator;
+    typedef SchemaIter<SchemaField,StandardIncrementer> iterator;
+    typedef SchemaIter<SchemaField const,StandardIncrementer> const_iterator;
 
     Schema();
 
@@ -253,17 +220,19 @@ public:
 
     Schema & operator=(Schema &&);
 
-    iterator begin() { return iterator(_by_order.begin()); }
-    iterator end() { return iterator(_by_order.end()); }
+    void swap(Schema & other);
 
-    const_iterator begin() const { return const_iterator(_by_order.cbegin(); )}
-    const_iterator end() const { return const_iterator(_by_order.cend(); )}
+    iterator begin() { return iterator(_first); }
+    iterator end() { return iterator(nullptr); }
 
-    const_iterator cbegin() const { return const_iterator(_by_order.cbegin(); )}
-    const_iterator cend() const { return const_iterator(_by_order.cend(); )}
+    const_iterator begin() const { return const_iterator(_first); }
+    const_iterator end() const { return const_iterator(nullptr); }
 
-    size_t size() const { return _by_order.size(); }
-    bool empty() const { return _by_order.empty(); }
+    const_iterator cbegin() const { return const_iterator(_first); }
+    const_iterator cend() const { return const_iterator(nullptr); }
+
+    size_t size() const { return _by_name.size(); }
+    bool empty() const { return _by_name.empty(); }
 
     SchemaField * get(std::string const & name);
 
@@ -328,12 +297,16 @@ public:
 
 private:
 
-    offset_t allocate(size_t alignment, size_t nbytes);
-
-    NameMap _by_name;
-    OrderVector _by_order;
-    std::weak_ptr<SchemaWatcher> _watcher;
+    // SchemaFields are ordered by name in the _by_name vector, which manages
+    // their memory.  But each SchemaField is also a linked list node that
+    // remembers the order in which they were added.  This gives us a
+    // container that remembers its insertion order while also supporting
+    // O(log N) name lookup without a complex tree or hash data structure
+    std::vector<std::unique_ptr<SchemaField>> _by_name;
+    SchemaField * _first;
+    SchemaField * _last;
     size_t _next_offset;
+    std::weak_ptr<SchemaWatcher> _watcher;
 };
 
 

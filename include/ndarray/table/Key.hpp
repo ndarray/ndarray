@@ -25,14 +25,7 @@ template <typename T> class Key;
 
 class TypeError : public std::logic_error {
 
-    std::string format(
-        std::string const & desired,
-        std::string const & actual
-    ) {
-        std::ostringstream s;
-        s << "Key has type '" << actual << "'', not '" << desired << "'.";
-        return s.str();
-    }
+    std::string format(std::string const & desired, std::string const & actual);
 
 public:
 
@@ -70,6 +63,11 @@ public:
 
     virtual ~KeyBase() {}
 
+protected:
+
+    friend class SchemaField;
+
+    virtual std::unique_ptr<KeyBase> clone() const = 0;
 };
 
 
@@ -82,7 +80,7 @@ public:
     typedef typename DType<T>::reference reference;
     typedef typename DType<T>::const_reference const_reference;
 
-    explicit Key(offset_ offset, DType<T> dtype) :
+    explicit Key(offset_t offset, DType<T> dtype) :
         _offset_and_dtype(offset, std::move(dtype))
     {}
 
@@ -96,22 +94,30 @@ public:
 
     reference make_reference(byte_t * buffer) const {
         return _offset_and_dtype().second().make_reference_at(
-            buffer + _offset_and_dtype().first();
+            buffer + _offset_and_dtype().first()
         );
     }
 
     const_reference make_const_reference(byte_t const * buffer) const {
         return _offset_and_dtype().second().make_const_reference_at(
-            buffer + _offset_and_dtype().first();
+            buffer + _offset_and_dtype().first()
         );
     }
 
     virtual bool is_direct() const {
-        return DType<T>::is_direct();
+        return DType<T>::is_direct;
     }
 
     virtual std::string const & type_name() const {
         return DType<T>::name();
+    }
+
+protected:
+
+    virtual std::unique_ptr<KeyBase> clone() const {
+        return std::unique_ptr<KeyBase>(
+            new Key<T>(_offset_and_dtype.first(), _offset_and_dtype.second())
+        );
     }
 
 private:
@@ -124,7 +130,7 @@ inline KeyBase::operator Key<T> const & () const {
     try {
         return dynamic_cast<Key<T> const &>(*this);
     } catch (std::bad_cast &) {
-        throw TypeError(DType<T>::name(), this->name());
+        throw TypeError(DType<T>::name(), this->type_name());
     }
 }
 

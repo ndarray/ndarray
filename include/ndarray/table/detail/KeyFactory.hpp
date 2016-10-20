@@ -40,7 +40,7 @@ public:
 
     KeyFactory & operator=(KeyFactory &&) = delete;
 
-    virtual ~KeyFactor() {}
+    virtual ~KeyFactory() {}
 
 protected:
 

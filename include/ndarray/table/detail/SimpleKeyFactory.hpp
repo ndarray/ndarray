@@ -20,7 +20,7 @@ namespace ndarray {
 namespace detail {
 
 template <typename T>
-class SimpleKeyFactory {
+class SimpleKeyFactory : public KeyFactory {
 public:
 
     SimpleKeyFactory() {
@@ -31,12 +31,15 @@ public:
         size_t & offset,
         void const * dtype
     ) const {
-        DType<T> const & dt = *reinterpret_cast<DType<T> const*>(dtype);
-        if (offset % dt.alignment()) {
-            offset += dt.alignment() - offset % dt.alignment();
+        DType<T> const * dt = nullptr;
+        if (dtype) {
+            dt = reinterpret_cast<DType<T> const*>(dtype);
         }
-        std::unique_ptr<KeyBase> r(new Key<T>(offset, dt));
-        offset += dt.nbytes();
+        if (offset % dt->alignment()) {
+            offset += dt->alignment() - offset % dt->alignment();
+        }
+        std::unique_ptr<KeyBase> r(new Key<T>(offset, *dt));
+        offset += dt->nbytes();
         return r;
     }
 

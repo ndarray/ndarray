@@ -8,6 +8,7 @@
  * of the source distribution, or alternately available at:
  * https://github.com/ndarray/ndarray
  */
+#include <unordered_map>
 
 #include "ndarray/table/detail/KeyFactory.hpp"
 #include "ndarray/table/detail/SimpleKeyFactory.hpp"
@@ -29,9 +30,9 @@ void KeyFactory::declare(
 }
 
 std::unique_ptr<KeyBase> KeyFactory::invoke(
-    offset_t & offset,
+    size_t & offset,
     std::string const & type_name,
-    void * dtype
+    void const * dtype
 ) {
     auto iter = registry.find(type_name);
     if (iter == registry.end()) {
