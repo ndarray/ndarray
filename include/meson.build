@@ -1,6 +1,7 @@
 install_headers(
     ['ndarray/Array.hpp',
      'ndarray/common.hpp',
+     'ndarray/CompressedPair.hpp',
      'ndarray/DType.hpp',
      'ndarray/exceptions.hpp',
      'ndarray/Manager.hpp',
@@ -13,7 +14,6 @@ install_headers(
      'ndarray/detail/ArrayTraits_2.hpp',
      'ndarray/detail/Array_1.hpp',
      'ndarray/detail/Array_2.hpp',
-     'ndarray/detail/CompressedPair.hpp',
      'ndarray/detail/IndexVectorTraits.hpp',
      'ndarray/detail/Iter.hpp',
      'ndarray/detail/IterTraits_1.hpp',

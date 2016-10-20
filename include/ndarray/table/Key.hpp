@@ -15,6 +15,7 @@
 
 #include "ndarray/common.hpp"
 #include "ndarray/formatting/types.hpp"
+#include "ndarray/CompressedPair.hpp"
 
 namespace ndarray {
 
@@ -114,7 +115,7 @@ public:
     }
 
 private:
-    detail::CompressedPair<offset_t,DType<T>> _offset_and_dtype;
+    CompressedPair<offset_t,DType<T>> _offset_and_dtype;
 };
 
 

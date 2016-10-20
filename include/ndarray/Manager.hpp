@@ -16,7 +16,7 @@
 
 #include "ndarray/common.hpp"
 #include "ndarray/DType.hpp"
-#include "ndarray/detail/CompressedPair.hpp"
+#include "ndarray/CompressedPair.hpp"
 
 namespace ndarray {
 

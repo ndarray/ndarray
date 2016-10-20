@@ -15,7 +15,7 @@
 
 #include "ndarray/common.hpp"
 #include "ndarray/DType.hpp"
-#include "ndarray/detail/CompressedPair.hpp"
+#include "ndarray/CompressedPair.hpp"
 
 namespace ndarray {
 
@@ -91,7 +91,7 @@ public:
     }
 
 private:
-    detail::CompressedPair<std::shared_ptr<detail::Layout>,DType<T>>
+    CompressedPair<std::shared_ptr<detail::Layout>,DType<T>>
         _layout_and_dtype;
 };
 
