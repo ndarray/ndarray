@@ -13,43 +13,6 @@
 
 namespace ndarray {
 
-SchemaField & SchemaField::operator=(SchemaField && other) {
-    if (name() != other.name()) {
-        throw std::logic_error(
-            "Cannot rename a SchemaField in-place; use Schema::rename."
-        );
-    }
-    _key = std::move(other._key);
-    Field::operator=(std::move(other));
-    return *this;
-}
-
-SchemaField & SchemaField::operator=(Field const & other) {
-    if (name() != other.name()) {
-        throw std::logic_error(
-            "Cannot rename a SchemaField in-place; use Schema::rename."
-        );
-    }
-    Field::operator=(other);
-    return *this;
-}
-
-SchemaField & SchemaField::operator=(Field && other) {
-    if (name() != other.name()) {
-        throw std::logic_error(
-            "Cannot rename a SchemaField in-place; use Schema::rename."
-        );
-    }
-    Field::operator=(std::move(other));
-    return *this;
-}
-
-std::unique_ptr<SchemaField> SchemaField::copy() const {
-    return std::unique_ptr<SchemaField>(
-        new SchemaField(*this, _key->clone())
-    );
-}
-
 namespace {
 
 template <typename Iter>

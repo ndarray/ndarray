@@ -22,9 +22,13 @@ install_headers(
      'ndarray/detail/utils.hpp',
      'ndarray/formatting/Vector.hpp',
      'ndarray/formatting/types.hpp',
+     'ndarray/table/Field.hpp',
      'ndarray/table/Key.hpp',
      'ndarray/table/Schema.hpp',
+     'ndarray/table/SchemaField.hpp',
+     'ndarray/table/SchemaWatcher.hpp',
      'ndarray/table/detail/KeyFactory.hpp',
+     'ndarray/table/detail/SchemaIter.hpp',
      'ndarray/table/detail/SimpleKeyFactory.hpp',
      ]
 )
