@@ -103,7 +103,7 @@ public:
         byte_t const * buffer,
         std::shared_ptr<Manager> const &
     ) const {
-        return *reinterpret_cast<T*>(buffer);
+        return *reinterpret_cast<T const*>(buffer);
     }
 
 };
