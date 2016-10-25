@@ -38,11 +38,15 @@ public:
 
     KeyBase const & key() const { return *_key; }
 
-    virtual void set_name(std::string const & name_) {
-        throw std::logic_error(
-            "Cannot rename a SchemaField in-place; use Schema::rename."
-        );
     }
+
+    }
+
+    virtual void set_name(std::string const & name_);
+
+    virtual void set_doc(std::string const & doc_);
+
+    virtual void set_unit(std::string const & unit_);
 
 private:
 

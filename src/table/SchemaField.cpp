@@ -50,4 +50,23 @@ std::unique_ptr<SchemaField> SchemaField::copy() const {
 }
 
 
+void SchemaField::set_name(std::string const & name_) {
+    throw std::logic_error(
+        "Cannot modify a SchemaField in-place; use Schema::set."
+    );
+}
+
+void SchemaField::set_doc(std::string const & doc_) {
+    throw std::logic_error(
+        "Cannot modify a SchemaField in-place; use Schema::set."
+    );
+}
+
+void SchemaField::set_unit(std::string const & unit_) {
+    throw std::logic_error(
+        "Cannot modify a SchemaField in-place; use Schema::set."
+    );
+}
+
+
 } // ndarray

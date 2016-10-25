@@ -45,11 +45,11 @@ public:
 
     std::string const & doc() const { return _doc; }
 
-    void set_doc(std::string const & doc_) { _doc = doc_; }
+    virtual void set_doc(std::string const & doc_) { _doc = doc_; }
 
     std::string const & unit() const { return _unit; }
 
-    void set_unit(std::string const & unit_) { _unit = unit_; }
+    virtual void set_unit(std::string const & unit_) { _unit = unit_; }
 
     virtual ~Field() {}
 
