@@ -103,7 +103,10 @@ public:
     explicit Array(
         ShapeVector const & shape,
         dtype_t const & dtype=dtype_t(),
-        MemoryOrder order=DEFAULT_ORDER
+        typename std::enable_if<
+            detail::IndexVectorTraits<ShapeVector>::is_specialized,
+            MemoryOrder
+        >::type order=DEFAULT_ORDER
     ) :
         base_t(impl_t(shape, order, dtype))
     {
@@ -134,7 +137,10 @@ public:
         ShapeVector const & shape,
         std::shared_ptr<Manager> manager=std::shared_ptr<Manager>(),
         dtype_t const & dtype=dtype_t(),
-        MemoryOrder order=DEFAULT_ORDER
+        typename std::enable_if<
+            detail::IndexVectorTraits<ShapeVector>::is_specialized,
+            MemoryOrder
+        >::type order=DEFAULT_ORDER
     ) :
         base_t(impl_t(reinterpret_cast<byte_t*>(data), shape, order,
                       std::move(manager), dtype))

@@ -12,6 +12,7 @@
 #define NDARRAY_detail_IndexVectorTraits_hpp_INCLUDED
 
 #include <array>
+#include <vector>
 
 #include "ndarray/common.hpp"
 #include "ndarray/Vector.hpp"

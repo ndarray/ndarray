@@ -18,3 +18,8 @@ test_formatting = executable(
     link_with : lib
 )
 test('formatting', test_formatting)
+
+
+python = dependency('python3')
+
+test('Array-ef', find_program('Array-ef.py'))
