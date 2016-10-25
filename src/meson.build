@@ -3,6 +3,7 @@ lib = shared_library(
     ['exceptions.cpp',
      'table/Key.cpp',
      'table/KeyFactory.cpp',
+     'table/Record.cpp',
      'table/Schema.cpp',
      'table/SchemaField.cpp'],
     include_directories : inc,

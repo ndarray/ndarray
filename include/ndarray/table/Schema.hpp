@@ -65,6 +65,14 @@ public:
     size_t size() const { return _by_name.size(); }
     bool empty() const { return _by_name.empty(); }
 
+    size_t alignment() const { return _alignment; }
+    size_t nbytes() const { return _nbytes; }
+
+    bool operator==(Schema const & other) const;
+    bool operator!=(Schema const & other) const { return !(*this == other); }
+
+    bool equal_keys(Schema const & other) const;
+
     SchemaField * get(std::string const & name);
 
     SchemaField const * get(std::string const & name) const;
@@ -136,7 +144,8 @@ private:
     std::vector<std::unique_ptr<SchemaField>> _by_name;
     SchemaField * _first;
     SchemaField * _last;
-    size_t _next_offset;
+    size_t _nbytes;
+    size_t _alignment;
     std::weak_ptr<SchemaWatcher> _watcher;
 };
 

@@ -31,6 +31,7 @@ void KeyFactory::declare(
 
 std::unique_ptr<KeyBase> KeyFactory::invoke(
     size_t & offset,
+    size_t & alignment,
     std::string const & type_name,
     void const * dtype
 ) {
@@ -41,7 +42,7 @@ std::unique_ptr<KeyBase> KeyFactory::invoke(
             + "' cannot be added directly to Schemas."
         );
     }
-    return iter->second->apply(offset, dtype);
+    return iter->second->apply(offset, alignment, dtype);
 }
 
 template class SimpleKeyFactory<char>;

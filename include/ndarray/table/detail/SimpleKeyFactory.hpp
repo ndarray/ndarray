@@ -29,6 +29,7 @@ public:
 
     virtual std::unique_ptr<KeyBase> apply(
         size_t & offset,
+        size_t & alignment,
         void const * dtype
     ) const {
         DType<T> const * dt = nullptr;
@@ -40,6 +41,7 @@ public:
         }
         std::unique_ptr<KeyBase> r(new Key<T>(offset, *dt));
         offset += dt->nbytes();
+        alignment = std::max(alignment, dt->alignment());
         return r;
     }
 

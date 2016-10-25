@@ -38,8 +38,12 @@ public:
 
     KeyBase const & key() const { return *_key; }
 
+    bool operator==(SchemaField const & other) const {
+        return Field::operator==(other) && key().equals(other.key());
     }
 
+    bool operator!=(SchemaField const & other) const {
+        return !(*this == other);
     }
 
     virtual void set_name(std::string const & name_);

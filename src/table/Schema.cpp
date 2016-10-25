@@ -42,14 +42,15 @@ Iter find_key(Iter begin, Iter end, KeyBase const & key) {
 
 
 Schema::Schema() :
-    _by_name(), _first(nullptr), _last(nullptr), _next_offset(0)
+    _by_name(), _first(nullptr), _last(nullptr), _nbytes(0), _alignment(1)
 {}
 
 Schema::Schema(Schema const & other) :
     _by_name(),
     _first(nullptr),
     _last(nullptr),
-    _next_offset(other._next_offset),
+    _nbytes(other._nbytes),
+    _alignment(other._alignment),
     _watcher()
 {
     for (auto const & field : other) {
@@ -76,7 +77,8 @@ Schema::Schema(Schema && other) :
     _by_name(),
     _first(nullptr),
     _last(nullptr),
-    _next_offset(0),
+    _nbytes(0),
+    _alignment(1),
     _watcher()
 {
     auto other_watcher = other._watcher.lock();
@@ -111,6 +113,25 @@ void Schema::swap(Schema & other) {
     } else {
         // TODO
     }
+}
+
+bool Schema::operator==(Schema const & other) const {
+    if (&other == this) {
+        return true;
+    }
+    return std::equal(begin(), end(), other.begin(), other.end());
+}
+
+bool Schema::equal_keys(Schema const & other) const {
+    if (&other == this) {
+        return true;
+    }
+    return std::equal(
+        begin(), end(), other.begin(), other.end(),
+        [](SchemaField const & a, SchemaField const & b) {
+            return a.key().equals(b.key());
+        }
+    );
 }
 
 SchemaField * Schema::get(std::string const & name) {
@@ -187,7 +208,7 @@ KeyBase const & Schema::append(
     if (watcher) {
         // TODO
     }
-    auto key = detail::KeyFactory::invoke(_next_offset, type, dtype);
+    auto key = detail::KeyFactory::invoke(_nbytes, _alignment, type, dtype);
     std::unique_ptr<SchemaField> new_field(
         new SchemaField(std::move(field), std::move(key))
     );

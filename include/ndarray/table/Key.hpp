@@ -20,6 +20,9 @@
 namespace ndarray {
 
 
+class Schema;
+
+
 template <typename T> class Key;
 
 
@@ -67,6 +70,32 @@ protected:
 
     friend class SchemaField;
 
+    friend class Schema;
+
+    friend class DType<Schema>;
+
+    template <typename S> friend class Record;
+
+    template <typename S> friend class RecordRef;
+
+    virtual void initialize(byte_t * buffer) const = 0;
+
+    virtual void destroy(byte_t * buffer) const = 0;
+
+    virtual bool equals(KeyBase const & other) const = 0;
+
+    virtual void assign(
+        KeyBase const & other,
+        byte_t const * in,
+        byte_t * out
+    ) const = 0;
+
+    virtual void move(
+        KeyBase const & other,
+        byte_t * in,
+        byte_t * out
+    ) const = 0;
+
     virtual std::unique_ptr<KeyBase> clone() const = 0;
 };
 
@@ -92,15 +121,23 @@ public:
 
     Key & operator=(Key &&) = delete;
 
-    reference make_reference(byte_t * buffer) const {
-        return _offset_and_dtype().second().make_reference_at(
-            buffer + _offset_and_dtype().first()
+    reference make_reference(
+        byte_t * buffer,
+        std::shared_ptr<Manager> const & manager
+    ) const {
+        return _offset_and_dtype.second().make_reference_at(
+            buffer + _offset_and_dtype.first(),
+            manager
         );
     }
 
-    const_reference make_const_reference(byte_t const * buffer) const {
-        return _offset_and_dtype().second().make_const_reference_at(
-            buffer + _offset_and_dtype().first()
+    const_reference make_const_reference(
+        byte_t const * buffer,
+        std::shared_ptr<Manager> const & manager
+    ) const {
+        return _offset_and_dtype.second().make_const_reference_at(
+            buffer + _offset_and_dtype.first(),
+            manager
         );
     }
 
@@ -113,6 +150,44 @@ public:
     }
 
 protected:
+
+    virtual void initialize(byte_t * buffer) const {
+        _offset_and_dtype.second().initialize(
+            buffer + _offset_and_dtype.first()
+        );
+    }
+
+    virtual void destroy(byte_t * buffer) const {
+        _offset_and_dtype.second().destroy(
+            buffer + _offset_and_dtype.first()
+        );
+    }
+
+    virtual bool equals(KeyBase const & other) const {
+        Key<T> const * k = dynamic_cast<Key<T> const *>(this);
+        return k && _offset_and_dtype.first() == k->_offset_and_dtype.first()
+            && _offset_and_dtype.second() == k->_offset_and_dtype.second();
+    }
+
+    virtual void assign(
+        KeyBase const & other,
+        byte_t const * in_buffer,
+        byte_t * out_buffer
+    ) const {
+        Key<T> const & out_key = static_cast<Key<T> const &>(other);
+        out_key.make_reference(out_buffer, nullptr)
+            = this->make_const_reference(in_buffer, nullptr);
+    }
+
+    virtual void move(
+        KeyBase const & other,
+        byte_t * in_buffer,
+        byte_t * out_buffer
+    ) const {
+        Key<T> const & out_key = static_cast<Key<T> const &>(other);
+        out_key.make_reference(out_buffer, nullptr)
+            = std::move(this->make_reference(in_buffer, nullptr));
+    }
 
     virtual std::unique_ptr<KeyBase> clone() const {
         return std::unique_ptr<KeyBase>(
@@ -127,11 +202,11 @@ private:
 
 template <typename T>
 inline KeyBase::operator Key<T> const & () const {
-    try {
-        return dynamic_cast<Key<T> const &>(*this);
-    } catch (std::bad_cast &) {
+    Key<T> * r = dynamic_cast<Key<T> const *>(this);
+    if (!r) {
         throw TypeError(DType<T>::name(), this->type_name());
     }
+    return *r;
 }
 
 

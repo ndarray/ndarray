@@ -39,6 +39,16 @@ public:
 
     Field & operator=(Field &&) = default;
 
+    bool operator==(Field const & other) const {
+        return name() == other.name()
+            && doc() == other.doc()
+            && unit() == other.unit();
+    }
+
+    bool operator!=(Field const & other) const {
+        return !(*this == other);
+    }
+
     std::string const & name() const { return _name; }
 
     virtual void set_name(std::string const & name_) { _name = name_; }

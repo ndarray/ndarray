@@ -28,6 +28,7 @@ public:
 
     static std::unique_ptr<KeyBase> invoke(
         size_t & offset,
+        size_t & alignment,
         std::string const & type_name,
         void const * dtype
     );
@@ -46,6 +47,7 @@ protected:
 
     virtual std::unique_ptr<KeyBase> apply(
         size_t & offset,
+        size_t & alignment,
         void const * dtype
     ) const = 0;
 
