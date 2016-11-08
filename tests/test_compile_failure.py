@@ -4,6 +4,7 @@ import subprocess
 import os.path
 import re
 
+
 class CompileTest(object):
 
     def __init__(self, subdir, template_target, preamble=""):
@@ -17,6 +18,7 @@ class CompileTest(object):
                 break
         else:
             raise RuntimeError("Could not find template compile command.")
+
         def keep(term):
             if template_target in term:
                 return False
@@ -29,6 +31,7 @@ class CompileTest(object):
             if term.startswith("-fdiagnostics-color"):
                 return False
             return True
+
         self.terms = [term for term in shlex.split(template) if keep(term)]
         self.preamble = preamble
 
