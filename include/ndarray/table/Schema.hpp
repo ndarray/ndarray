@@ -134,6 +134,10 @@ public:
 
     void rename(iterator iter, std::string const & new_name);
 
+    void align();
+
+    void pad(size_t nbytes);
+
 private:
 
     // SchemaFields are ordered by name in the _by_name vector, which manages

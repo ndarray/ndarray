@@ -323,5 +323,13 @@ void Schema::rename(iterator iter, std::string const & new_name) {
     rename(iter->name(), new_name);
 }
 
+void Schema::align() {
+    if (_nbytes % _alignment) {
+        pad(_alignment - _nbytes % _alignment);
+    }
+}
+
+void Schema::pad(size_t nbytes) {
+    _nbytes += nbytes;}
 
 } // ndarray
