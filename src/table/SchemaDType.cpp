@@ -14,6 +14,14 @@
 namespace ndarray {
 
 
+DType<Schema>::DType(Schema const & schema) : _schema(schema) {
+    _schema.align();
+}
+
+DType<Schema>::DType(Schema && schema) : _schema(std::move(schema)) {
+    _schema.align();
+}
+
 std::string const & DType<Schema>::name() {
     static std::string const x("Schema");
     return x;

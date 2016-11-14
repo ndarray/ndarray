@@ -34,7 +34,9 @@ public:
 
     DType() : _schema() {}
 
-    explicit DType(std::shared_ptr<Schema> schema_) : _schema(schema_) {}
+    explicit DType(Schema const & schema);
+
+    explicit DType(Schema && schema);
 
     DType(DType const & other) = default;
     DType(DType && other) = default;
