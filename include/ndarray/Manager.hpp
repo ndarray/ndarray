@@ -96,9 +96,15 @@ private:
 template <typename T>
 std::pair<byte_t*,std::shared_ptr<Manager>>
 manage_new(size_t size, DType<T> dtype) {
+    if (dtype.alignment() > alignof(std::max_align_t)) {
+        // Punt on over-aligned types until they get easier to support in C++17,
+        // unless we have a demonstrated need for them earlier.
+        throw std::runtime_error("Overaligned types not yet supported.")
+    }
     size_t nbytes = dtype.nbytes() * size;
     std::unique_ptr<byte_t[]> owner(new byte_t[nbytes]);
     byte_t * buffer = owner.get();
+    assert(buffer % dtype->alignment() == 0);
     auto manager = std::make_shared<detail::PrimaryManager<T,std::unique_ptr<byte_t[]>>>(
         std::move(dtype), std::move(owner), nbytes
     );
