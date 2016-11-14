@@ -188,6 +188,11 @@ public:
 
     Record<S const> & shallow() { return *this; }
 
+private:
+    RecordRef(detail::RecordImpl const & impl) : base_t(std::move(impl)) {}
+    RecordRef(detail::RecordImpl && impl) : base_t(std::move(impl)) {}
+    friend class RecordRef<S>;
+    template <typename T> friend class Record;
 };
 
 template <typename S>
@@ -215,7 +220,38 @@ public:
 
     Record<S> & shallow() { return *this; }
 
+private:
+    RecordRef(detail::RecordImpl const & impl) : base_t(std::move(impl)) {}
+    RecordRef(detail::RecordImpl && impl) : base_t(std::move(impl)) {}
+    friend class RecordRef<S const>;
+    template <typename T> friend class Record;
 };
+
+#ifdef NDARRAY_FAST_CONVERSIONS
+
+template <typename S>
+inline RecordRef<S const> const & Record<S const>::operator*() const {
+    return *reinterpret_cast<RecordRef<S const>*>(this);
+}
+
+template <typename S>
+inline RecordRef<S> const & Record<S>::operator*() const {
+    return *reinterpret_cast<RecordRef<S>*>(this);
+}
+
+#else
+
+template <typename S>
+inline RecordRef<S const> Record<S const>::operator*() const {
+    return RecordRef<S const>(this->_impl);
+}
+
+template <typename S>
+inline RecordRef<S> Record<S>::operator*() const {
+    return RecordRef<S>(this->_impl);
+}
+
+#endif
 
 
 #ifndef NDARRAY_table_Record_cpp_ACTIVE
