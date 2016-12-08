@@ -1,0 +1,5 @@
+Try moving index from Key to KeyBase (assume all Keys are direct for now).  This should simplify RecordRef assignment, and (eventually) fix the linker errors.
+
+Standardize capitalization and syntax for typedefs.
+
+Assume C++14, especially for type traits.
