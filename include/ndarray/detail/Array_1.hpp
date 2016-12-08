@@ -28,7 +28,127 @@ class Array<T const,N,C> : public ArrayBase<T const,N,C> {
     template <typename U, size_t M, offset_t D> friend class Array;
 public:
 
+    typedef typename base_t::dtype_t dtype_t;
+
+    static constexpr MemoryOrder DEFAULT_ORDER
+        = (C >= 0 ? MemoryOrder::ROW_MAJOR : MemoryOrder::COL_MAJOR);
+
     Array() : base_t() {}
+
+    template <typename ShapeVector>
+    explicit Array(
+        T const * data,
+        ShapeVector const & shape,
+        std::shared_ptr<Manager> manager=std::shared_ptr<Manager>(),
+        dtype_t const & dtype=dtype_t(),
+        typename std::enable_if<
+            detail::IndexVectorTraits<ShapeVector>::is_specialized,
+            MemoryOrder
+        >::type order=DEFAULT_ORDER
+    ) :
+        base_t(impl_t(reinterpret_cast<byte_t*>(const_cast<T*>(data)),
+                      shape, order, std::move(manager), dtype))
+    {
+        if (C != 0 && order != DEFAULT_ORDER) {
+            throw NoncontiguousError(
+                "Memory order incompatible with contiguousness."
+            );
+        }
+    }
+
+    explicit Array(
+        T const * data,
+        std::initializer_list<size_t> shape,
+        std::shared_ptr<Manager> manager=std::shared_ptr<Manager>(),
+        dtype_t const & dtype=dtype_t(),
+        MemoryOrder order=DEFAULT_ORDER
+    ) :
+        base_t(impl_t(reinterpret_cast<byte_t*>(const_cast<T*>(data)),
+                      shape, order, std::move(manager), dtype))
+    {
+        if (C != 0 && order != DEFAULT_ORDER) {
+            throw NoncontiguousError(
+                "Memory order incompatible with contiguousness."
+            );
+        }
+    }
+
+    template <typename ShapeVector, typename StridesVector>
+    Array(
+        T const * data,
+        ShapeVector const & shape,
+        StridesVector const & strides,
+        std::shared_ptr<Manager> manager=std::shared_ptr<Manager>(),
+        dtype_t const & dtype=dtype_t(),
+        bool skip_contiguousness_check=false
+    ) :
+        base_t(impl_t(reinterpret_cast<byte_t*>(const_cast<T*>(data)),
+                      shape, strides, std::move(manager), dtype))
+    {
+        if (!skip_contiguousness_check) {
+            detail::check_contiguousness<N,C>(*this->_layout(), dtype.nbytes());
+        }
+    }
+
+    template <typename ShapeVector>
+    Array(
+        T const * data,
+        ShapeVector const & shape,
+        std::initializer_list<offset_t> strides,
+        std::shared_ptr<Manager> manager=std::shared_ptr<Manager>(),
+        dtype_t const & dtype=dtype_t(),
+        bool skip_contiguousness_check=false
+    ) :
+        base_t(impl_t(reinterpret_cast<byte_t*>(const_cast<T*>(data)),
+                      shape, strides, std::move(manager), dtype))
+    {
+        if (!skip_contiguousness_check) {
+            detail::check_contiguousness<N,C>(*this->_layout(), dtype.nbytes());
+        }
+    }
+
+    template <typename StridesVector>
+    Array(
+        T const * data,
+        std::initializer_list<size_t> shape,
+        StridesVector const & strides,
+        std::shared_ptr<Manager> manager=std::shared_ptr<Manager>(),
+        dtype_t const & dtype=dtype_t(),
+        bool skip_contiguousness_check=false
+    ) :
+        base_t(impl_t(reinterpret_cast<byte_t*>(const_cast<T*>(data)),
+                      shape, strides, std::move(manager), dtype))
+    {
+        if (!skip_contiguousness_check) {
+            detail::check_contiguousness<N,C>(*this->_layout(), dtype.nbytes());
+        }
+    }
+
+    Array(
+        T const * data,
+        std::initializer_list<size_t> shape,
+        std::initializer_list<offset_t> strides,
+        std::shared_ptr<Manager> manager=std::shared_ptr<Manager>(),
+        dtype_t const & dtype=dtype_t(),
+        bool skip_contiguousness_check=false
+    ) :
+        base_t(impl_t(reinterpret_cast<byte_t*>(const_cast<T*>(data)),
+                      shape, strides, std::move(manager), dtype))
+    {
+        if (!skip_contiguousness_check) {
+            detail::check_contiguousness<N,C>(*this->_layout(), dtype.nbytes());
+        }
+    }
+
+    Array(
+        T const * data,
+        std::shared_ptr<detail::Layout<N>> layout,
+        std::shared_ptr<Manager> manager,
+        dtype_t const & dtype=dtype_t()
+    ) :
+        base_t(impl_t(reinterpret_cast<byte_t*>(const_cast<T*>(data)),
+                      std::move(layout), std::move(manager), dtype))
+    {}
 
     Array(Array const &) = default;
 
@@ -235,6 +355,16 @@ public:
             detail::check_contiguousness<N,C>(*this->_layout(), dtype.nbytes());
         }
     }
+
+    Array(
+        T * data,
+        std::shared_ptr<detail::Layout<N>> layout,
+        std::shared_ptr<Manager> manager,
+        dtype_t const & dtype=dtype_t()
+    ) :
+        base_t(impl_t(reinterpret_cast<byte_t*>(data),
+                      std::move(layout), std::move(manager), dtype))
+    {}
 
     Array(Array const &) = default;
 
