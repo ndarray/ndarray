@@ -12,6 +12,7 @@
 #define NDARRAY_table_Record_hpp_INCLUDED
 
 #include "ndarray/common.hpp"
+#include "ndarray/table/common.hpp"
 #include "ndarray/table/Schema.hpp"
 #include "ndarray/table/detail/RecordImpl.hpp"
 
@@ -21,26 +22,15 @@ template <typename S> class RecordRef;
 
 template <typename S>
 class RecordBase {
+    using Storage = typename std::remove_const<S>::type;
 public:
 
-    typedef DType<Schema> dtype_t;
-
-    dtype_t const & dtype() const { return _impl.dtype(); }
-
-    std::shared_ptr<Schema> const & schema() const { return dtype().schema(); }
+    std::shared_ptr<Schema> const & schema() const { return _impl.schema(); }
 
 protected:
 
-    RecordBase() : _impl() {}
-
-    RecordBase(
-        byte_t * buffer_,
-        dtype_t dtype_,
-        std::shared_ptr<Manager> manager_
-    ) : _impl(buffer_, std::move(dtype_), std::move(manager_)) {}
-
-    RecordBase(detail::RecordImpl const & impl) : _impl(impl) {}
-    RecordBase(detail::RecordImpl && impl) : _impl(std::move(impl)) {}
+    RecordBase(detail::RecordImpl<Storage> const & impl) : _impl(impl) {}
+    RecordBase(detail::RecordImpl<Storage> && impl) : _impl(std::move(impl)) {}
 
     RecordBase(RecordBase const &) = default;
     RecordBase(RecordBase &&) = default;
@@ -48,23 +38,15 @@ protected:
     RecordBase & operator=(RecordBase const &) = default;
     RecordBase & operator=(RecordBase &&) = default;
 
-    detail::RecordImpl _impl;
+    detail::RecordImpl<Storage> _impl;
 };
 
 
 template <typename S>
 class Record<S const> : public RecordBase<S const> {
     typedef RecordBase<S const> base_t;
+    using Storage = typename std::remove_const<S>::type;
 public:
-    typedef DType<Schema> dtype_t;
-
-    Record() : base_t() {}
-
-    Record(
-        byte_t * buffer_,
-        dtype_t dtype_,
-        std::shared_ptr<Manager> manager_
-    ) : base_t(buffer_, std::move(dtype_), std::move(manager_)) {}
 
     Record(Record const &) = default;
     Record(Record &&) = default;
@@ -78,10 +60,7 @@ public:
 
     template <typename T>
     typename Key<T>::const_reference operator[](Key<T> const & key) const {
-        return key.make_const_reference_at(
-            this->_impl.buffer,
-            this->_impl.manager()
-        );
+        return this->_impl.cget(key);
     }
 
 #ifdef NDARRAY_FAST_CONVERSIONS
@@ -95,8 +74,8 @@ public:
 #endif
 
 protected:
-    Record(detail::RecordImpl const & impl) : base_t(impl) {}
-    Record(detail::RecordImpl && impl) : base_t(std::move(impl)) {}
+    Record(detail::RecordImpl<Storage> const & impl) : base_t(impl) {}
+    Record(detail::RecordImpl<Storage> && impl) : base_t(std::move(impl)) {}
 private:
     friend class Record<S>;
     template <typename T> friend class RecordRef;
@@ -105,16 +84,8 @@ private:
 template <typename S>
 class Record : public RecordBase<S> {
     typedef RecordBase<S> base_t;
+    using Storage = typename std::remove_const<S>::type;
 public:
-    typedef DType<Schema> dtype_t;
-
-    Record() : base_t() {}
-
-    Record(
-        byte_t * buffer_,
-        dtype_t dtype_,
-        std::shared_ptr<Manager> manager_
-    ) : base_t(buffer_, std::move(dtype_), std::move(manager_)) {}
 
     Record(Record const &) = default;
     Record(Record &&) = default;
@@ -128,10 +99,7 @@ public:
 
     template <typename T>
     typename Key<T>::reference operator[](Key<T> const & key) const {
-        return key.make_reference_at(
-            this->_impl.buffer,
-            this->_impl.manager()
-        );
+        return this->_impl.get(key);
     }
 
 #ifdef NDARRAY_FAST_CONVERSIONS
@@ -153,8 +121,8 @@ public:
 #endif
 
 protected:
-    Record(detail::RecordImpl const & impl) : base_t(impl) {}
-    Record(detail::RecordImpl && impl) : base_t(std::move(impl)) {}
+    Record(detail::RecordImpl<Storage> const & impl) : base_t(impl) {}
+    Record(detail::RecordImpl<Storage> && impl) : base_t(std::move(impl)) {}
 private:
     friend class Record<S const>;
     template <typename T> friend class RecordRef;
@@ -169,16 +137,8 @@ void swap(Record<S> & a, Record<S> & b) {
 template <typename S>
 class RecordRef<S const> : public Record<S const> {
     typedef Record<S const> base_t;
+    using Storage = typename std::remove_const<S>::type;
 public:
-    typedef DType<Schema> dtype_t;
-
-    RecordRef() : base_t() {}
-
-    RecordRef(
-        byte_t * buffer_,
-        dtype_t dtype_,
-        std::shared_ptr<Manager> manager_
-    ) : base_t(buffer_, std::move(dtype_), std::move(manager_)) {}
 
     RecordRef(RecordRef const &) = default;
     RecordRef(RecordRef &&) = default;
@@ -189,8 +149,8 @@ public:
     Record<S const> & shallow() { return *this; }
 
 private:
-    RecordRef(detail::RecordImpl const & impl) : base_t(std::move(impl)) {}
-    RecordRef(detail::RecordImpl && impl) : base_t(std::move(impl)) {}
+    RecordRef(detail::RecordImpl<Storage> const & impl) : base_t(std::move(impl)) {}
+    RecordRef(detail::RecordImpl<Storage> && impl) : base_t(std::move(impl)) {}
     friend class RecordRef<S>;
     template <typename T> friend class Record;
 };
@@ -198,16 +158,8 @@ private:
 template <typename S>
 class RecordRef : public Record<S> {
     typedef Record<S> base_t;
+    using Storage = typename std::remove_const<S>::type;
 public:
-    typedef DType<Schema> dtype_t;
-
-    RecordRef() : base_t() {}
-
-    RecordRef(
-        byte_t * buffer_,
-        dtype_t dtype_,
-        std::shared_ptr<Manager> manager_
-    ) : base_t(buffer_, std::move(dtype_), std::move(manager_)) {}
 
     RecordRef(RecordRef const &) = default;
     RecordRef(RecordRef &&) = default;
@@ -215,14 +167,14 @@ public:
     RecordRef & operator=(RecordRef const &) = delete;
     RecordRef & operator=(RecordRef &&) = delete;
 
-    RecordRef const & operator=(Record<S const> const & other) const;
-    RecordRef const & operator=(Record<S> && other) const;
+    template <typename Other>
+    RecordRef const & operator=(Record<Other> const & other) const;
 
     Record<S> & shallow() { return *this; }
 
 private:
-    RecordRef(detail::RecordImpl const & impl) : base_t(std::move(impl)) {}
-    RecordRef(detail::RecordImpl && impl) : base_t(std::move(impl)) {}
+    RecordRef(detail::RecordImpl<Storage> const & impl) : base_t(std::move(impl)) {}
+    RecordRef(detail::RecordImpl<Storage> && impl) : base_t(std::move(impl)) {}
     friend class RecordRef<S const>;
     template <typename T> friend class Record;
 };
@@ -256,12 +208,33 @@ inline RecordRef<S> Record<S>::operator*() const {
 
 #ifndef NDARRAY_table_Record_cpp_ACTIVE
 
-extern template class RecordBase<Schema>;
-extern template class RecordBase<Schema const>;
-extern template class Record<Schema>;
-extern template class Record<Schema const>;
-extern template class RecordRef<Schema>;
-extern template class RecordRef<Schema const>;
+extern template class RecordBase<FixedRow>;
+extern template class RecordBase<FixedRow const>;
+extern template class Record<FixedRow>;
+extern template class Record<FixedRow const>;
+extern template class RecordRef<FixedRow>;
+extern template class RecordRef<FixedRow const>;
+
+extern template class RecordBase<FlexRow>;
+extern template class RecordBase<FlexRow const>;
+extern template class Record<FlexRow>;
+extern template class Record<FlexRow const>;
+extern template class RecordRef<FlexRow>;
+extern template class RecordRef<FlexRow const>;
+
+extern template class RecordBase<FixedCol>;
+extern template class RecordBase<FixedCol const>;
+extern template class Record<FixedCol>;
+extern template class Record<FixedCol const>;
+extern template class RecordRef<FixedCol>;
+extern template class RecordRef<FixedCol const>;
+
+extern template class RecordBase<FlexCol>;
+extern template class RecordBase<FlexCol const>;
+extern template class Record<FlexCol>;
+extern template class Record<FlexCol const>;
+extern template class RecordRef<FlexCol>;
+extern template class RecordRef<FlexCol const>;
 
 #endif
 

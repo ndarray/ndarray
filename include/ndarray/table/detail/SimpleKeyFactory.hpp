@@ -28,20 +28,14 @@ public:
     }
 
     virtual std::unique_ptr<KeyBase> apply(
-        size_t & offset,
-        size_t & alignment,
+        size_t index,
         void const * dtype
     ) const {
         DType<T> const * dt = nullptr;
         if (dtype) {
             dt = reinterpret_cast<DType<T> const*>(dtype);
         }
-        if (offset % dt->alignment()) {
-            offset += dt->alignment() - offset % dt->alignment();
-        }
-        std::unique_ptr<KeyBase> r(new Key<T>(offset, *dt));
-        offset += dt->nbytes();
-        alignment = std::max(alignment, dt->alignment());
+        std::unique_ptr<KeyBase> r(new Key<T>(index, *dt));
         return r;
     }
 

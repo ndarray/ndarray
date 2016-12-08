@@ -11,14 +11,37 @@
 #ifndef NDARRAY_table_SchemaWatcher_hpp_INCLUDED
 #define NDARRAY_table_SchemaWatcher_hpp_INCLUDED
 
-#include "ndarray/common.hpp"
+#include <mutex>
+
+#include "ndarray/table/common.hpp"
+#include "ndarray/table/Schema.hpp"
 
 namespace ndarray {
 
 class SchemaWatcher {
 public:
-    virtual ~SchemaWatcher() {}
+
+    virtual ~SchemaWatcher() = 0;
+
+protected:
+
+    // Should be called by subclasses during construction.
+    void attach(Schema & schema) {
+        std::lock_guard<std::mutex> guard(schema._watchers_mutex);
+        schema._watchers.push_front(this);
+    }
+
+    // Should be called by derived classes in their destructors.
+    void detach(Schema & schema) {
+        std::lock_guard<std::mutex> guard(schema._watchers_mutex);
+        schema._watchers.remove(this);
+    }
+
 };
+
+// Pure virtual doesn't save us from having to define it, since base class
+// destructors are always called.
+inline SchemaWatcher::~SchemaWatcher() {}
 
 } // ndarray
 

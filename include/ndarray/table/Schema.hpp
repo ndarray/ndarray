@@ -13,12 +13,13 @@
 
 #include <memory>
 #include <vector>
+#include <forward_list>
 #include <type_traits>
+#include <mutex>
 
 #include "ndarray/common.hpp"
 #include "ndarray/table/SchemaField.hpp"
 #include "ndarray/table/detail/SchemaIter.hpp"
-#include "ndarray/table/SchemaWatcher.hpp"
 
 namespace ndarray {
 
@@ -47,11 +48,9 @@ public:
 
     Schema(Schema &&);
 
-    Schema & operator=(Schema const &);
+    Schema & operator=(Schema const &) = delete;
 
-    Schema & operator=(Schema &&);
-
-    void swap(Schema & other);
+    Schema & operator=(Schema &&) = delete;
 
     iterator begin() { return iterator(_first); }
     iterator end() { return iterator(nullptr); }
@@ -64,9 +63,6 @@ public:
 
     size_t size() const { return _by_name.size(); }
     bool empty() const { return _by_name.empty(); }
-
-    size_t alignment() const { return _alignment; }
-    size_t nbytes() const { return _nbytes; }
 
     bool operator==(Schema const & other) const;
     bool operator!=(Schema const & other) const { return !(*this == other); }
@@ -134,11 +130,9 @@ public:
 
     void rename(iterator iter, std::string const & new_name);
 
-    void align();
-
-    void pad(size_t nbytes);
-
 private:
+
+    friend class SchemaWatcher;
 
     // SchemaFields are ordered by name in the _by_name vector, which manages
     // their lifetime.  But each SchemaField is also a linked list node that
@@ -148,9 +142,12 @@ private:
     std::vector<std::unique_ptr<SchemaField>> _by_name;
     SchemaField * _first;
     SchemaField * _last;
-    size_t _nbytes;
-    size_t _alignment;
-    std::weak_ptr<SchemaWatcher> _watcher;
+    // Other objects can "watch" schemas to be notified of modifications so
+    // they can be modified in concert.  These watchers are typically
+    // tables, which may modify their data to track the fields in the Schema
+    // or prohibit some kinds of modification entirely.
+    mutable std::mutex _watchers_mutex;
+    mutable std::forward_list<SchemaWatcher*> _watchers;
 };
 
 

@@ -15,39 +15,55 @@
 namespace ndarray {
 
 template <typename S>
+template <typename Other>
 RecordRef<S> const & RecordRef<S>::operator=(
-    Record<S const> const & other
+    Record<Other> const & other
 ) const {
     if (!this->schema()->equal_keys(*other.schema())) {
         throw std::logic_error("Cannot assign records with unequal keys.");
     }
     for (auto const & field : *this->schema()) {
         field.key().assign(
-            field.key(), this->_impl.buffer, other._impl.buffer
+            field.key(), this->_impl, other._impl
         );
     }
     return *this;
 }
 
-template <typename S>
-RecordRef<S> const & RecordRef<S>::operator=(Record<S> && other) const {
-    if (!this->schema()->equal_keys(*other.schema())) {
-        throw std::logic_error("Cannot assign records with unequal keys.");
-    }
-    for (auto const & field : *this->schema()) {
-        field.key().move(
-            field.key(), this->_impl.buffer, other._impl.buffer
-        );
-    }
-    other = Record<S>();  // seems safer to reset other; is it worthwhile?
-    return *this;
-}
+template RecordRef<FixedRow> const &
+    RecordRef<FixedRow>::operator=(Record<FixedRow> const &) const;
+template RecordRef<FixedRow> const &
+    RecordRef<FixedRow>::operator=(Record<FlexRow> const &) const;
+template RecordRef<FixedRow> const &
+    RecordRef<FixedRow>::operator=(Record<FixedCol> const &) const;
+template RecordRef<FixedRow> const &
+    RecordRef<FixedRow>::operator=(Record<FlexCol> const &) const;
 
-template class RecordBase<Schema>;
-template class RecordBase<Schema const>;
-template class Record<Schema>;
-template class Record<Schema const>;
-template class RecordRef<Schema>;
-template class RecordRef<Schema const>;
+template RecordRef<FlexRow> const &
+    RecordRef<FlexRow>::operator=(Record<FixedRow> const &) const;
+template RecordRef<FlexRow> const &
+    RecordRef<FlexRow>::operator=(Record<FlexRow> const &) const;
+template RecordRef<FlexRow> const &
+    RecordRef<FlexRow>::operator=(Record<FixedCol> const &) const;
+template RecordRef<FlexRow> const &
+    RecordRef<FlexRow>::operator=(Record<FlexCol> const &) const;
+
+template RecordRef<FixedCol> const &
+    RecordRef<FixedCol>::operator=(Record<FixedRow> const &) const;
+template RecordRef<FixedCol> const &
+    RecordRef<FixedCol>::operator=(Record<FlexRow> const &) const;
+template RecordRef<FixedCol> const &
+    RecordRef<FixedCol>::operator=(Record<FixedCol> const &) const;
+template RecordRef<FixedCol> const &
+    RecordRef<FixedCol>::operator=(Record<FlexCol> const &) const;
+
+template RecordRef<FlexCol> const &
+    RecordRef<FlexCol>::operator=(Record<FixedRow> const &) const;
+template RecordRef<FlexCol> const &
+    RecordRef<FlexCol>::operator=(Record<FlexRow> const &) const;
+template RecordRef<FlexCol> const &
+    RecordRef<FlexCol>::operator=(Record<FixedCol> const &) const;
+template RecordRef<FlexCol> const &
+    RecordRef<FlexCol>::operator=(Record<FlexCol> const &) const;
 
 } // ndarray

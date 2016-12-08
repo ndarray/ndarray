@@ -8,6 +8,8 @@
  * of the source distribution, or alternately available at:
  * https://github.com/ndarray/ndarray
  */
+
+#include <cassert>
 #include "ndarray/table/Schema.hpp"
 #include "ndarray/table/detail/KeyFactory.hpp"
 
@@ -42,17 +44,15 @@ Iter find_key(Iter begin, Iter end, KeyBase const & key) {
 
 
 Schema::Schema() :
-    _by_name(), _first(nullptr), _last(nullptr), _nbytes(0), _alignment(1)
+    _by_name(), _first(nullptr), _last(nullptr)
 {}
 
 Schema::Schema(Schema const & other) :
     _by_name(),
     _first(nullptr),
-    _last(nullptr),
-    _nbytes(other._nbytes),
-    _alignment(other._alignment),
-    _watcher()
+    _last(nullptr)
 {
+    _by_name.reserve(other.size());
     for (auto const & field : other) {
         auto copy = field.copy();
         if (!_first) {
@@ -68,7 +68,6 @@ Schema::Schema(Schema const & other) :
         // that.  That would probably require a temporary container of some
         // sort, though, and the operations that we're doing (copying
         // pointers) should be fast enough that it doesn't matter.
-        _by_name.reserve(other.size());
         _by_name.insert(iter, std::move(copy));
     }
 }
@@ -76,43 +75,12 @@ Schema::Schema(Schema const & other) :
 Schema::Schema(Schema && other) :
     _by_name(),
     _first(nullptr),
-    _last(nullptr),
-    _nbytes(0),
-    _alignment(1),
-    _watcher()
+    _last(nullptr)
 {
-    auto other_watcher = other._watcher.lock();
-    if (!other_watcher) {
-        this->swap(other);
-    } else {
-        // TODO
-    }
-}
-
-Schema & Schema::operator=(Schema const & other) {
-    if (&other != this) {
-        Schema tmp(other);
-        this->swap(tmp);
-    }
-    return *this;
-}
-
-Schema & Schema::operator=(Schema && other) {
-    Schema tmp(std::move(other));
-    this->swap(tmp);
-    return *this;
-}
-
-void Schema::swap(Schema & other) {
-    auto watcher = _watcher.lock();
-    auto other_watcher = other._watcher.lock();
-    if (!watcher && !other_watcher) {
-        detail::generic_swap(_by_name, other._by_name);
-        detail::generic_swap(_first, other._first);
-        detail::generic_swap(_last, other._last);
-    } else {
-        // TODO
-    }
+    assert(other._watchers.empty()); // other has tables that depend on it!
+    detail::generic_swap(_by_name, other._by_name);
+    detail::generic_swap(_first, other._first);
+    detail::generic_swap(_last, other._last);
 }
 
 bool Schema::operator==(Schema const & other) const {
@@ -204,11 +172,10 @@ KeyBase const & Schema::append(
             "Field with name '" + field.name() + "' already present in schema."
         );
     }
-    auto watcher = _watcher.lock();
-    if (watcher) {
-        // TODO
+    for (auto watcher : _watchers) {
+        (void)watcher; // TODO
     }
-    auto key = detail::KeyFactory::invoke(_nbytes, _alignment, type, dtype);
+    auto key = detail::KeyFactory::invoke(_by_name.size(), type, dtype);
     std::unique_ptr<SchemaField> new_field(
         new SchemaField(std::move(field), std::move(key))
     );
@@ -323,13 +290,5 @@ void Schema::rename(iterator iter, std::string const & new_name) {
     rename(iter->name(), new_name);
 }
 
-void Schema::align() {
-    if (_nbytes % _alignment) {
-        pad(_alignment - _nbytes % _alignment);
-    }
-}
-
-void Schema::pad(size_t nbytes) {
-    _nbytes += nbytes;}
 
 } // ndarray
