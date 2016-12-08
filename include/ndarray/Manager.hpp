@@ -13,6 +13,7 @@
 
 #include <type_traits>
 #include <memory>
+#include <cstddef>
 
 #include "ndarray/common.hpp"
 #include "ndarray/DType.hpp"
@@ -99,7 +100,7 @@ manage_new(size_t size, DType<T> dtype) {
     if (dtype.alignment() > alignof(std::max_align_t)) {
         // Punt on over-aligned types until they get easier to support in C++17,
         // unless we have a demonstrated need for them earlier.
-        throw std::runtime_error("Overaligned types not yet supported.")
+        throw std::runtime_error("Overaligned types not yet supported.");
     }
     size_t nbytes = dtype.nbytes() * size;
     std::unique_ptr<byte_t[]> owner(new byte_t[nbytes]);
