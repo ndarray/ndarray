@@ -61,7 +61,7 @@ public:
     bool load(handle src, bool) {
         _none = src.is_none();
         if (_none) return true;
-        _src.reset(src.ptr(), true); // keep alive for stage 2
+        _src.reset(src.ptr()); // equivalent to add_ref=true, keep alive for stage 2
         if (!ndarray::PyConverter< ndarray::Array<T,N,C> >::fromPythonStage1(_src)) {
             PyErr_Clear();
             return false;
@@ -108,7 +108,7 @@ public:
     bool load(handle src, bool) {
         _none = src.is_none();
         if (_none) return true;
-        _src.reset(src.ptr(), true); // keep alive for stage 2
+        _src.reset(src.ptr()); // equivalent to add_ref=true, keep alive for stage 2
         if (!ndarray::PyConverter< ndarray::EigenView<T,N,C,Kind,Rows,Cols> >::fromPythonStage1(_src)) {
             PyErr_Clear();
             return false;
@@ -155,7 +155,7 @@ public:
     bool load(handle src, bool) {
         _none = src.is_none();
         if (_none) return true;
-        _src.reset(src.ptr(), true); // keep alive for stage 2
+        _src.reset(src.ptr()); // equivalent to add_ref=true, keep alive for stage 2
         if (!ndarray::PyConverter< Eigen::Array<T,R,C,O,MR,MC> >::fromPythonStage1(_src)) {
             PyErr_Clear();
             return false;
@@ -202,7 +202,7 @@ public:
     bool load(handle src, bool) {
         _none = src.is_none();
         if (_none) return true;
-        _src.reset(src.ptr(), true); // keep alive for stage 2
+        _src.reset(src.ptr()); // equivalent to add_ref=true, keep alive for stage 2
         if (!ndarray::PyConverter< Eigen::Matrix<T,R,C,O,MR,MC> >::fromPythonStage1(_src)) {
             PyErr_Clear();
             return false;
