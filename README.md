@@ -29,14 +29,21 @@ ndarray clone.
 
 A partial cmake build has also recently been added, and we expect it to
 eventually replace SCons as the recommended approach, but it does not yet
-support building against Boost.NumPy to provide bindings for Boost.Python.  To
-build with cmake, do:
+support building against Boost.NumPy to provide bindings for Boost.Python. 
+
+To build with cmake, do:
 
     mkdir build
     cd build
     cmake ..
     make
+    make test
 
+Inclusion and testing of optional dependencies is controlled by NDARRAY_* cmake
+options. Dependency resolution can be controlled by the PYBIND11_DIR,
+EIGEN_DIR, and FFTW_DIR environment variables. For example, to build with an
+alternate Eigen3 install location and disable FFTW testing replace `cmake ..`
+with `EIGEN_DIR=/opt/local cmake -DNDARRY_FFTW=OFF ..`.
 
 Building from Compressed Source
 -------------------------------
