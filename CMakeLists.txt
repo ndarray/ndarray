@@ -14,7 +14,7 @@ project(ndarray)
 # The test phase may rely on external libraries, which are enabled via the
 # options below. Library resolution is deferred to tests/CMakeLists.txt and
 # only executed if NDARRAY_TEST is enabled.
-option(NDARRAY_SWIG "Enable .i file installation and swig tests?" OFF)
+option(NDARRAY_SWIG "Enable .i file installation and swig tests?" ON)
 option(NDARRAY_TEST "Enable tests?" ON)
 option(NDARRAY_EIGEN "Enable Eigen tests?" ON)
 option(NDARRAY_FFTW "Enable FFTW tests?" ON)
