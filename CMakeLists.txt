@@ -2,10 +2,23 @@ cmake_minimum_required(VERSION 2.8.11)
 
 project(ndarray)
 
+# Build is split into two broad passes:
+# (1) Generation, which performs macro-expansion and header installation.
+# (2) Test, which builds & executes zero-dependency core and (optional) dependent tests.
+#
+# The generation phase does not rely on the presence of external libraries,
+# though the installed headers may be dependent on these libraries. This allows
+# generation & installation of ndarray as a vendorized dependency of external
+# projects without ndarry's optional dependencies.
+#
+# The test phase may rely on external libraries, which are enabled via the
+# options below. Library resolution is deferred to tests/CMakeLists.txt and
+# only executed if NDARRAY_TEST is enabled.
+option(NDARRAY_SWIG "Enable .i file installation and swig tests?" ON)
 option(NDARRAY_TEST "Enable tests?" ON)
-option(NDARRAY_SWIG "Enable Swig?" ON)
-option(NDARRAY_BOOST_PYTHON "Enable Boost Python?" OFF)
-option(NDARRAY_PYBIND11 "Enable Pybind11?" OFF)
+option(NDARRAY_EIGEN "Enable Eigen tests?" ON)
+option(NDARRAY_FFTW "Enable FFTW tests?" ON)
+option(NDARRAY_PYBIND11 "Enable Pybind11 tests?" OFF)
 
 # enable C++11 support
 add_definitions(-std=c++11)
@@ -13,41 +26,6 @@ add_definitions(-std=c++11)
 # put our local cmake find scripts at the beginning of the cmake
 # module search path
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
-
-# find required packages
-find_package(PythonInterp REQUIRED)
-find_package(PythonLibs REQUIRED)
-find_package(NumPy REQUIRED)
-find_package(Boost COMPONENTS unit_test_framework REQUIRED)
-find_package(FFTW REQUIRED)
-
-# allow user to specify EIGEN_DIR as an environment variable
-# this is necessary to integrate with build systems that install Eigen
-# in non-standard locations
-set(EIGEN3_INCLUDE_DIR $ENV{EIGEN_DIR})
-if(NOT EIGEN3_INCLUDE_DIR)
-	find_package(Eigen3 REQUIRED)
-else()
-	set(EIGEN3_INCLUDE_DIR ${EIGEN3_INCLUDE_DIR}/include)
-endif(NOT EIGEN3_INCLUDE_DIR)
-
-if (NDARRAY_SWIG)
-	find_package(SWIG REQUIRED)
-endif (NDARRAY_SWIG)
-
-if (NDARRAY_PYBIND11)
-	find_package(Pybind11 REQUIRED)
-endif (NDARRAY_PYBIND11)
-
-include_directories(
-	${PROJECT_SOURCE_DIR}/include
-	${PYTHON_INCLUDE_DIRS}
-	${NUMPY_INCLUDE_DIRS}
-	${Boost_INCLUDE_DIRS}
-	${FFTW_INCLUDES}
-	${EIGEN3_INCLUDE_DIR}
-	${PYBIND11_INCLUDE_DIR}
-	)
 
 add_subdirectory(include)
 
