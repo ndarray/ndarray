@@ -5,7 +5,7 @@ language: cpp
 before_install:
   - export PATH=$(echo $PATH | tr ':' "\n" | sed '/\/opt\/python/d' | tr "\n" ":" | sed "s|::|:|g")
   - sudo apt-get -qq update
-  - sudo apt-get install -y libboost-dev libboost-test-dev libboost-python-dev python-numpy python3-numpy libpython3-dev swig doxygen fftw-dev libeigen3-dev libpython3-dev
+  - sudo apt-get install -y libboost-dev libboost-test-dev libboost-python-dev python-numpy python3-numpy libpython3-dev swig doxygen fftw3-dev libeigen3-dev libpython3-dev
   - sudo ln -s /usr/lib/x86_64-linux-gnu/libboost_python-py34.so /usr/lib/x86_64-linux-gnu/libboost_python3.so
 
 script:
