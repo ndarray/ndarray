@@ -1,0 +1,17 @@
+sudo: required
+dist: trusty
+language: cpp
+
+before_install:
+  - export PATH=$(echo $PATH | tr ':' "\n" | sed '/\/opt\/python/d' | tr "\n" ":" | sed "s|::|:|g")
+  - sudo apt-get -qq update
+  - sudo apt-get install -y python-numpy python3-numpy libpython3-dev swig doxygen fftw-dev libeigen3-dev
+
+script:
+  - mkdir build
+  - cd build
+  - cmake -DPYTHON_EXECUTABLE=$PYTHON .. && make && make test ARGS="-V"
+
+env:
+  - PYTHON=/usr/bin/python
+  - PYTHON=/usr/bin/python3
