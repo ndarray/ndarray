@@ -1,13 +1,19 @@
+ndarray: NumPy-friendly multidimensional arrays in C++
+======================================================
+
 ndarray is a template library that provides multidimensional array
 objects in C++, with an interface and features designed to mimic the
 Python 'numpy' package as much as possible.
 
-More information can be found in the Doxygen-generated documentation
+More information can be found in the [documentation at
+ndarray.github.io/ndarray](http://ndarray.github.io/ndarray/).
+
 (which is unhelpfully not built automatically at present...read
 ndarray.h instead).
 
 
-BUILDING FROM GIT
+Building from Git
+-----------------
 
 ndarray includes the Boost.NumPy library using git's "submodules"
 feature.  When you clone the ndarray repository with git, you'll get
@@ -34,7 +40,8 @@ build with cmake, do:
     make
 
 
-BUILDING FROM COMPRESSED SOURCE
+Building from Compressed Source
+-------------------------------
 
 GitHub's automatically generated tarballs and zip files don't include
 the Boost.NumPy submodule or the git metadata needed to run "git
