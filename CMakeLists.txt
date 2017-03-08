@@ -51,6 +51,18 @@ include_directories(
 
 add_subdirectory(include)
 
+# add a target to generate API documentation with Doxygen
+find_package(Doxygen)
+if(DOXYGEN_FOUND)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doxygen.conf.in
+                   ${CMAKE_CURRENT_BINARY_DIR}/doxygen.conf @ONLY)
+    add_custom_target(doc ${DOXYGEN_EXECUTABLE}
+                      ${CMAKE_CURRENT_BINARY_DIR}/doxygen.conf
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    COMMENT "Running Doxygen" VERBATIM
+)
+endif(DOXYGEN_FOUND)
+
 if(NDARRAY_TEST)
 	enable_testing()
 	add_subdirectory(tests)
