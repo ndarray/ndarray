@@ -1,5 +1,6 @@
 ndarray: NumPy-friendly multidimensional arrays in C++
 ======================================================
+[![Build Status](https://travis-ci.org/ndarray/ndarray.svg?branch=enable-travis)](https://travis-ci.org/ndarray/ndarray)
 
 ndarray is a template library that provides multidimensional array
 objects in C++, with an interface and features designed to mimic the
