@@ -17,3 +17,11 @@ script:
 env:
   - PYTHON=/usr/bin/python
   - PYTHON=/usr/bin/python3
+
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $GITHUB_TOKEN # Set in travis-ci.org dashboard
+  on:
+    branch: enable-travis
+  local_dir: html
