@@ -9,9 +9,6 @@ Python 'numpy' package as much as possible.
 More information can be found in the [documentation at
 ndarray.github.io/ndarray](http://ndarray.github.io/ndarray/).
 
-(which is unhelpfully not built automatically at present...read
-ndarray.h instead).
-
 
 Building from Git
 -----------------
