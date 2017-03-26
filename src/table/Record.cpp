@@ -19,12 +19,14 @@ template <typename Other>
 RecordRef<S> const & RecordRef<S>::operator=(
     Record<Other> const & other
 ) const {
-    if (!this->schema()->equal_keys(*other.schema())) {
-        throw std::logic_error("Cannot assign records with unequal keys.");
-    }
-    for (auto const & field : *this->schema()) {
-        field.key().assign(
-            field.key(), this->_impl, other._impl
+    for (
+        auto i1 = this->schema().begin(), i2 = other.schema.begin();
+        i1 != this->schema().end() && i2 != other.schema.end();
+        ++i1, ++i2
+    ) {
+        i1->key().assign(
+            this->_impl.get_raw(i1->key()),
+            other._impl.cget_raw(i2->key())
         );
     }
     return *this;

@@ -1,4 +1,6 @@
-Try moving index from Key to KeyBase (assume all Keys are direct for now).  This should simplify RecordRef assignment, and (eventually) fix the linker errors.
+In progress: try moving index from Key to KeyBase (assume all Keys are direct for now).  This should simplify RecordRef assignment, and (eventually) fix the linker errors.
+
+In progress: make it possible to get byte_t* buffers from FlexCol::Holder, probably by removing the type erasure and just storing the Array innards (leaving all type info in the Schema/Key).
 
 Standardize capitalization and syntax for typedefs.
 

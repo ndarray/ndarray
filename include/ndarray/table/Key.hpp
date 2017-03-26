@@ -41,22 +41,18 @@ public:
 class KeyBase {
 public:
 
-    KeyBase() {}
-
-    KeyBase(KeyBase const &) = delete;
-
-    KeyBase(KeyBase &&) = delete;
-
-    KeyBase & operator=(KeyBase const &) = delete;
-
-    KeyBase & operator=(KeyBase &&) = delete;
-
-    virtual bool is_direct() const = 0;
-
     virtual std::string const & type_name() const = 0;
 
     template <typename T>
     operator Key<T> const & () const;
+
+    size_t index() const { return _index; }
+
+    virtual bool is_pod() const = 0;
+
+    virtual size_t nbytes() const = 0;
+
+    virtual size_t alignment() const = 0;
 
     virtual ~KeyBase() {}
 
@@ -70,114 +66,33 @@ protected:
 
     template <typename S> friend class RecordRef;
 
+
+    explicit KeyBase(size_t index_) : _index(index_) {}
+
+    KeyBase(KeyBase const &) = default;
+
+    KeyBase(KeyBase &&) = delete;
+
+    KeyBase & operator=(KeyBase const &) = delete;
+
+    KeyBase & operator=(KeyBase &&) = delete;
+
+
     virtual void initialize(byte_t * buffer) const = 0;
 
     virtual void destroy(byte_t * buffer) const = 0;
 
     virtual bool equals(KeyBase const & other) const = 0;
 
-
     virtual void assign(
-        KeyBase const & other,
-        detail::RecordImpl<FixedRow> const & target,
-        detail::RecordImpl<FixedRow> const & source
+        byte_t * destination,
+        byte_t const * source
     ) const = 0;
-
-    virtual void assign(
-        KeyBase const & other,
-        detail::RecordImpl<FixedRow> const & target,
-        detail::RecordImpl<FlexRow> const & source
-    ) const = 0;
-
-    virtual void assign(
-        KeyBase const & other,
-        detail::RecordImpl<FixedRow> const & target,
-        detail::RecordImpl<FixedCol> const & source
-    ) const = 0;
-
-    virtual void assign(
-        KeyBase const & other,
-        detail::RecordImpl<FixedRow> const & target,
-        detail::RecordImpl<FlexCol> const & source
-    ) const = 0;
-
-
-    virtual void assign(
-        KeyBase const & other,
-        detail::RecordImpl<FlexRow> const & target,
-        detail::RecordImpl<FixedRow> const & source
-    ) const = 0;
-
-    virtual void assign(
-        KeyBase const & other,
-        detail::RecordImpl<FlexRow> const & target,
-        detail::RecordImpl<FlexRow> const & source
-    ) const = 0;
-
-    virtual void assign(
-        KeyBase const & other,
-        detail::RecordImpl<FlexRow> const & target,
-        detail::RecordImpl<FixedCol> const & source
-    ) const = 0;
-
-    virtual void assign(
-        KeyBase const & other,
-        detail::RecordImpl<FlexRow> const & target,
-        detail::RecordImpl<FlexCol> const & source
-    ) const = 0;
-
-
-    virtual void assign(
-        KeyBase const & other,
-        detail::RecordImpl<FixedCol> const & target,
-        detail::RecordImpl<FixedRow> const & source
-    ) const = 0;
-
-    virtual void assign(
-        KeyBase const & other,
-        detail::RecordImpl<FixedCol> const & target,
-        detail::RecordImpl<FlexRow> const & source
-    ) const = 0;
-
-    virtual void assign(
-        KeyBase const & other,
-        detail::RecordImpl<FixedCol> const & target,
-        detail::RecordImpl<FixedCol> const & source
-    ) const = 0;
-
-    virtual void assign(
-        KeyBase const & other,
-        detail::RecordImpl<FixedCol> const & target,
-        detail::RecordImpl<FlexCol> const & source
-    ) const = 0;
-
-
-    virtual void assign(
-        KeyBase const & other,
-        detail::RecordImpl<FlexCol> const & target,
-        detail::RecordImpl<FixedRow> const & source
-    ) const = 0;
-
-    virtual void assign(
-        KeyBase const & other,
-        detail::RecordImpl<FlexCol> const & target,
-        detail::RecordImpl<FlexRow> const & source
-    ) const = 0;
-
-    virtual void assign(
-        KeyBase const & other,
-        detail::RecordImpl<FlexCol> const & target,
-        detail::RecordImpl<FixedCol> const & source
-    ) const = 0;
-
-    virtual void assign(
-        KeyBase const & other,
-        detail::RecordImpl<FlexCol> const & target,
-        detail::RecordImpl<FlexCol> const & source
-    ) const = 0;
-
 
     virtual std::unique_ptr<KeyBase> clone() const = 0;
+
+private:
+    size_t _index;
 };
 
 
@@ -191,16 +106,8 @@ public:
     typedef typename DType<T>::const_reference const_reference;
 
     explicit Key(size_t index, DType<T> dtype) :
-        _index_and_dtype(index, std::move(dtype))
+        KeyBase(index), _dtype(std::move(dtype))
     {}
-
-    Key(Key const &) = delete;
-
-    Key(Key &&) = delete;
-
-    Key & operator=(Key const &) = delete;
-
-    Key & operator=(Key &&) = delete;
 
     virtual bool is_direct() const {
         return DType<T>::is_direct;
@@ -210,11 +117,23 @@ public:
         return DType<T>::name();
     }
 
-    size_t index() const { return _index_and_dtype.first(); }
+    dtype_t const & dtype() const { return _dtype; }
 
-    dtype_t const & dtype() const { return _index_and_dtype.second(); }
+    virtual bool is_pod() const { return dtype_t::is_pod; }
+
+    virtual size_t nbytes() const { return dtype().nbytes(); }
+
+    virtual size_t alignment() const { return dtype().alignment(); }
 
 protected:
+
+    Key(Key const &) = default;
+
+    Key(Key &&) = delete;
+
+    Key & operator=(Key const &) = delete;
+
+    Key & operator=(Key &&) = delete;
 
     virtual void initialize(byte_t * buffer) const {
         dtype().initialize(buffer);
@@ -229,118 +148,20 @@ protected:
         return k && index() == k->index() && dtype() == k->dtype();
     }
 
-    template <typename Target, typename Source>
-    void assign_impl(
-        KeyBase const & other,
-        detail::RecordImpl<Target> const & target,
-        detail::RecordImpl<Source> const & source
-    ) const;
-
     virtual void assign(
-        KeyBase const & other,
-        detail::RecordImpl<FixedRow> const & target,
-        detail::RecordImpl<FixedRow> const & source
-    ) const;
-
-    virtual void assign(
-        KeyBase const & other,
-        detail::RecordImpl<FixedRow> const & target,
-        detail::RecordImpl<FlexRow> const & source
-    ) const;
-
-    virtual void assign(
-        KeyBase const & other,
-        detail::RecordImpl<FixedRow> const & target,
-        detail::RecordImpl<FixedCol> const & source
-    ) const;
-
-    virtual void assign(
-        KeyBase const & other,
-        detail::RecordImpl<FixedRow> const & target,
-        detail::RecordImpl<FlexCol> const & source
-    ) const;
-
-
-    virtual void assign(
-        KeyBase const & other,
-        detail::RecordImpl<FlexRow> const & target,
-        detail::RecordImpl<FixedRow> const & source
-    ) const;
-
-    virtual void assign(
-        KeyBase const & other,
-        detail::RecordImpl<FlexRow> const & target,
-        detail::RecordImpl<FlexRow> const & source
-    ) const;
-
-    virtual void assign(
-        KeyBase const & other,
-        detail::RecordImpl<FlexRow> const & target,
-        detail::RecordImpl<FixedCol> const & source
-    ) const;
-
-    virtual void assign(
-        KeyBase const & other,
-        detail::RecordImpl<FlexRow> const & target,
-        detail::RecordImpl<FlexCol> const & source
-    ) const;
-
-
-    virtual void assign(
-        KeyBase const & other,
-        detail::RecordImpl<FixedCol> const & target,
-        detail::RecordImpl<FixedRow> const & source
-    ) const;
-
-    virtual void assign(
-        KeyBase const & other,
-        detail::RecordImpl<FixedCol> const & target,
-        detail::RecordImpl<FlexRow> const & source
-    ) const;
-
-    virtual void assign(
-        KeyBase const & other,
-        detail::RecordImpl<FixedCol> const & target,
-        detail::RecordImpl<FixedCol> const & source
-    ) const;
-
-    virtual void assign(
-        KeyBase const & other,
-        detail::RecordImpl<FixedCol> const & target,
-        detail::RecordImpl<FlexCol> const & source
-    ) const;
-
-
-    virtual void assign(
-        KeyBase const & other,
-        detail::RecordImpl<FlexCol> const & target,
-        detail::RecordImpl<FixedRow> const & source
-    ) const;
-
-    virtual void assign(
-        KeyBase const & other,
-        detail::RecordImpl<FlexCol> const & target,
-        detail::RecordImpl<FlexRow> const & source
-    ) const;
-
-    virtual void assign(
-        KeyBase const & other,
-        detail::RecordImpl<FlexCol> const & target,
-        detail::RecordImpl<FixedCol> const & source
-    ) const;
-
-    virtual void assign(
-        KeyBase const & other,
-        detail::RecordImpl<FlexCol> const & target,
-        detail::RecordImpl<FlexCol> const & source
-    ) const;
+        byte_t * destination,
+        byte_t const * source
+    ) const {
+        dtype().make_reference_at(destination, nullptr)
+            = dtype().make_const_reference_at(source, nullptr);
+    }
 
     virtual std::unique_ptr<KeyBase> clone() const {
-        return std::unique_ptr<KeyBase>(new Key<T>(index(), dtype()));
+        return std::unique_ptr<KeyBase>(new Key<T>(*this));
     }
 
 private:
-    CompressedPair<size_t,DType<T>> _index_and_dtype;
+    DType<T> _dtype;
 };
 
 

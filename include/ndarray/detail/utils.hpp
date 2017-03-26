@@ -30,6 +30,16 @@ void for_each_zip(
     }
 }
 
+template <typename S, typename T>
+struct transfer_const {
+    typedef T type;
+};
+
+template <typename S, typename T>
+struct transfer_const<S const,T> {
+    typedef T const type;
+};
+
 } // namespace detail
 } // namespace ndarray
 

@@ -39,12 +39,23 @@ public:
 
     void swap(RecordImpl & other);
 
-    std::shared_ptr<Schema> const & schema() const { return _storage->_schema; }
+    std::shared_ptr<Schema> const & schema() const {
+        return _storage->schema();
+    }
+
+    byte_t * get_raw(KeyBase const & key) const {
+        return _buffer + _storage->_offsets[key.index()];
+    }
+
+    template <typename T>
+    byte_t const * cget_raw(KeyBase const & key) const {
+        return _buffer + _storage->_offsets[key.index()];
+    }
 
     template <typename T>
     typename Key<T>::reference get(Key<T> const & key) const {
         return key.dtype().make_reference_at(
-            _buffer + _storage->_offsets[key.index()],
+            get_raw(key),
             _storage->_manager
         );
     }
@@ -52,7 +63,7 @@ public:
     template <typename T>
     typename Key<T>::const_reference cget(Key<T> const & key) const {
         return key.dtype().make_const_reference_at(
-            _buffer + _storage->_offsets[key.index()],
+            cget_raw(key),
             _storage->_manager
         );
     }
@@ -81,12 +92,23 @@ public:
 
     void swap(RecordImpl & other);
 
-    std::shared_ptr<Schema> const & schema() const { return _storage->schema(); }
+    std::shared_ptr<Schema> const & schema() const {
+        return _storage->schema();
+    }
+
+    byte_t * get_raw(KeyBase const & key) const {
+        return _buffer + _storage->_offsets[key.index()];
+    }
+
+    template <typename T>
+    byte_t const * cget_raw(KeyBase const & key) const {
+        return _buffer + _storage->_offsets[key.index()];
+    }
 
     template <typename T>
     typename Key<T>::reference get(Key<T> const & key) const {
         return key.dtype().make_reference_at(
-            _buffer + _storage->_offsets[key.index()],
+            get_raw(key),
             _manager
         );
     }
@@ -94,7 +116,7 @@ public:
     template <typename T>
     typename Key<T>::const_reference cget(Key<T> const & key) const {
         return key.dtype().make_const_reference_at(
-            _buffer + _storage->_offsets[key.index()],
+            cget_raw(key),
             _manager
         );
     }
@@ -125,12 +147,23 @@ public:
 
     void swap(RecordImpl & other);
 
-    std::shared_ptr<Schema> const & schema() const { return _storage->_schema; }
+    std::shared_ptr<Schema> const & schema() const {
+        return _storage->schema();
+    }
+
+    byte_t * get_raw(KeyBase const & key) const {
+        return _buffer + _storage->_offsets[key.index()];
+    }
+
+    template <typename T>
+    byte_t const * cget_raw(KeyBase const & key) const {
+        return _buffer + _storage->_offsets[key.index()];
+    }
 
     template <typename T>
     typename Key<T>::reference get(Key<T> const & key) const {
         return key.dtype().make_reference_at(
-            _buffer + _storage->_offsets[key.index()],
+            get_raw(key),
             _storage->_manager
         );
     }
@@ -138,7 +171,7 @@ public:
     template <typename T>
     typename Key<T>::const_reference cget(Key<T> const & key) const {
         return key.dtype().make_const_reference_at(
-            _buffer + _storage->_offsets[key.index()],
+            cget_raw(key),
             _storage->_manager
         );
     }
@@ -168,7 +201,19 @@ public:
 
     void swap(RecordImpl & other);
 
-    std::shared_ptr<Schema> const & schema() const { return _storage->_schema; }
+    std::shared_ptr<Schema> const & schema() const {
+        return _storage->schema();
+    }
+
+    byte_t * get_raw(KeyBase const & key) const {
+        auto const & array = _storage->_columns[key.index()]->array;
+        return reinterpret_cast<byte_t*>(array.data() + array.stride()*_index);
+    }
+
+    template <typename T>
+    byte_t const * cget_raw(KeyBase const & key) const {
+        return get_raw(key);
+    }
 
     template <typename T>
     typename Key<T>::reference get(Key<T> const & key) const {
@@ -192,158 +237,6 @@ void swap(RecordImpl<Storage> & a, RecordImpl<Storage> & b) {
 
 
 } // detail
-
-
-template <typename T>
-template <typename Target, typename Source>
-void Key<T>::assign_impl(
-    KeyBase const & other,
-    detail::RecordImpl<Target> const & target,
-    detail::RecordImpl<Source> const & source
-) const {
-    Key<T> const & k = static_cast<Key<T> const &>(other);
-    target.get(*this) = source.cget(k);
-}
-
-
-template <typename T>
-void Key<T>::assign(
-    KeyBase const & other,
-    detail::RecordImpl<FixedRow> const & target,
-    detail::RecordImpl<FixedRow> const & source
-) const {
-    assign_impl(other, target, source);
-}
-
-template <typename T>
-void Key<T>::assign(
-    KeyBase const & other,
-    detail::RecordImpl<FixedRow> const & target,
-    detail::RecordImpl<FlexRow> const & source
-) const {
-    assign_impl(other, target, source);
-}
-
-template <typename T>
-void Key<T>::assign(
-    KeyBase const & other,
-    detail::RecordImpl<FixedRow> const & target,
-    detail::RecordImpl<FixedCol> const & source
-) const {
-    assign_impl(other, target, source);
-}
-
-template <typename T>
-void Key<T>::assign(
-    KeyBase const & other,
-    detail::RecordImpl<FixedRow> const & target,
-    detail::RecordImpl<FlexCol> const & source
-) const {
-    assign_impl(other, target, source);
-}
-
-
-template <typename T>
-void Key<T>::assign(
-    KeyBase const & other,
-    detail::RecordImpl<FlexRow> const & target,
-    detail::RecordImpl<FixedRow> const & source
-) const {
-    assign_impl(other, target, source);
-}
-
-template <typename T>
-void Key<T>::assign(
-    KeyBase const & other,
-    detail::RecordImpl<FlexRow> const & target,
-    detail::RecordImpl<FlexRow> const & source
-) const {
-    assign_impl(other, target, source);
-}
-
-template <typename T>
-void Key<T>::assign(
-    KeyBase const & other,
-    detail::RecordImpl<FlexRow> const & target,
-    detail::RecordImpl<FixedCol> const & source
-) const {
-    assign_impl(other, target, source);
-}
-
-template <typename T>
-void Key<T>::assign(
-    KeyBase const & other,
-    detail::RecordImpl<FlexRow> const & target,
-    detail::RecordImpl<FlexCol> const & source
-) const {
-    assign_impl(other, target, source);
-}
-
-
-template <typename T>
-void Key<T>::assign(
-    KeyBase const & other,
-    detail::RecordImpl<FixedCol> const & target,
-    detail::RecordImpl<FixedRow> const & source
-) const {
-    assign_impl(other, target, source);
-}
-
-template <typename T>
-void Key<T>::assign(
-    KeyBase const & other,
-    detail::RecordImpl<FixedCol> const & target,
-    detail::RecordImpl<FlexRow> const & source
-) const {
-    assign_impl(other, target, source);
-}
-
-template <typename T>
-void Key<T>::assign(
-    KeyBase const & other,
-    detail::RecordImpl<FixedCol> const & target,
-    detail::RecordImpl<FixedCol> const & source
-) const {
-    assign_impl(other, target, source);
-}
-
-template <typename T>
-void Key<T>::assign(
-    KeyBase const & other,
-    detail::RecordImpl<FixedCol> const & target,
-    detail::RecordImpl<FlexCol> const & source
-) const {
-    assign_impl(other, target, source);
-}
-
-
-template <typename T>
-void Key<T>::assign(
-    KeyBase const & other,
-    detail::RecordImpl<FlexCol> const & target,
-    detail::RecordImpl<FixedRow> const & source
-) const {
-    assign_impl(other, target, source);
-}
-
-template <typename T>
-void Key<T>::assign(
-    KeyBase const & other,
-    detail::RecordImpl<FlexCol> const & target,
-    detail::RecordImpl<FlexRow> const & source
-) const {
-    assign_impl(other, target, source);
-}
-
-template <typename T>
-void Key<T>::assign(
-    KeyBase const & other,
-    detail::RecordImpl<FlexCol> const & target,
-    detail::RecordImpl<FixedCol> const & source
-) const {
-    assign_impl(other, target, source);
-}
-
 } // ndarray
 
 #endif // !NDARRAY_table_detail_RecordImpl_hpp_INCLUDED

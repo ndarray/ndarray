@@ -32,7 +32,7 @@ public:
     static constexpr bool is_pod = false;
     static constexpr bool is_direct = false;
 
-    DType() : _schema() {}
+    DType() : _schema(std::make_shared<Schema>()) {}
 
     explicit DType(Schema const & schema);
 
@@ -74,10 +74,12 @@ public:
         std::shared_ptr<Manager> const & manager
     ) const;
 
-    std::shared_ptr<Schema> const & schema() const { return _schema; }
+    std::shared_ptr<Schema const> const & schema() const { return _schema; }
 
 private:
     std::shared_ptr<Schema> _schema;
+    offset_t _row_stride;
+    offset_t _col_stride;
 };
 
 
