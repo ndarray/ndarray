@@ -59,6 +59,8 @@ template <typename T, int N, int C>
 class type_caster< ndarray::Array<T,N,C> > {
 public:
     bool load(handle src, bool) {
+        _none = src.is_none();
+        if (_none) return true;
         _src.reset(src.ptr(), true); // keep alive for stage 2
         if (!ndarray::PyConverter< ndarray::Array<T,N,C> >::fromPythonStage1(_src)) {
             PyErr_Clear();
@@ -80,12 +82,20 @@ public:
 protected:
     ndarray::PyPtr _src;
     ndarray::Array<T,N,C> _value;
+    bool _none = false;
 public:
     static PYBIND11_DESCR name() { return type_descr(_<ndarray::Array<T,N,C>>()); }
     static handle cast(const ndarray::Array<T,N,C> *src, return_value_policy policy, handle parent) {
         return cast(*src, policy, parent);
     }
-    operator ndarray::Array<T,N,C> * () { set_value(); return &_value; }
+    operator ndarray::Array<T,N,C> * () { 
+        if (_none) {
+            return nullptr;
+        } else {
+            set_value();
+            return &_value;
+        }
+    }
     operator ndarray::Array<T,N,C> & () { set_value(); return _value; }
     template <typename _T> using cast_op_type = pybind11::detail::cast_op_type<_T>;
 };
@@ -96,6 +106,8 @@ template <typename T, int N, int C, typename Kind, int Rows, int Cols>
 class type_caster< ndarray::EigenView<T,N,C,Kind,Rows,Cols> > {
 public:
     bool load(handle src, bool) {
+        _none = src.is_none();
+        if (_none) return true;
         _src.reset(src.ptr(), true); // keep alive for stage 2
         if (!ndarray::PyConverter< ndarray::EigenView<T,N,C,Kind,Rows,Cols> >::fromPythonStage1(_src)) {
             PyErr_Clear();
@@ -117,12 +129,20 @@ public:
 protected:
     ndarray::PyPtr _src;
     ndarray::EigenView<T,N,C,Kind,Rows,Cols> _value;
+    bool _none = false;
 public:
     static PYBIND11_DESCR name() { return type_descr(_<ndarray::EigenView<T,N,C,Kind,Rows,Cols>>()); }
     static handle cast(const ndarray::EigenView<T,N,C,Kind,Rows,Cols> *src, return_value_policy policy, handle parent) {
         return cast(*src, policy, parent);
     }
-    operator ndarray::EigenView<T,N,C,Kind,Rows,Cols> * () { set_value(); return &_value; }
+    operator ndarray::EigenView<T,N,C,Kind,Rows,Cols> * () {
+        if (_none) {
+            return nullptr;
+        } else {
+            set_value();
+            return &_value;
+        }
+    }
     operator ndarray::EigenView<T,N,C,Kind,Rows,Cols> & () { set_value(); return _value; }
     template <typename _T> using cast_op_type = pybind11::detail::cast_op_type<_T>;
 };
@@ -133,6 +153,8 @@ template<typename T, int R, int C, int O, int MR, int MC>
 class type_caster< Eigen::Array<T,R,C,O,MR,MC> > {
 public:
     bool load(handle src, bool) {
+        _none = src.is_none();
+        if (_none) return true;
         _src.reset(src.ptr(), true); // keep alive for stage 2
         if (!ndarray::PyConverter< Eigen::Array<T,R,C,O,MR,MC> >::fromPythonStage1(_src)) {
             PyErr_Clear();
@@ -154,12 +176,20 @@ public:
 protected:
     ndarray::PyPtr _src;
     Eigen::Array<T,R,C,O,MR,MC> _value;
+    bool _none = false;
 public:
     static PYBIND11_DESCR name() { return type_descr(_<Eigen::Array<T,R,C,O,MR,MC>>()); }
     static handle cast(const Eigen::Array<T,R,C,O,MR,MC> *src, return_value_policy policy, handle parent) {
         return cast(*src, policy, parent);
     }
-    operator Eigen::Array<T,R,C,O,MR,MC> * () { set_value(); return &_value; }
+    operator Eigen::Array<T,R,C,O,MR,MC> * () {
+        if (_none) {
+            return nullptr;
+        } else {
+            set_value();
+            return &_value;
+        }
+    }
     operator Eigen::Array<T,R,C,O,MR,MC> & () { set_value(); return _value; }
     template <typename _T> using cast_op_type = pybind11::detail::cast_op_type<_T>;
 };
@@ -170,6 +200,8 @@ template<typename T, int R, int C, int O, int MR, int MC>
 class type_caster< Eigen::Matrix<T,R,C,O,MR,MC> > {
 public:
     bool load(handle src, bool) {
+        _none = src.is_none();
+        if (_none) return true;
         _src.reset(src.ptr(), true); // keep alive for stage 2
         if (!ndarray::PyConverter< Eigen::Matrix<T,R,C,O,MR,MC> >::fromPythonStage1(_src)) {
             PyErr_Clear();
@@ -191,12 +223,20 @@ public:
 protected:
     ndarray::PyPtr _src;
     Eigen::Matrix<T,R,C,O,MR,MC> _value;
+    bool _none = false;
 public:
     static PYBIND11_DESCR name() { return type_descr(_<Eigen::Matrix<T,R,C,O,MR,MC>>()); }
     static handle cast(const Eigen::Matrix<T,R,C,O,MR,MC> *src, return_value_policy policy, handle parent) {
         return cast(*src, policy, parent);
     }
-    operator Eigen::Matrix<T,R,C,O,MR,MC> * () { set_value(); return &_value; }
+    operator Eigen::Matrix<T,R,C,O,MR,MC> * () {
+        if (_none) {
+            return nullptr;
+        } else {
+            set_value();
+            return &_value;
+        }
+    }
     operator Eigen::Matrix<T,R,C,O,MR,MC> & () { set_value(); return _value; }
     template <typename _T> using cast_op_type = pybind11::detail::cast_op_type<_T>;
 };
