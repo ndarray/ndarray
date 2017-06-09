@@ -73,6 +73,20 @@ class TestNumpyPybind11(unittest.TestCase):
         table = numpy.zeros(3, dtype=dtype)
         self.assertRaises(TypeError, pybind11_test_mod.acceptArray10, table['f1'])
 
+    def testNone(self):
+        array = numpy.zeros(10, dtype=float)
+        self.assertEqual(pybind11_test_mod.acceptNoneArray(array), 0)
+        self.assertEqual(pybind11_test_mod.acceptNoneArray(None), 1)
+        self.assertEqual(pybind11_test_mod.acceptNoneArray(), 1)
 
+        m1 = pybind11_test_mod.returnMatrixXd()
+        self.assertEqual(pybind11_test_mod.acceptNoneMatrixXd(m1), 2)
+        self.assertEqual(pybind11_test_mod.acceptNoneMatrixXd(None), 3)
+        self.assertEqual(pybind11_test_mod.acceptNoneMatrixXd(), 3)
+
+        m2 = pybind11_test_mod.returnMatrix2d()
+        self.assertEqual(pybind11_test_mod.acceptNoneMatrix2d(m2), 4)
+        self.assertEqual(pybind11_test_mod.acceptNoneMatrix2d(None), 5)
+        self.assertEqual(pybind11_test_mod.acceptNoneMatrix2d(), 5)
 if __name__ == "__main__":
     unittest.main()
