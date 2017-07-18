@@ -11,6 +11,10 @@
 #ifndef NDARRAY_CONVERTER_numpy_h_INCLUDED
 #define NDARRAY_CONVERTER_numpy_h_INCLUDED
 
+#ifndef NPY_NO_DEPRECATED_API
+#pragma message ( "ndarray is compatible with the NumPy 1.7 API, define NPY_NO_DEPRECATED_API to suppress API version warnings" )
+#endif
+
 /**
  *  @file ndarray/converter/numpy.h
  *  @brief Python C-API conversions between ndarray and numpy.
@@ -155,25 +159,26 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
             PyErr_SetString(PyExc_TypeError, "numpy.ndarray argument required");
             return false;
         }
-        int actualType = PyArray_TYPE(p.get());
+        auto array = reinterpret_cast<PyArrayObject*>(p.get());
+        int actualType = PyArray_TYPE(array);
         int requiredType = detail::NumpyTraits<NonConst>::getCode();
         if (actualType != requiredType) {
             PyErr_SetString(PyExc_ValueError, ("numpy.ndarray argument has incorrect data type"));
             return false;
         }
-        if (PyArray_NDIM(p.get()) != N) {
+        if (PyArray_NDIM(array) != N) {
             PyErr_SetString(PyExc_ValueError, "numpy.ndarray argument has incorrect number of dimensions");
             return false;
         }
         bool writeable = !boost::is_const<Element>::value;
-        if (writeable && !(PyArray_FLAGS(p.get()) & NPY_WRITEABLE)) {
+        if (writeable && !(PyArray_FLAGS(array) & NPY_ARRAY_WRITEABLE)) {
             PyErr_SetString(PyExc_TypeError, "numpy.ndarray argument must be writeable");
             return false;
         }
         if (C > 0) {
             Offset requiredStride = sizeof(Element);
             for (int i = 0; i < C; ++i) {
-                Offset actualStride = PyArray_STRIDE(p.get(), N-i-1);
+                Offset actualStride = PyArray_STRIDE(array, N-i-1);
                 if (actualStride != requiredStride) {
                     PyErr_SetString(
                         PyExc_ValueError,
@@ -181,12 +186,12 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
                     );
                     return false;
                 }
-                requiredStride *= PyArray_DIM(p.get(), N-i-1);
+                requiredStride *= PyArray_DIM(array, N-i-1);
             }
         } else if (C < 0) {
             int requiredStride = sizeof(Element);
             for (int i = 0; i < -C; ++i) {
-                Offset actualStride = PyArray_STRIDE(p.get(), i);
+                Offset actualStride = PyArray_STRIDE(array, i);
                 if (actualStride != requiredStride) {
                     PyErr_SetString(
                         PyExc_ValueError,
@@ -194,7 +199,7 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
                     );
                     return false;
                 }
-                requiredStride *= PyArray_DIM(p.get(), i);
+                requiredStride *= PyArray_DIM(array, i);
             }
         }
         return true;
@@ -216,13 +221,14 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
         PyPtr const & input,  ///< Result of fromPythonStage1().
         Array<T,N,C> & output ///< Reference to existing output C++ object.
     ) {
-        if (!(PyArray_FLAGS(input.get()) & NPY_ALIGNED)) {
+        auto array = reinterpret_cast<PyArrayObject*>(input.get());
+        if (!(PyArray_FLAGS(array) & NPY_ARRAY_ALIGNED)) {
             PyErr_SetString(PyExc_TypeError, "unaligned arrays cannot be converted to C++");
             return false;
         }
         Offset itemsize = sizeof(Element);
         for (int i = 0; i < N; ++i) {
-            if ((PyArray_DIM(input.get(), i) > 1) && (PyArray_STRIDE(input.get(), i) % itemsize != 0)) {
+            if ((PyArray_DIM(array, i) > 1) && (PyArray_STRIDE(array, i) % itemsize != 0)) {
                 PyErr_SetString(
                     PyExc_TypeError,
                     "Cannot convert array to C++: strides must be an integer multiple of the element size"
@@ -232,11 +238,11 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
         }
         Vector<Size,N> shape;
         Vector<Offset,N> strides;
-        std::copy(PyArray_DIMS(input.get()), PyArray_DIMS(input.get()) + N, shape.begin());
-        std::copy(PyArray_STRIDES(input.get()), PyArray_STRIDES(input.get()) + N , strides.begin());
+        std::copy(PyArray_DIMS(array), PyArray_DIMS(array) + N, shape.begin());
+        std::copy(PyArray_STRIDES(array), PyArray_STRIDES(array) + N , strides.begin());
         for (int i = 0; i < N; ++i) strides[i] /= sizeof(Element);
         output = external(
-            reinterpret_cast<Element*>(PyArray_DATA(input.get())),
+            reinterpret_cast<Element*>(PyArray_DATA(array)),
             shape, strides, input
         );
         return true;
@@ -257,10 +263,10 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
         PyObject* owner=NULL    /**< A Python object that owns the memory in the Array.
                                  *   If NULL, one will be constructed from m.getManager(). */
     ) {
-        int flags = NPY_ALIGNED;
-        if (C==N) flags |= NPY_C_CONTIGUOUS;
+        int flags = NPY_ARRAY_ALIGNED;
+        if (C==N) flags |= NPY_ARRAY_C_CONTIGUOUS;
         bool writeable = !boost::is_const<Element>::value;
-        if (writeable) flags |= NPY_WRITEABLE;
+        if (writeable) flags |= NPY_ARRAY_WRITEABLE;
         npy_intp outShape[N];
         npy_intp outStrides[N];
         Vector<Size,N> inShape = m.getShape();
@@ -276,8 +282,8 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
         );
         if (!array) return NULL;
         if (!m.getManager() && owner == NULL) {
-            flags = NPY_CARRAY_RO | NPY_ENSURECOPY | NPY_C_CONTIGUOUS;
-            if (writeable) flags |= NPY_WRITEABLE;
+            flags = NPY_ARRAY_CARRAY_RO | NPY_ARRAY_ENSURECOPY | NPY_ARRAY_C_CONTIGUOUS;
+            if (writeable) flags |= NPY_ARRAY_WRITEABLE;
             PyPtr r = PyArray_FROM_OF(array.get(),flags);
             if (!r) return NULL;
             array.swap(r);
@@ -291,7 +297,7 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
                     detail::destroyCapsule
                 );
             }
-            reinterpret_cast<PyArrayObject*>(array.get())->base = owner;
+            PyArray_SetBaseObject(reinterpret_cast<PyArrayObject*>(array.get()), owner);
         }
         Py_INCREF(array.get());
         return PyArray_Return(reinterpret_cast<PyArrayObject*>(array.get()));

@@ -26,17 +26,17 @@ template <typename TUnaryFunctor,
 struct PyUnaryUFunctor {
 
     static PyObject* _call_(TUnaryFunctor const& self, PyObject* input, PyObject* output) {
-        PyObject* input_array = PyArray_FROM_OTF(input,detail::NumpyTraits<TArgument>::getCode(),
-                                                 NPY_ALIGNED);
+        PyArrayObject* input_array = PyArray_FROM_OTF(input,detail::NumpyTraits<TArgument>::getCode(),
+                                                      NPY_ARRAY_ALIGNED);
         if (input_array == NULL) return NULL;
-        PyObject* output_array;
+        PyArrayObject* output_array;
         if (output == NULL || output == Py_None) {
             output_array = PyArray_SimpleNew(PyArray_NDIM(input_array),
                                              PyArray_DIMS(input_array),
                                              detail::NumpyTraits<TResult>::getCode());
         } else {
             output_array = PyArray_FROM_OTF(output,detail::NumpyTraits<TResult>::getCode(),
-                                            NPY_ALIGNED | NPY_WRITEABLE | NPY_UPDATEIFCOPY);
+                                            NPY_ARRAY_ALIGNED | NPY_ARRAY_WRITEABLE | NPY_ARRAY_UPDATEIFCOPY);
         }
         if (output_array == NULL) {
             Py_DECREF(input_array);
@@ -72,9 +72,9 @@ struct PyBinaryUFunctor {
     static PyObject* _call_(TBinaryFunctor const& self, PyObject* input1, PyObject* input2,
                               PyObject* output) {
         PyObject* input1_array = PyArray_FROM_OTF(input1,detail::NumpyTraits<TArgument1>::getCode(),
-                                                  NPY_ALIGNED);
+                                                  NPY_ARRAY_ALIGNED);
         PyObject* input2_array = PyArray_FROM_OTF(input2,detail::NumpyTraits<TArgument1>::getCode(),
-                                                  NPY_ALIGNED);
+                                                  NPY_ARRAY_ALIGNED);
         if (input1_array == NULL || input2_array == NULL) {
             Py_XDECREF(input1_array);
             Py_XDECREF(input2_array);
@@ -94,7 +94,7 @@ struct PyBinaryUFunctor {
             Py_DECREF(tmp);
         } else {
             output_array = PyArray_FROM_OTF(output,detail::NumpyTraits<TResult>::getCode(),
-                                            NPY_ALIGNED | NPY_WRITEABLE | NPY_UPDATEIFCOPY);
+                                            NPY_ARRAY_ALIGNED | NPY_ARRAY_WRITEABLE | NPY_ARRAY_UPDATEIFCOPY);
         }
         if (output_array == NULL) {
             Py_DECREF(input1_array);
