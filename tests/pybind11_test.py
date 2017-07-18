@@ -88,5 +88,12 @@ class TestNumpyPybind11(unittest.TestCase):
         self.assertEqual(pybind11_test_mod.acceptNoneMatrix2d(m2), 4)
         self.assertEqual(pybind11_test_mod.acceptNoneMatrix2d(None), 5)
         self.assertEqual(pybind11_test_mod.acceptNoneMatrix2d(), 5)
+
+    def testFullySpecifiedMatrix(self):
+        # Failure on this specific case was not caught by other unit tests
+        a = numpy.array([[ 1.,  0.], [ 0.,  1.]])
+        b = numpy.array([ 0.,  0.])
+        self.assert_(pybind11_test_mod.acceptFullySpecifiedMatrix(a, b))
+
 if __name__ == "__main__":
     unittest.main()
