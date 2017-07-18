@@ -30,7 +30,6 @@ template <typename T, int N, int C, typename XprKind_, int Rows_, int Cols_>
 struct PyConverter< EigenView<T,N,C,XprKind_,Rows_,Cols_> > {
 
     static bool fromPythonStage1(PyPtr & p) {
-        auto array = reinterpret_cast<PyArrayObject*>(p.get());
         // add or remove dimensions with size one so we have the right number of dimensions
         if (PyArray_Check(p.get())) {
             if ((Rows_ == 1 || Cols_ == 1) && N == 2) {
@@ -41,17 +40,18 @@ struct PyConverter< EigenView<T,N,C,XprKind_,Rows_,Cols_> > {
                     shape[1] = 1;
                 }
                 PyArray_Dims dims = { shape, 2 };
-                PyPtr r(PyArray_Newshape(array, &dims, NPY_ANYORDER));
+                PyPtr r(PyArray_Newshape(reinterpret_cast<PyArrayObject*>(p.get()), &dims, NPY_ANYORDER));
                 if (!r) return false;
                 p.swap(r);
             } else if (N == 1) {
-                PyPtr r(PyArray_Squeeze(array));
+                PyPtr r(PyArray_Squeeze(reinterpret_cast<PyArrayObject*>(p.get())));
                 if (!r) return false;
                 p.swap(r);
             }
         } // else let the Array converter raise the exception
         if (!PyConverter< Array<T,N,C> >::fromPythonStage1(p)) return false;
         // check whether the size is correct if it's static
+        auto array = reinterpret_cast<PyArrayObject*>(p.get());
         if (N == 2) {
             if (Rows_ != Eigen::Dynamic && PyArray_DIM(array, 0) != Rows_) {
                 PyErr_SetString(PyExc_ValueError, "incorrect number of rows for matrix");

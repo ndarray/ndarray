@@ -127,6 +127,10 @@ struct MatrixOwner {
     explicit MatrixOwner() : member(MemberMatrix::Zero()) {}
 };
 
+bool acceptFullySpecifiedMatrix(Eigen::Matrix<double, 2, 2, 0, 2, 2> const & a, Eigen::Matrix<double, 2, 1, 0, 2, 1> const & b) {
+    return true;
+};
+
 PYBIND11_PLUGIN(pybind11_test_mod) {
     pybind11::module mod("pybind11_test_mod", "Tests for the ndarray library");
 
@@ -159,6 +163,7 @@ PYBIND11_PLUGIN(pybind11_test_mod) {
     mod.def("acceptNoneArray", acceptNoneArray, "array"_a = nullptr);
     mod.def("acceptNoneMatrixXd", acceptNoneMatrixXd, "matrix"_a = nullptr);
     mod.def("acceptNoneMatrix2d", acceptNoneMatrix2d, "matrix"_a = nullptr);
+    mod.def("acceptFullySpecifiedMatrix", acceptFullySpecifiedMatrix);
 
     return mod.ptr();
 }
