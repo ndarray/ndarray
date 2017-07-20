@@ -98,3 +98,4 @@ for header in Flatten(headers):
     env.Alias("install", env.InstallAs(os.path.join(install_headers, relative), header))
 
 tests = SConscript(os.path.join("tests", "SConscript"), exports=["env", "testEnv", "pyEnv", "bpEnv"])
+env.Depends(tests, headers)
