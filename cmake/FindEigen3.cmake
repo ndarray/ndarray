@@ -67,7 +67,7 @@ else (EIGEN3_INCLUDE_DIR)
       $ENV{EIGEN_DIR}
       ${CMAKE_INSTALL_PREFIX}/include
       ${KDE4_INCLUDE_DIR}
-      PATH_SUFFIXES eigen3 eigen
+      PATH_SUFFIXES eigen3 eigen include include/eigen3 include/eigen
     )
 
   if(EIGEN3_INCLUDE_DIR)
