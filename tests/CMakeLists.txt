@@ -26,35 +26,35 @@ add_test(test_views views)
 
 ### Eigen dependency tests
 if(NDARRAY_EIGEN)
-  find_package(Eigen3 REQUIRED)
+    find_package(Eigen3 REQUIRED)
 
-  include_directories( ${EIGEN3_INCLUDE_DIR} )
+    include_directories( ${EIGEN3_INCLUDE_DIR} )
 
-  add_executable(ndarray-eigen ndarray-eigen.cc)
-  target_link_libraries(ndarray-eigen ${Boost_LIBRARIES})
-  add_test(test_ndarray_eigen ndarray-eigen)
+    add_executable(ndarray-eigen ndarray-eigen.cc)
+    target_link_libraries(ndarray-eigen ${Boost_LIBRARIES})
+    add_test(test_ndarray_eigen ndarray-eigen)
 endif(NDARRAY_EIGEN)
 
 ### FFTW dependency tests
 if(NDARRAY_FFTW)
-  find_package(FFTW REQUIRED)
-  include_directories( ${FFTW_INCLUDES} )
+    find_package(FFTW REQUIRED)
+    include_directories( ${FFTW_INCLUDES} )
 
-  add_executable(ndarray-fft ndarray-fft.cc)
-  target_link_libraries(ndarray-fft ${Boost_LIBRARIES} ${FFTW_LIBRARIES})
-  add_test(test_ndarray-fft ndarray-fft)
+    add_executable(ndarray-fft ndarray-fft.cc)
+    target_link_libraries(ndarray-fft ${Boost_LIBRARIES} ${FFTW_LIBRARIES})
+    add_test(test_ndarray-fft ndarray-fft)
 endif(NDARRAY_FFTW)
 
 ### Python resolution
 if(NDARRAY_SWIG OR NDARRAY_PYBIND11)
-  find_package(PythonInterp REQUIRED)
-  find_package(PythonLibs REQUIRED)
-  find_package(NumPy REQUIRED)
+    find_package(PythonInterp REQUIRED)
+    find_package(PythonLibs REQUIRED)
+    find_package(NumPy REQUIRED)
 
-  include_directories(
-    ${PYTHON_INCLUDE_DIRS}
-    ${NUMPY_INCLUDE_DIRS}
-  )
+    include_directories(
+        ${PYTHON_INCLUDE_DIRS}
+        ${NUMPY_INCLUDE_DIRS}
+    )
 ENDIF()
 
 ###SWIG dependency tests (also depend on Eigen)

@@ -42,15 +42,15 @@ if(DOXYGEN_FOUND)
 endif(DOXYGEN_FOUND)
 
 if(NDARRAY_TEST)
-	enable_testing()
-	add_subdirectory(tests)
+    enable_testing()
+    add_subdirectory(tests)
 endif(NDARRAY_TEST)
 
 # installation
 install(DIRECTORY include/ DESTINATION include/
-	FILES_MATCHING PATTERN "*.h")
+        FILES_MATCHING PATTERN "*.h")
 
 if(NDARRAY_SWIG)
-	install(DIRECTORY include/ DESTINATION include/
-		FILES_MATCHING PATTERN "*.i")
+    install(DIRECTORY include/ DESTINATION include/
+            FILES_MATCHING PATTERN "*.i")
 endif(NDARRAY_SWIG)
