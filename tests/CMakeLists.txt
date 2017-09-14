@@ -11,8 +11,8 @@
 find_package(Boost COMPONENTS unit_test_framework REQUIRED)
 
 include_directories(
-	${PROJECT_SOURCE_DIR}/include
-	${Boost_INCLUDE_DIRS}
+    ${PROJECT_SOURCE_DIR}/include
+    ${Boost_INCLUDE_DIRS}
 )
 
 add_executable(ndarray ndarray.cc)
@@ -57,44 +57,52 @@ if(NDARRAY_SWIG OR NDARRAY_PYBIND11)
   )
 ENDIF()
 
-###SWIG dependency tests
+###SWIG dependency tests (also depend on Eigen)
 if(NDARRAY_SWIG)
-	find_package(SWIG REQUIRED)
-	include(${SWIG_USE_FILE})
+    if (NDARRAY_EIGEN)
+        find_package(SWIG REQUIRED)
+        include(${SWIG_USE_FILE})
 
-	set_property(SOURCE swig_test_mod.i PROPERTY CPLUSPLUS ON)
-	swig_add_module(swig_test_mod python swig_test_mod.i)
+        set_property(SOURCE swig_test_mod.i PROPERTY CPLUSPLUS ON)
+        swig_add_module(swig_test_mod python swig_test_mod.i)
 
-	if (APPLE)
-		swig_link_libraries(swig_test_mod "-undefined dynamic_lookup")
-	else ()
-		swig_link_libraries(swig_test_mod "-shared")
-	endif()
+        if (APPLE)
+            swig_link_libraries(swig_test_mod "-undefined dynamic_lookup")
+        else ()
+            swig_link_libraries(swig_test_mod "-shared")
+        endif()
 
-	configure_file(swig_test.py swig_test.py COPYONLY)
-	add_test(NAME swig_test
-		COMMAND ${PYTHON_EXECUTABLE}
-		${CMAKE_CURRENT_BINARY_DIR}/swig_test.py)
+        configure_file(swig_test.py swig_test.py COPYONLY)
+        add_test(NAME swig_test
+            COMMAND ${PYTHON_EXECUTABLE}
+            ${CMAKE_CURRENT_BINARY_DIR}/swig_test.py)
+    else(NDARRAY_EIGEN)
+        message(STATUS "Skipping Swig tests as they depend on Eigen")
+    endif(NDARRAY_EIGEN)
 endif(NDARRAY_SWIG)
 
-###Pybind11 dependency tests
+###Pybind11 dependency tests (also depend on Eigen)
 if(NDARRAY_PYBIND11)
-	find_package(Pybind11 REQUIRED)
+    if(NDARRAY_EIGEN)
+        find_package(Pybind11 REQUIRED)
 
-  include_directories(${PYBIND11_INCLUDE_DIR})
+        include_directories(${PYBIND11_INCLUDE_DIR})
 
-	add_library(pybind11_test_mod.so MODULE pybind11_test_mod.cc)
-	set_target_properties(pybind11_test_mod.so PROPERTIES PREFIX "${PYTHON_MODULE_PREFIX}")
-	set_target_properties(pybind11_test_mod.so PROPERTIES SUFFIX "${PYTHON_MODULE_EXTENSION}")
+        add_library(pybind11_test_mod.so MODULE pybind11_test_mod.cc)
+        set_target_properties(pybind11_test_mod.so PROPERTIES PREFIX "${PYTHON_MODULE_PREFIX}")
+        set_target_properties(pybind11_test_mod.so PROPERTIES SUFFIX "${PYTHON_MODULE_EXTENSION}")
 
-	if (APPLE)
-		target_link_libraries(pybind11_test_mod.so PRIVATE "-undefined dynamic_lookup")
-	else ()
-		target_link_libraries(pybind11_test_mod.so "-shared")
-	endif()
+        if (APPLE)
+            target_link_libraries(pybind11_test_mod.so PRIVATE "-undefined dynamic_lookup")
+        else ()
+            target_link_libraries(pybind11_test_mod.so "-shared")
+        endif()
 
-	configure_file(pybind11_test.py pybind11_test.py COPYONLY)
-	add_test(NAME pybind11_test
-		COMMAND ${PYTHON_EXECUTABLE}
-		${CMAKE_CURRENT_BINARY_DIR}/pybind11_test.py)
+        configure_file(pybind11_test.py pybind11_test.py COPYONLY)
+        add_test(NAME pybind11_test
+            COMMAND ${PYTHON_EXECUTABLE}
+            ${CMAKE_CURRENT_BINARY_DIR}/pybind11_test.py)
+    else(NDARRAY_EIGEN)
+        message(STATUS "Skipping pybind11 tests as they depend on Eigen")
+    endif(NDARRAY_EIGEN)
 endif(NDARRAY_PYBIND11)
