@@ -84,19 +84,11 @@ endif(NDARRAY_SWIG)
 ###Pybind11 dependency tests (also depend on Eigen)
 if(NDARRAY_PYBIND11)
     if(NDARRAY_EIGEN)
-        find_package(Pybind11 REQUIRED)
+        find_package(pybind11 REQUIRED)
 
         include_directories(${PYBIND11_INCLUDE_DIR})
 
-        add_library(pybind11_test_mod.so MODULE pybind11_test_mod.cc)
-        set_target_properties(pybind11_test_mod.so PROPERTIES PREFIX "${PYTHON_MODULE_PREFIX}")
-        set_target_properties(pybind11_test_mod.so PROPERTIES SUFFIX "${PYTHON_MODULE_EXTENSION}")
-
-        if (APPLE)
-            target_link_libraries(pybind11_test_mod.so PRIVATE "-undefined dynamic_lookup")
-        else ()
-            target_link_libraries(pybind11_test_mod.so "-shared")
-        endif()
+        pybind11_add_module(pybind11_test_mod pybind11_test_mod.cc)
 
         configure_file(pybind11_test.py pybind11_test.py COPYONLY)
         add_test(NAME pybind11_test
