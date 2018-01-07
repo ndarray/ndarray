@@ -1,9 +1,6 @@
-#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 #include "pybind11/pybind11.h"
 
-#include "numpy/arrayobject.h"
 #include "ndarray/pybind11.h"
-#include "ndarray/converter.h"
 
 namespace py = pybind11;
 using namespace py::literals;
@@ -133,11 +130,6 @@ bool acceptFullySpecifiedMatrix(Eigen::Matrix<double, 2, 2, 0, 2, 2> const & a, 
 
 PYBIND11_PLUGIN(pybind11_test_mod) {
     pybind11::module mod("pybind11_test_mod", "Tests for the ndarray library");
-
-    if (_import_array() < 0) {
-        PyErr_SetString(PyExc_ImportError, "numpy.core.multiarray failed to import");
-        return nullptr;
-    }
 
     py::class_<MatrixOwner> cls(mod, "MatrixOwner");
     cls.def(py::init<>());
