@@ -129,7 +129,7 @@ struct PyIntConverterBase : public PyConverterBase<T> {
  */
 template <
     typename T,
-    bool isUnsigned=boost::is_unsigned<T>::value,
+    bool isUnsigned=!boost::is_signed<T>::value,
     int cmpToLong=(sizeof(T) < sizeof(long)) ? -1 : ((sizeof(T)==sizeof(long)) ? 0 : 1)
     >
 struct PyIntConverter;
