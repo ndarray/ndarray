@@ -23,6 +23,7 @@
 #include "Python.h"
 #include "ndarray.h"
 #include "ndarray/converter/PyConverter.h"
+#include "ndarray/converter/PyManager.h"
 
 namespace ndarray {
 namespace detail {
@@ -116,16 +117,6 @@ template <> struct NumpyTraits<std::complex<long double> > {
 };
 
 /// \endcond
-
-/**
- *  @internal @ingroup ndarrayPythonInternalGroup
- *  @brief A destructor for a Python CObject that owns a shared_ptr.
- */
-inline void destroyCapsule(PyObject * p) {
-    void * m = PyCapsule_GetPointer(p, "ndarray.Manager");
-    ndarray::Manager::Ptr * b = reinterpret_cast<ndarray::Manager::Ptr*>(m);
-    delete b;
-}
 
 } // namespace ndarray::detail
 
@@ -291,11 +282,7 @@ struct PyConverter< Array<T,N,C> > : public detail::PyConverterBase< Array<T,N,C
             if (owner != NULL) {
                 Py_INCREF(owner);
             } else {
-                owner = PyCapsule_New(
-                    new Manager::Ptr(m.getManager()),
-                    "ndarray.Manager",
-                    detail::destroyCapsule
-                );
+                owner = makePyManager(m.getManager());
             }
             PyArray_SetBaseObject(reinterpret_cast<PyArrayObject*>(array.get()), owner);
         }
