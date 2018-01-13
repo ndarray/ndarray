@@ -95,5 +95,12 @@ class TestNumpyPybind11(unittest.TestCase):
         b = numpy.array([ 0.,  0.])
         self.assert_(pybind11_test_mod.acceptFullySpecifiedMatrix(a, b))
 
+    def testNonNativeByteOrder(self):
+        d1 = numpy.dtype("<f8")
+        d2 = numpy.dtype(">f8")
+        nonnative = d2 if d1 == numpy.dtype(float) else d1
+        a = numpy.zeros(5, dtype=nonnative)
+        self.assertRaises(TypeError, pybind11_test_mod.acceptArray10, a)
+
 if __name__ == "__main__":
     unittest.main()

@@ -117,6 +117,10 @@ struct Pybind11Helper {
         if (isNone) {
             return ndarray::Array<T,N,C>();
         }
+        if (!pybind11::reinterpret_borrow<pybind11::bool_>(wrapper.dtype().attr("isnative"))) {
+            PyErr_SetString(PyExc_TypeError, "Only arrays with native byteorder can be converted to C++.");
+            throw pybind11::error_already_set();
+        }
         Vector<ndarray::Size,N> nShape;
         Vector<ndarray::Offset,N> nStrides;
         pybind11_np_size_t const * pShape = wrapper.shape();
