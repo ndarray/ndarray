@@ -94,7 +94,7 @@ struct Pybind11Helper {
         pybind11_np_size_t const * strides = wrapper.strides();
         pybind11_np_size_t const itemsize = wrapper.itemsize();
         if (C > 0) {
-            ssize_t requiredStride = itemsize;
+            pybind11_np_size_t requiredStride = itemsize;
             for (int i = 0; i < C; ++i) {
                 if (strides[N-i-1] != requiredStride) {
                     return false;
@@ -102,7 +102,7 @@ struct Pybind11Helper {
                 requiredStride *= shape[N-i-1];
             }
         } else if (C < 0) {
-            ssize_t requiredStride = itemsize;
+            pybind11_np_size_t requiredStride = itemsize;
             for (int i = 0; i < -C; ++i) {
                 if (strides[i] != requiredStride) {
                     return false;
