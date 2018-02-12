@@ -249,15 +249,15 @@ public:
         }
         // check whether the shape is correct if it's static
         if (N == 2) {
-            if (Rows != Eigen::Dynamic && _helper.wrapper.shape(0) != Rows) {
+            if (Rows != Eigen::Dynamic && _helper.wrapper.shape(0) != static_cast<ndarray::pybind11_np_size_t>(Rows)) {
                 return false;
             }
-            if (Cols != Eigen::Dynamic && _helper.wrapper.shape(1) != Cols) {
+            if (Cols != Eigen::Dynamic && _helper.wrapper.shape(1) != static_cast<ndarray::pybind11_np_size_t>(Cols)) {
                 return false;
             }
         } else {
-            ndarray::pybind11_np_size_t requiredSize = Rows * Cols;
-            if (requiredSize != Eigen::Dynamic && _helper.wrapper.size() != requiredSize) {
+            auto requiredSize = Rows * Cols;
+            if (requiredSize != Eigen::Dynamic && _helper.wrapper.size() != static_cast<ndarray::pybind11_np_size_t>(requiredSize)) {
                 return false;
             }
         }
