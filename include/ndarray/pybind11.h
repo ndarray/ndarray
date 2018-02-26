@@ -247,6 +247,9 @@ public:
         } else if (N == 1) {
             _helper.wrapper = _helper.wrapper.squeeze();
         }
+        if (!_helper.check()) {
+            return false;
+        }
         // check whether the shape is correct if it's static
         if (N == 2) {
             if (Rows != Eigen::Dynamic && _helper.wrapper.shape(0) != static_cast<ndarray::pybind11_np_size_t>(Rows)) {
@@ -261,7 +264,7 @@ public:
                 return false;
             }
         }
-        return _helper.check();
+        return true;
     }
 
     void set_value() {
