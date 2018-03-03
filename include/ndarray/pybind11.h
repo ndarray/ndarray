@@ -69,6 +69,9 @@ struct Pybind11Helper {
         if (isNone) {
             return true;
         }
+        if (!Wrapper::check_(src)) {
+            return false;
+        }
         try {
             wrapper = pybind11::reinterpret_borrow<Wrapper>(src);
         } catch (pybind11::error_already_set & err) {
