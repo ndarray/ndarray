@@ -281,52 +281,52 @@ public:
         return Base::operator=(other);
     }
 
-    inline Index innerStride() const { return ST::getInnerStride(*Access::getCore(_array)); }
-    inline Index outerStride() const { return ST::getOuterStride(*Access::getCore(_array)); }
+    inline Eigen::Index innerStride() const { return ST::getInnerStride(*Access::getCore(_array)); }
+    inline Eigen::Index outerStride() const { return ST::getOuterStride(*Access::getCore(_array)); }
 
-    inline Index rowStride() const { return ST::getRowStride(*Access::getCore(_array)); }
-    inline Index colStride() const { return ST::getColStride(*Access::getCore(_array)); }
+    inline Eigen::Index rowStride() const { return ST::getRowStride(*Access::getCore(_array)); }
+    inline Eigen::Index colStride() const { return ST::getColStride(*Access::getCore(_array)); }
 
-    inline Index rows() const { return ST::getRows(*Access::getCore(_array)); }
-    inline Index cols() const { return ST::getCols(*Access::getCore(_array)); }
+    inline Eigen::Index rows() const { return ST::getRows(*Access::getCore(_array)); }
+    inline Eigen::Index cols() const { return ST::getCols(*Access::getCore(_array)); }
 
     inline T* data() const { return _array.getData(); }
 
     inline T* data() { return _array.getData(); }
 
-    inline T& coeff(Index row, Index col) const {
+    inline T& coeff(Eigen::Index row, Eigen::Index col) const {
         return _array.getData()[row * rowStride() + col * colStride()];
     }
 
-    inline T& coeff(Index index) const {
+    inline T& coeff(Eigen::Index index) const {
         return _array.getData()[index * innerStride()];
     }
 
-    inline T& coeffRef(Index row, Index col) const {
+    inline T& coeffRef(Eigen::Index row, Eigen::Index col) const {
       return _array.getData()[row * rowStride() + col * colStride()];
     }
 
-    inline T& coeffRef(Index row, Index col) {
+    inline T& coeffRef(Eigen::Index row, Eigen::Index col) {
       return _array.getData()[row * rowStride() + col * colStride()];
     }
 
-    inline T& coeffRef(Index index) const {
+    inline T& coeffRef(Eigen::Index index) const {
         return _array.getData()[index * innerStride()];
     }
 
-    inline T& coeffRef(Index index) {
+    inline T& coeffRef(Eigen::Index index) {
         return _array.getData()[index * innerStride()];
     }
 
     template <int LoadMode>
-    inline PacketScalar packet(Index row, Index col) const {
+    inline PacketScalar packet(Eigen::Index row, Eigen::Index col) const {
         return Eigen::internal::ploadt<PacketScalar, LoadMode>(
             _array.getData() + (col * colStride() + row * rowStride())
         );
     }
 
     template<int LoadMode>
-    inline PacketScalar packet(Index index) const {
+    inline PacketScalar packet(Eigen::Index index) const {
         BOOST_STATIC_ASSERT( N == 1 );
         return Eigen::internal::ploadt<PacketScalar, LoadMode>(
             _array.getData() + index * innerStride()
@@ -334,7 +334,7 @@ public:
     }
 
     template<int StoreMode>
-    inline void writePacket(Index row, Index col, const PacketScalar& x) {
+    inline void writePacket(Eigen::Index row, Eigen::Index col, const PacketScalar& x) {
         BOOST_STATIC_ASSERT( !boost::is_const<T>::value );
         Eigen::internal::pstoret<Scalar, PacketScalar, StoreMode>(
             _array.getData() + (col * colStride() + row * rowStride()), x
@@ -342,7 +342,7 @@ public:
     }
 
     template<int StoreMode>
-    inline void writePacket(Index index, const PacketScalar& x) {
+    inline void writePacket(Eigen::Index index, const PacketScalar& x) {
         BOOST_STATIC_ASSERT( !boost::is_const<T>::value );
         BOOST_STATIC_ASSERT( N == 1 );
         Eigen::internal::pstoret<Scalar, PacketScalar, StoreMode>(
