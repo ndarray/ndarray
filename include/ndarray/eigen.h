@@ -237,7 +237,8 @@ class EigenView
 public:
     
     typedef typename Eigen::internal::dense_xpr_base< EigenView<T,N,C,XprKind_,Rows_,Cols_> >::type Base;
-
+    typedef typename Eigen::internal::remove_all<XprKind_>::type NestedExpression;
+ 
     EIGEN_DENSE_PUBLIC_INTERFACE(EigenView)
 
     enum { Options = ST::Options };
