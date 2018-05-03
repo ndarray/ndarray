@@ -181,6 +181,7 @@ namespace internal {
 
 template <typename T, int N, int C, typename XprKind_, int Rows, int Cols>
 struct traits< ndarray::EigenView<T,N,C,XprKind_,Rows,Cols> > {
+    typedef int StorageIndex;
     typedef DenseIndex Index;
     typedef Dense StorageKind;
     typedef XprKind_ XprKind;
