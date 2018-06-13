@@ -125,6 +125,13 @@ void invokeAsEigenTests() {
     testAsEigen1<2, XprKind>(a10.transpose());
 }
 
+BOOST_AUTO_TEST_CASE(AsEigen) {
+    invokeAsEigenTests<double, Eigen::ArrayXpr>();
+    invokeAsEigenTests<double, Eigen::MatrixXpr>();
+    invokeAsEigenTests<float const, Eigen::ArrayXpr>();
+    invokeAsEigenTests<float const, Eigen::MatrixXpr>();
+}
+
 template <int C, int Rows, int Cols>
 void testEigenView(ndarray::EigenView<double,2,C,Eigen::ArrayXpr,Rows,Cols> b) {
     ndarray::Array<double,2,C> a(b.shallow());
@@ -246,13 +253,6 @@ void invokeEigenViewTests() {
     testEigenView(a10.transpose().asEigen<XprKind,1,2>());
 }
 
-BOOST_AUTO_TEST_CASE(AsEigen) {
-    invokeAsEigenTests<double, Eigen::ArrayXpr>();
-    invokeAsEigenTests<double, Eigen::MatrixXpr>();
-    invokeAsEigenTests<float const, Eigen::ArrayXpr>();
-    invokeAsEigenTests<float const, Eigen::MatrixXpr>();
-}
-
 BOOST_AUTO_TEST_CASE(EigenView) {
     invokeEigenViewTests<Eigen::ArrayXpr>();
     invokeEigenViewTests<Eigen::MatrixXpr>();
@@ -270,12 +270,13 @@ void testSVD(Matrix const & a, Vector const & b, Vector & x) {
 }
 
 BOOST_AUTO_TEST_CASE(SVD) {
-    typedef ndarray::EigenView<double,2,2> Matrix;
-    typedef ndarray::EigenView<double,1,1> Vector;
-    Matrix a(ndarray::allocate(8,5));
-    Vector b(ndarray::allocate(8));
-    Vector x(ndarray::allocate(5));
+    auto aArray = ndarray::Array<double, 2, 2>(ndarray::allocate(8,5));
+    auto bArray = ndarray::Array<double, 1, 1>(ndarray::allocate(8));
+    auto xArray = ndarray::Array<double, 1, 1>(ndarray::allocate(5));
+    auto a = ndarray::asEigenMatrix(aArray);
+    auto b = ndarray::asEigenMatrix(bArray);
+    auto x = ndarray::asEigenMatrix(xArray);
     a.setRandom();
     b.setRandom();
-    testSVD< Eigen::JacobiSVD<Matrix::PlainEigenType> >(a, b, x);
+    testSVD<Eigen::JacobiSVD<Eigen::MatrixXd>>(a, b, x);
 }
