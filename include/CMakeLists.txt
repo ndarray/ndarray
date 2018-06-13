@@ -1,18 +1,26 @@
 # preprocess files with m4 if needed
-set(FILES
-	"ndarray/ArrayRef.h"
-	"ndarray/ArrayBaseN.h"
-	"ndarray/operators.h"
-	"ndarray/Vector.h"
-	"ndarray/fft/FFTWTraits.h"
-	)
+set(FILES1
+    "ndarray/ArrayBaseN.h"
+    )
 
-set(PREPROCESS_FILES "")
-foreach(FILENAME ${FILES})
-	list(APPEND PREPROCESS_FILES "${CMAKE_CURRENT_SOURCE_DIR}/${FILENAME}")
+set(FILES2
+    "ndarray/ArrayRef.h"
+    "ndarray/operators.h"
+    "ndarray/Vector.h"
+    "ndarray/fft/FFTWTraits.h"
+    )
+
+set(PREPROCESS_FILES1 "")
+foreach(FILENAME ${FILES1})
+	list(APPEND PREPROCESS_FILES1 "${CMAKE_CURRENT_SOURCE_DIR}/${FILENAME}")
 endforeach(FILENAME)
 
-foreach(FILENAME ${PREPROCESS_FILES})
+set(PREPROCESS_FILES2 "")
+foreach(FILENAME ${FILES2})
+    list(APPEND PREPROCESS_FILES2 "${CMAKE_CURRENT_SOURCE_DIR}/${FILENAME}")
+endforeach(FILENAME)
+
+foreach(FILENAME ${PREPROCESS_FILES1})
 	add_custom_command (
 		OUTPUT ${FILENAME}
 		DEPENDS ${FILENAME}.m4
@@ -20,4 +28,14 @@ foreach(FILENAME ${PREPROCESS_FILES})
 		)
 endforeach(FILENAME)
 
-add_custom_target(preprocess_includes ALL DEPENDS ${PREPROCESS_FILES})
+foreach(FILENAME ${PREPROCESS_FILES2})
+    add_custom_command (
+        OUTPUT ${FILENAME}
+        DEPENDS ${FILENAME}.m4
+        COMMAND m4 ${FILENAME}.m4 > ${FILENAME}
+        )
+endforeach(FILENAME)
+
+add_custom_target(preprocess_includes1 ALL DEPENDS ${PREPROCESS_FILES1})
+add_custom_target(preprocess_includes2 ALL DEPENDS ${PREPROCESS_FILES2})
+add_dependencies(preprocess_includes2 preprocess_includes1)
