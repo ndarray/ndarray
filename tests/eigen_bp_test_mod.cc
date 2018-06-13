@@ -8,6 +8,7 @@
  * of the source distribution, or alternately available at:
  * https://github.com/ndarray/ndarray
  */
+#include "ndarray/buildOptions.h"
 #include "ndarray/eigen/bp/auto.h"
 
 namespace bp = boost::python;
@@ -35,6 +36,8 @@ void fillMatrix(M & m) {
     m(1,2) = 6;
 }
 
+#ifdef NDARRAY_EIGENVIEW
+
 template <typename M>
 M returnEigenView() {
     static typename boost::remove_const<typename boost::remove_reference<M>::type>::type m(
@@ -43,6 +46,8 @@ M returnEigenView() {
     fillMatrix(m);
     return m;
 }
+
+#endif NDARRAY_EIGENVIEW
 
 template <typename M>
 M returnMatrix() {
@@ -102,6 +107,8 @@ public:
 
 static const int X = Eigen::Dynamic;
 
+#ifdef NDARRAY_EIGENVIEW
+
 template <typename T, typename XprKind, int Rows, int Cols>
 void wrapEigenView(std::string const & name) {
     bp::def(("accept" + name + "_2p2").c_str(),
@@ -126,8 +133,13 @@ void wrapEigenView(std::string const & name) {
             returnEigenView<ndarray::EigenView<T,2,-2,XprKind,Rows,Cols> >);
 }
 
+#endif  // NDARRAY_EIGENVIEW
+
 BOOST_PYTHON_MODULE(eigen_bp_test_mod) {
     bn::initialize();
+
+#ifdef NDARRAY_EIGENVIEW
+
     wrapEigenView<double,Eigen::MatrixXpr,2,3>("EigenView_M23d");
     wrapEigenView<double,Eigen::MatrixXpr,X,3>("EigenView_MX3d");
     wrapEigenView<double,Eigen::MatrixXpr,2,X>("EigenView_M2Xd");
@@ -145,6 +157,8 @@ BOOST_PYTHON_MODULE(eigen_bp_test_mod) {
     wrapEigenView<int,Eigen::ArrayXpr,X,3>("EigenView_AX3i");
     wrapEigenView<int,Eigen::ArrayXpr,2,X>("EigenView_A2Xi");
     wrapEigenView<int,Eigen::ArrayXpr,X,X>("EigenView_AXXi");
+
+#endif  // NDARRAY_EIGENVIEW
 
     bp::def("acceptMatrix_23d_cref", acceptMatrix< Eigen::Matrix<double,2,3> const & >);
     bp::def("acceptMatrix_X3d_cref", acceptMatrix< Eigen::Matrix<double,X,3> const & >);

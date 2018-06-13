@@ -16,8 +16,12 @@ changecom(`###')dnl
 
 #include "boost/numpy.hpp"
 #include "ndarray/eigen/bp/EigenView.h"
+#include "ndarray/buildOptions.h"
+
+#ifdef NDARRAY_EIGENVIEW
 
 BP_AUTO_CONVERTERS(`typename T, int N, int C, typename XprKind_, int Rows_, int Cols_',
                    `ndarray::EigenView<T,N,C,XprKind_,Rows_,Cols_>')dnl
 
+#endif  // NDARRAY_EIGENVIEW
 #endif // !NDARRAY_EIGEN_BP_AUTO_EigenView_h_INCLUDED

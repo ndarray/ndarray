@@ -17,6 +17,8 @@ project(ndarray)
 option(NDARRAY_SWIG "Enable .i file installation and swig tests?" ON)
 option(NDARRAY_TEST "Enable tests?" ON)
 option(NDARRAY_EIGEN "Enable Eigen tests?" ON)
+option(NDARRAY_EIGENVIEW "Enable ndarray::EigenView (requires Eigen < 3.3)?" OFF)
+option(NDARRAY_STDPYBIND11EIGEN "Enable standard pybind11 Eigen wrappers (requires Eigen > 3.2.5)?" OFF)
 option(NDARRAY_FFTW "Enable FFTW tests?" ON)
 option(NDARRAY_PYBIND11 "Enable Pybind11 tests?" OFF)
 
@@ -40,6 +42,10 @@ if(DOXYGEN_FOUND)
     COMMENT "Running Doxygen" VERBATIM
 )
 endif(DOXYGEN_FOUND)
+
+if(NDARRAY_EIGENVIEW AND NDARRAY_STDPYBIND11EIGEN)
+    message(FATAL_ERROR "NDARRAY_EIGENVIEW and NDARRAY_STDPYBIND11EIGEN cannot both be enabled")
+endif()
 
 if(NDARRAY_TEST)
     enable_testing()

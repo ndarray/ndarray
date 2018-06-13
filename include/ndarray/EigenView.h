@@ -10,7 +10,6 @@
  */
 #ifndef NDARRAY_EigenView_h_INCLUDED
 #define NDARRAY_EigenView_h_INCLUDED
-#ifdef ENABLE_EIGENVIEW
 
 /**
  *  @file ndarray/EigenView.h
@@ -27,6 +26,9 @@
 #include "Eigen/Core"
 #include "ndarray.h"
 #include "ndarray/eigen_fwd.h"
+#include "ndarray/buildOptions.h"
+
+#ifdef NDARRAY_EIGENVIEW
 
 namespace ndarray {
 namespace detail {
@@ -431,5 +433,5 @@ ArrayBase<Derived>::asEigen() const {
 
 }  // namespace ndarray
 
-#endif  // ENABLE_EIGENVIEW_XX
+#endif  // NDARRAY_EIGENVIEW
 #endif // !NDARRAY_EigenView_h_INCLUDED

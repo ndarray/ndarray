@@ -9,6 +9,7 @@
  * https://github.com/ndarray/ndarray
  */
 #include "ndarray/eigen.h"
+#include "ndarray/buildOptions.h"
 #include "Eigen/SVD"
 
 #define BOOST_TEST_DYN_LINK
@@ -131,6 +132,8 @@ BOOST_AUTO_TEST_CASE(AsEigen) {
     invokeAsEigenTests<float const, Eigen::ArrayXpr>();
     invokeAsEigenTests<float const, Eigen::MatrixXpr>();
 }
+
+#ifdef NDARRAY_EIGENVIEW
 
 template <int C, int Rows, int Cols>
 void testEigenView(ndarray::EigenView<double,2,C,Eigen::ArrayXpr,Rows,Cols> b) {
@@ -261,6 +264,8 @@ BOOST_AUTO_TEST_CASE(EigenView) {
     ndarray::SelectEigenView<Eigen::MatrixXd>::Type v(ndarray::copy(m));
     BOOST_CHECK( (v.array() == m.array()).all() );
 }
+
+#endif  // NDARRAY_EIGENVIEW
 
 template <typename SVD, typename Matrix, typename Vector>
 void testSVD(Matrix const & a, Vector const & b, Vector & x) {
