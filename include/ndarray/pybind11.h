@@ -44,9 +44,15 @@
 #include "pybind11.h"
 #include "pybind11/numpy.h"
 
+#include "ndarray/buildOptions.h"
+#ifdef NDARRAY_STDPYBIND11EIGEN
+#include "pybind11/eigen.h"
+#endif  // NDARRAY_STDPYBIND11EIGEN
+
 #include "ndarray.h"
 #include "ndarray/eigen.h"
 #include "ndarray/converter/PyManager.h"
+#include "ndarray/buildOptions.h"
 
 namespace ndarray {
 
@@ -220,6 +226,8 @@ private:
     ndarray::Array<T,N,C> _value;
     Helper _helper;
 };
+
+#ifdef NDARRAY_EIGENVIEW
 
 /* @brief A pybind11 type_caster for ndarray::EigenView
  */
@@ -403,6 +411,8 @@ private:
     Eigen::Matrix<T,R,C,O,MR,MC> _value;
     type_caster< InputView > _nested;
 };
+
+#endif  // NDARRAY_EIGENVIEW
 
 NAMESPACE_END(detail)
 NAMESPACE_END(pybind11)

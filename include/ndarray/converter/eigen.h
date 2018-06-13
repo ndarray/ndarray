@@ -16,9 +16,12 @@
  *  @brief Python C-API conversions for Eigen matrices.
  */
 
+#include "ndarray/buildOptions.h"
 #include "ndarray/eigen.h"
 #include "ndarray/converter.h"
 #include "ndarray/converter/eigen.h"
+
+#ifdef NDARRAY_EIGENVIEW
 
 namespace ndarray {
 
@@ -146,4 +149,5 @@ struct PyConverter< Eigen::Array<Scalar,Rows,Cols,Options,MaxRows,MaxCols> >
 
 } // namespace ndarray
 
+#endif  // NDARRAY_EIGENVIEW
 #endif // !NDARRAY_CONVERTER_eigen_h_INCLUDED

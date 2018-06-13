@@ -21,11 +21,11 @@ foreach(FILENAME ${FILES2})
 endforeach(FILENAME)
 
 foreach(FILENAME ${PREPROCESS_FILES1})
-	add_custom_command (
-		OUTPUT ${FILENAME}
-		DEPENDS ${FILENAME}.m4
-		COMMAND m4 ${FILENAME}.m4 > ${FILENAME}
-		)
+    add_custom_command (
+        OUTPUT ${FILENAME}
+        DEPENDS ${FILENAME}.m4 "ndarray/buildOptions.h.in"
+        COMMAND m4 ${FILENAME}.m4 > ${FILENAME}
+        )
 endforeach(FILENAME)
 
 foreach(FILENAME ${PREPROCESS_FILES2})
@@ -35,6 +35,9 @@ foreach(FILENAME ${PREPROCESS_FILES2})
         COMMAND m4 ${FILENAME}.m4 > ${FILENAME}
         )
 endforeach(FILENAME)
+
+# record certain build options
+configure_file(ndarray/buildOptions.h.in "${CMAKE_CURRENT_SOURCE_DIR}/ndarray/buildOptions.h")
 
 add_custom_target(preprocess_includes1 ALL DEPENDS ${PREPROCESS_FILES1})
 add_custom_target(preprocess_includes2 ALL DEPENDS ${PREPROCESS_FILES2})
