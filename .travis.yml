@@ -40,7 +40,16 @@ install:
 script:
   - mkdir build
   - cd build
-  - cmake -DNDARRAY_PYBIND11=ON .. && make && make test ARGS="-V"
+
+  - cmake -DNDARRAY_PYBIND11=ON ..
+  - make
+  - make test ARGS="-V"
+
+  - rm CMakeCache.txt
+  - cmake -DNDARRAY_PYBIND11=ON -DNDARRAY_EIGENVIEW=ON ..
+  - make
+  - make test ARGS="-V"
+
   - make doc
 
 deploy:
