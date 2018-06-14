@@ -46,7 +46,7 @@ if(NDARRAY_FFTW)
 endif(NDARRAY_FFTW)
 
 ### Python resolution
-if(NDARRAY_SWIG OR NDARRAY_PYBIND11)
+if(NDARRAY_PYBIND11)
     find_package(PythonInterp REQUIRED)
     find_package(PythonLibs REQUIRED)
     find_package(NumPy REQUIRED)
@@ -56,30 +56,6 @@ if(NDARRAY_SWIG OR NDARRAY_PYBIND11)
         ${NUMPY_INCLUDE_DIRS}
     )
 ENDIF()
-
-###SWIG dependency tests (also depend on Eigen)
-if(NDARRAY_SWIG)
-    if (NDARRAY_EIGEN)
-        find_package(SWIG REQUIRED)
-        include(${SWIG_USE_FILE})
-
-        set_property(SOURCE swig_test_mod.i PROPERTY CPLUSPLUS ON)
-        swig_add_module(swig_test_mod python swig_test_mod.i)
-
-        if (APPLE)
-            swig_link_libraries(swig_test_mod "-undefined dynamic_lookup")
-        else ()
-            swig_link_libraries(swig_test_mod "-shared")
-        endif()
-
-        configure_file(swig_test.py swig_test.py COPYONLY)
-        add_test(NAME swig_test
-            COMMAND ${PYTHON_EXECUTABLE}
-            ${CMAKE_CURRENT_BINARY_DIR}/swig_test.py)
-    else(NDARRAY_EIGEN)
-        message(STATUS "Skipping Swig tests as they depend on Eigen")
-    endif(NDARRAY_EIGEN)
-endif(NDARRAY_SWIG)
 
 ###Pybind11 dependency tests (also depend on Eigen)
 if(NDARRAY_PYBIND11)

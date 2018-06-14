@@ -55,14 +55,6 @@ if pyEnv.havePython:
                           mod,
                           Move(os.path.join(Dir('.').srcnode().abspath, "python_test_mod.pyd"), mod[0]))
     PythonUnitTest(pyEnv, "python_test.py", mod)
-    if pyEnv.haveSwig and pyEnv.haveEigen:
-        mod = pyEnv.LoadableModule("_swig_test_mod", ["swig_test_mod.i"], SHLIBPREFIX="")
-        if os.name == 'nt':
-            # Move the module to have the correct name.
-            mod = env.Command(os.path.join(Dir('.').srcnode().abspath, "_swig_test_mod.pyd"),
-                              mod,
-                              Move(os.path.join(Dir('.').srcnode().abspath, "_swig_test_mod.pyd"), mod[0]))
-        PythonUnitTest(pyEnv, "swig_test.py", mod)
 
 if bpEnv.haveBoostPython:
     libs = bpEnv.get("LIBS", []) + ["boost_numpy"]
