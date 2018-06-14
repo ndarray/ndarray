@@ -61,16 +61,11 @@ pyEnv = env.Clone()
 if building:
     config = pyEnv.Configure(custom_tests=checks)
     havePython = config.CheckPython() and config.CheckNumPy()
-    haveSwig = havePython and config.CheckSwig()
-    if haveSwig:
-        pyEnv.AppendUnique(SWIGPATH = ["#include"])
     config.CheckBoostPP()
     pyEnv = config.Finish()
 else:
     havePython = False
-    haveSwig = False
 pyEnv.havePython = havePython
-pyEnv.haveSwig = haveSwig
 
 bpEnv = pyEnv.Clone()
 if building:

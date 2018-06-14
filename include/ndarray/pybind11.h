@@ -51,10 +51,27 @@
 
 #include "ndarray.h"
 #include "ndarray/eigen.h"
-#include "ndarray/converter/PyManager.h"
 #include "ndarray/buildOptions.h"
 
 namespace ndarray {
+
+namespace detail {
+
+inline void destroyCapsule(PyObject * p) {
+    void * m = PyCapsule_GetPointer(p, "ndarray.Manager");
+    Manager::Ptr * b = reinterpret_cast<Manager::Ptr*>(m);
+    delete b;
+}
+
+} // namespace ndarray::detail
+
+inline PyObject* makePyManager(Manager::Ptr const & m) {
+    return PyCapsule_New(
+        new Manager::Ptr(m),
+        "ndarray.Manager",
+        detail::destroyCapsule
+    );
+}
 
 #if PYBIND11_VERSION_MAJOR == 2 && PYBIND11_VERSION_MINOR <= 1
 using pybind11_np_size_t = size_t;

@@ -14,7 +14,6 @@ project(ndarray)
 # The test phase may rely on external libraries, which are enabled via the
 # options below. Library resolution is deferred to tests/CMakeLists.txt and
 # only executed if NDARRAY_TEST is enabled.
-option(NDARRAY_SWIG "Enable .i file installation and swig tests?" ON)
 option(NDARRAY_TEST "Enable tests?" ON)
 option(NDARRAY_EIGEN "Enable Eigen tests?" ON)
 option(NDARRAY_EIGENVIEW "Enable ndarray::EigenView (requires Eigen < 3.3)?" OFF)
@@ -55,8 +54,3 @@ endif(NDARRAY_TEST)
 # installation
 install(DIRECTORY include/ DESTINATION include/
         FILES_MATCHING PATTERN "*.h")
-
-if(NDARRAY_SWIG)
-    install(DIRECTORY include/ DESTINATION include/
-            FILES_MATCHING PATTERN "*.i")
-endif(NDARRAY_SWIG)
