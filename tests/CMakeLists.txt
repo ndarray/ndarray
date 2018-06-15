@@ -64,6 +64,12 @@ if(NDARRAY_PYBIND11)
 
         include_directories(${PYBIND11_INCLUDE_DIR})
 
+        # Either pybind11 2.1.x doesn't set the module extension appropriately,
+        # or ndarray is inadvertently squashing it.  In any case, the problem
+        # goes away with pybind11 2.2.x, and in the meantime this fixes it.
+        # It probably wouldn't work on Windows, but we don't care about that.
+        set(PYTHON_MODULE_EXTENSION ".so")
+
         pybind11_add_module(pybind11_test_mod pybind11_test_mod.cc)
 
         configure_file(pybind11_test.py pybind11_test.py COPYONLY)
