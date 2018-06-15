@@ -13,23 +13,7 @@ ndarray.github.io/ndarray](http://ndarray.github.io/ndarray/).
 Building from Git
 -----------------
 
-ndarray includes the Boost.NumPy library using git's "submodules"
-feature.  When you clone the ndarray repository with git, you'll get
-an empty Boost.NumPy directory.  Even if you don't plan to use
-Boost.NumPy (which is required only if you want to build the
-Boost.Python bindings for ndarray), it *is* necessary to checkout the
-Boost.NumPy source (as parts of the build system is shared).  So,
-immediately after cloning ndarray, you'll need to run:
-
-git submodule update --init --recursive
-
-From there, you'll be able to build ndarray and (optionally)
-Boost.NumPy together just by running "scons" from the root of the
-ndarray clone.
-
-A partial cmake build has also recently been added, and we expect it to
-eventually replace SCons as the recommended approach, but it does not yet
-support building against Boost.NumPy to provide bindings for Boost.Python. 
+CMake is the supported way to build ndarray.
 
 To build with cmake, do:
 
@@ -44,6 +28,32 @@ options. Dependency resolution can be controlled by the PYBIND11_DIR,
 EIGEN_DIR, and FFTW_DIR environment variables. For example, to build with an
 alternate Eigen3 install location and disable FFTW testing replace `cmake ..`
 with `EIGEN_DIR=/opt/local cmake -DNDARRY_FFTW=OFF ..`.
+
+ndarray::EigenView is not compatible with Eigen >= 3.3,
+nor is it compatible with pybind11's default Eigen wrappers.
+To build without ndarray::EigenView use cmake option `-DNDARRAY_EIGENVIEW=OFF`
+
+However, the cmake build does not support Boost.NumPy library
+and Boost.Python wrappers, which are deprecated in favor of pybind11.
+If you are keen to use Boost.Python you can try the older
+scons build files, as follows
+
+ndarray includes the Boost.NumPy library using git's "submodules"
+feature.  When you clone the ndarray repository with git, you'll get
+an empty Boost.NumPy directory.  Even if you don't plan to use
+Boost.NumPy (which is required only if you want to build the
+Boost.Python bindings for ndarray), it *is* necessary to checkout the
+Boost.NumPy source (as parts of the build system is shared).  So,
+immediately after cloning ndarray, you'll need to run:
+
+git submodule update --init --recursive
+
+From there, you'll be able to build ndarray and (optionally)
+Boost.NumPy together just by running "scons" from the root of the
+ndarray clone.
+
+Version 1.4.2 of ndarray is the last version to support SWIG.
+
 
 Building from Compressed Source
 -------------------------------

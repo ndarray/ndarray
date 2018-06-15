@@ -201,6 +201,33 @@ struct SelectEigenMap<T, 2, -2, XprKind> {
 } // namespace detail
 
 
+//@{
+/**
+ *  Use asEigenArray(array) or asEigen<Eigen::ArrayXpr>(array)
+ *  to obtain an Eigen::Array-like view of an ndarray array.
+ *  Use asEigenMatrix(array) or asEigen<Eigen::MatrixXpr>(array)
+ *  to obtain an Eigen::Matrix-like view of an ndarray array.
+ *  The returned view is an Eigen::Map whose memory is owned by the ndarray array.
+ *
+ *  Be careful when calling these functions on a temporary ndarray array,
+ *  as you must keep the temporary alive until you are done with the returned Eigen::Map.
+ *  For example the following will have undefined behavior:
+ *
+ *     auto eigenMap = asEigenMatrix(makeNdArray(...));
+ *     // at this point the temporary ndarray array is gone and eigenMap is broken
+ *     processMatrix(eigenMap);
+ *
+ *  This version is safe:
+ *
+ *     processMatrix(asEigenMatrix(makeNdArray(...)));
+ *
+ *  This version is also safe and allows you to do additional processing of the Eigen map:
+ *
+ *     auto arr = makeNdArray(...);
+ *     auto eigenMap = asEigenMatrix(arr);
+ *     processMatrix(eigenMap);
+ *     // ... do more with eigenMap
+ */
 template <typename XprKind, typename T, int N, int C>
 typename detail::SelectEigenMap<T, N, C, XprKind>::Type
 asEigen(Array<T, N, C> const & a) {
@@ -212,7 +239,6 @@ typename detail::SelectEigenMap<T, N, C, XprKind>::Type
 asEigen(ArrayRef<T, N, C> const & a) {
     return detail::SelectEigenMap<T, N, C, XprKind>::apply(a);
 }
-
 
 template <typename T, int N, int C>
 typename detail::SelectEigenMap<T, N, C, Eigen::ArrayXpr>::Type
@@ -237,6 +263,7 @@ typename detail::SelectEigenMap<T, N, C, Eigen::MatrixXpr>::Type
 asEigenMatrix(ArrayRef<T, N, C> const & a) {
     return asEigen<Eigen::MatrixXpr, T, N, C>(a);
 }
+//@}
 
 } // namespace ndarray
 
