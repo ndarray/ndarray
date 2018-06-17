@@ -60,7 +60,4 @@ Building from Compressed Source
 
 GitHub's automatically generated tarballs and zip files don't include
 the Boost.NumPy submodule or the git metadata needed to run "git
-submodule", so these features can't be used to download ndarray.
-
-When we post release downloads, however, we'll include the Boost.NumPy
-source so they can be built directly.
+submodule", so these features can't be used from release tarball.  Please download from git if you want to use the Boost.NumPy interface.
