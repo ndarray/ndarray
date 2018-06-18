@@ -1,5 +1,11 @@
 # ndarray change log
 
+## 1.5.1
+
+### Bug fixes
+
+Reverted a non-portable workaround for bad module suffixes with pybind11 2.1.x.  Please just use pybind11 2.2.x instead.
+
 ## 1.5.0
 
 ### New features

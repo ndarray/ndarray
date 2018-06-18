@@ -33,6 +33,8 @@ ndarray::EigenView is not compatible with Eigen >= 3.3,
 nor is it compatible with pybind11's default Eigen wrappers.
 To build without ndarray::EigenView use cmake option `-DNDARRAY_EIGENVIEW=OFF`
 
+ndarray's build system does not produce the correct suffixes for pybind11 outputs under pybind11 2.1.x (due to a bug in pybind11 itself).  To avoid this problem, please upgrade to pybind11 2.2.x, or try the (now reverted) patch from ndarray commit f46c0f0ff876ceab5aaa3286e5f6e86902e72feb.
+
 However, the cmake build does not support Boost.NumPy library
 and Boost.Python wrappers, which are deprecated in favor of pybind11.
 If you are keen to use Boost.Python you can try the older
