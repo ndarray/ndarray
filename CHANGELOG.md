@@ -22,6 +22,10 @@ Added build option `-DNDARRAY_STDPYBIND11EIGEN` which, if ON, imports `pybind11/
 The intent is to make it easier to port old pybind11 wrappers that used EigenView. The default is `OFF`.
 `-DNDARRAY_EIGENVIEW` and `-DNDARRAY_STDPYBIND11EIGEN` cannot both be `ON`.
 
+### Deprecations and removals
+
+Support for SWIG has been dropped as of the 1.5.0 release.
+
 ### Bug fixes
 
 Fixed a race condition in the cmake build files: ArrayBaseN.h.m4 might not be processed before other
