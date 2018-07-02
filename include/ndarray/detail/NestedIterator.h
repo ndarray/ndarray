@@ -17,7 +17,6 @@
  *  @brief Definition of NestedIterator.
  */
 
-#include <boost/iterator/iterator_facade.hpp>
 #include "ndarray_fwd.h"
 
 namespace ndarray {
@@ -26,37 +25,25 @@ namespace detail {
 /**
  *  @internal @brief Nested-array iterator class for Array with ND > 1.
  *
- *  While this iterator makes use of boost::iterator_facade, it
- *  reimplements the actual dereferencing operations (operator*,
- *  operator->) to return <b><tt>Reference const &</tt></b> and
- *  <b><tt>Reference const *</tt></b>, even though these are
- *  only convertible to the <b><tt>reference</tt></b> and
- *  <b><tt>pointer</tt></b> types associated with the iterator,
- *  not the types themselves.
+ *  NestedIterator does not support multi-pass algorithms, so it is formally
+ *  just an InputIterator.  It nevertheless supports efficient indexing,
+ *  arithmetic, and comparison operations of the sort provided by
+ *  RandomAccessIterator.
  *
  *  @ingroup ndarrayInternalGroup
  */
 template <typename T, int N, int C>
-class NestedIterator : public boost::iterator_facade<
-    NestedIterator<T,N,C>,
-    typename ArrayTraits<T,N,C>::Value,
-    boost::random_access_traversal_tag,
-    typename ArrayTraits<T,N,C>::Reference
-    >
-{
+class NestedIterator {
 public:
+
+    typedef typename ArrayTraits<T,N,C>::Value value_type;
+    typedef typename ArrayTraits<T,N,C>::Reference const & reference;
+    typedef typename ArrayTraits<T,N,C>::Reference const * pointer;
+    typedef Offset difference_type;
+    typedef std::input_iterator_tag iterator_category;
+
     typedef typename ArrayTraits<T,N,C>::Value Value;
     typedef typename ArrayTraits<T,N,C>::Reference Reference;
-    
-    Reference operator[](Size n) const {
-        Reference r(_ref);
-        r._data += n * _stride;
-        return r;
-    }
-
-    Reference const & operator*() const { return _ref; }
-
-    Reference const * operator->() { return &_ref; }
 
     NestedIterator() : _ref(Value()), _stride(0) {}
 
@@ -66,6 +53,19 @@ public:
 
     template <typename T_, int C_>
     NestedIterator(NestedIterator<T_,N,C_> const & other) : _ref(other._ref), _stride(other._stride) {}
+
+    // Return Reference (ArrayRef) instead of Value (Array) so
+    // `iter[n] = <expr>` copies values, not pointers.  Can't
+    // return (lowercase) reference because it's a temporary.
+    Reference operator[](Size n) const {
+        Reference r(_ref);
+        r._data += n * _stride;
+        return r;
+    }
+
+    reference operator*() const { return _ref; }
+
+    pointer operator->() { return &_ref; }
 
     NestedIterator & operator=(NestedIterator const & other) {
         if (&other != this) {
@@ -84,27 +84,94 @@ public:
         return *this;
     }
 
-private:
-
-    friend class boost::iterator_core_access;
-
-    template <typename T_, int N_, int C_> friend class NestedIterator;
-
-    Reference const & dereference() const { return _ref; }
-
-    void increment() { _ref._data += _stride; }
-    void decrement() { _ref._data -= _stride; }
-    void advance(Offset n) { _ref._data += _stride * n; }
-
     template <typename T_, int C_>
-    Offset distance_to(NestedIterator<T_,N,C_> const & other) const {
-        return std::distance(_ref._data, other._ref._data) / _stride; 
-    }
-
-    template <typename T_, int C_>
-    bool equal(NestedIterator<T_,N,C_> const & other) const {
+    bool operator==(NestedIterator<T_,N,C_> const & other) const {
         return _ref._data == other._ref._data;
     }
+
+    template <typename T_, int C_>
+    bool operator!=(NestedIterator<T_,N,C_> const & other) const {
+        return !(*this == other);
+    }
+
+    template <typename T_, int C_>
+    bool operator<(NestedIterator<T_,N,C_> const & other) const {
+        return _ref._data < other._ref._data;
+    }
+
+    template <typename T_, int C_>
+    bool operator>(NestedIterator<T_,N,C_> const & other) const {
+        return _ref._data > other._ref._data;
+    }
+
+    template <typename T_, int C_>
+    bool operator<=(NestedIterator<T_,N,C_> const & other) const {
+        return _ref._data <= other._ref._data;
+    }
+
+    template <typename T_, int C_>
+    bool operator>=(NestedIterator<T_,N,C_> const & other) const {
+        return _ref._data >= other._ref._data;
+    }
+
+    NestedIterator & operator++() {
+        _ref._data += _stride;
+        return *this;
+    }
+
+    NestedIterator & operator--() {
+        _ref._data -= _stride;
+        return *this;
+    }
+
+    NestedIterator operator++(int) {
+        NestedIterator copy(*this);
+        ++(*this);
+        return copy;
+    }
+
+    NestedIterator operator--(int) {
+        NestedIterator copy(*this);
+        --(*this);
+        return copy;
+    }
+
+    NestedIterator & operator+=(difference_type n) {
+        _ref._data += _stride*n;
+        return *this;
+    }
+
+    NestedIterator & operator-=(difference_type n) {
+        _ref._data -= _stride*n;
+        return *this;
+    }
+
+    NestedIterator operator+(difference_type n) {
+        NestedIterator copy(*this);
+        copy += n;
+        return copy;
+    }
+
+    NestedIterator operator-(difference_type n) {
+        NestedIterator copy(*this);
+        copy -= n;
+        return copy;
+    }
+
+    friend NestedIterator operator+(difference_type n, NestedIterator const & self) {
+        NestedIterator copy(self);
+        copy += n;
+        return copy;
+    }
+
+    template <typename T_, int C_>
+    difference_type operator-(NestedIterator<T_,N,C_> const & other) {
+        return (_ref.data - other._ref._data) / _stride;
+    }
+
+private:
+
+    template <typename T_, int N_, int C_> friend class NestedIterator;
 
     Reference _ref;
     Offset _stride;

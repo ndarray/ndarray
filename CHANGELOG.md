@@ -1,5 +1,12 @@
 # ndarray change log
 
+## 1.5.2
+
+### Bug fixes
+
+Correctly declared higher-dimensional (>1) iterators to be InputIterators,
+not RandomAccessIterators.
+
 ## 1.5.1
 
 ### Bug fixes
