@@ -64,6 +64,7 @@ if(pybind11_FOUND)
 
     ndarray_add_python_test_module(__init__)
     ndarray_add_python_test_module(compilation)
+    ndarray_add_python_test(Array)
 
 else()
 
