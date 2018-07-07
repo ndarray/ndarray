@@ -159,7 +159,7 @@ class Compiler:
 compiler = Compiler.fromCMake(COMPILE_COMMAND_CMAKE_TARGET)
 
 
-class SnippetFormatter:
+class SnippetContext:
     """A helper for formatting code snippets into compileable files.
 
     Parameters
@@ -189,7 +189,6 @@ class SnippetFormatter:
         self.prefix = prefix
         self.suffix = suffix
         self.indent = indent
-        self._partial = tuple(base._partial) if base is not None else tuple()
 
         def inherit_arg(arg, default):
             given = getattr(self, arg)
@@ -211,8 +210,7 @@ class SnippetFormatter:
 
     def __call__(self, code):
         """Format the given code."""
-        lines = list(self._partial)
-        lines.extend(textwrap.dedent(code).splitlines())
+        lines = textwrap.dedent(code).splitlines()
         b = io.StringIO()
         b.write(self.preamble)
         b.write("\n")
@@ -227,11 +225,6 @@ class SnippetFormatter:
         b.write("\n")
         return b.getvalue()
 
-    def partial(self, code):
-        r = SnippetFormatter(base=self)
-        r._partial += tuple(textwrap.dedent(code).splitlines())
-        return r
-
 
 def make_snippet_name(frame):
     module, _ = os.path.splitext(os.path.basename(frame.filename))
@@ -242,7 +235,7 @@ class CompilationTestMixin:
     """A unittest.TestCase mixin for testing code compilation.
     """
 
-    def assertCompiles(self, code, name=None, output_dir=None, formatter=None, **kwds):
+    def assertCompiles(self, code, name=None, output_dir=None, context=None, **kwds):
         """Assert that a code snippet does not compile.
 
         Parameters
@@ -255,9 +248,9 @@ class CompilationTestMixin:
             module, line number, and name are used to construct a name.
         output_dir : `str`, path-like
             Directory for source and output files.
-        formatter : callable, optional
+        context : callable, optional
             A callable to apply to the code before compiling it (typically
-            a `SnippetFormatter`).   If provided, the original code snippet
+            a `SnippetContext`).   If provided, the original code snippet
             will be included in any test failure messages.
 
         Additional keyword arguments are passed to Compiler.compile.
@@ -266,19 +259,20 @@ class CompilationTestMixin:
             name = make_snippet_name(inspect.stack()[1])
         if output_dir is None:
             output_dir = OUTPUT_DIR
-        if formatter is not None:
-            code = formatter(code)
+        if context is not None:
+            code = context(code)
         process, _ = compiler.compile(name, code, output_dir=output_dir, **kwds)
         self.assertEqual(process.returncode, 0, msg="{} did not compile".format(name))
 
     def assertDoesNotCompile(self, code, name=None, stderr_regex=None, stdout_regex=None,
-                             output_dir=None, formatter=None, **kwds):
+                             output_dir=None, context=None, **kwds):
         """Assert that a code snippet does not compile.
 
         Parameters
         ----------
-        lines : `str`
-            Code to be compiled.
+        code : `str`, `list`, or `tuple`
+            Code to be compiled.  If a list or tuple, elements will be joined
+            by newlines to form a string.
         name : `str`, optional
             Name of the snippet; used to generate filenames for source and
             output files.  If not provided, the calling method's
@@ -291,7 +285,7 @@ class CompilationTestMixin:
             Like ``stderr_regex``, but applied to STDOUT.
         output_dir : `str`, path-like
             Directory for source and output files.
-        formatter : callable, optional
+        context : callable, optional
             A callable to apply to the code before compiling it (typically
             a `SnippetFormatter`).
 
@@ -301,8 +295,10 @@ class CompilationTestMixin:
             name = make_snippet_name(inspect.stack()[1])
         if output_dir is None:
             output_dir = OUTPUT_DIR
-        if formatter is not None:
-            code = formatter(code)
+        if isinstance(code, (list, tuple)):
+            code = "\n".join(code)
+        if context is not None:
+            code = context(code)
         process, _ = compiler.compile(name, code, output_dir=output_dir, **kwds)
         self.assertNotEqual(process.returncode, 0, msg="{} unexpectedly compiled".format(name))
         if stderr_regex is not None:
