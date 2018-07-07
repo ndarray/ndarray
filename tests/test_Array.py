@@ -11,19 +11,18 @@
 import unittest
 import itertools
 from collections import namedtuple
-from .compilation import CompilationTestMixin, SnippetFormatter
+from .compilation import CompilationTestMixin, SnippetContext
 
 
 def load_tests(loader, tests, pattern):
     suite = unittest.TestSuite()
-    suite.addTests(ArrayConversionTestCase.makeSuite1d())
-    suite.addTests(ArrayConversionTestCase.makeSuite2d())
+    suite.addTests(ArrayTestCase.makeSuite())
     return suite
 
 
-class ArrayConversionTestCase(unittest.TestCase, CompilationTestMixin):
+class ArrayTestCase(unittest.TestCase, CompilationTestMixin):
 
-    formatter = SnippetFormatter(
+    context = SnippetContext(
         """
         #include "ndarray/Array.hpp"
 
@@ -32,7 +31,7 @@ class ArrayConversionTestCase(unittest.TestCase, CompilationTestMixin):
         namespace {
 
         template <typename T, Size N, Offset C>
-        bool accept_array(Array<T, N, C> const & a) {
+        bool accept_Array(Array<T, N, C> const & a) {
             return true;
         }
 
@@ -40,63 +39,85 @@ class ArrayConversionTestCase(unittest.TestCase, CompilationTestMixin):
         """
     )
 
-    tmpl = """
-        Array<float {p.t_in}, {n}, {p.c_in}> a;
-        accept_array<float {p.t_out}, {n}, {p.c_out}>(a);
-    """
+    default_construct_template = "Array{p.ref}<{p.scalar} {p.const}, {p.n}, {p.c}> {var};"
+    accept_template = "accept_Array{p.ref}<{p.scalar} {p.const}, {p.n}, {p.c}>({var});"
 
-    ParameterTuple = namedtuple("ParameterTuple", ("t_in", "c_in", "t_out", "c_out"))
+    ParameterTuple = namedtuple("ParameterTuple", ("ref", "scalar", "const", "n", "c"))
 
     @classmethod
-    def generate_combinations(cls, n):
-        for combo in itertools.product(("const", ""), tuple(range(-n, n + 1)), repeat=2):
-            yield cls.ParameterTuple._make(combo)
+    def generate_parameters(cls, base=None, **kwds):
+        """Generate ParameterTuples from cartesian products of possible values.
 
-    def __init__(self, code, should_compile=None, stderr_regex=None, parameters=None):
-        if should_compile is None:
-            super().__init__()
-        else:
-            super().__init__("testCompiles" if should_compile else "testDoesNotCompile")
-        self.code = code
-        self.stderr_regex = stderr_regex
+        Parameters
+        ----------
+        base : `ParameterTuple`
+            A tuple of parameter values or ranges to use as defaults.
+
+        Keyword arguments with keys matching any of the fields in
+        ParameterTuple are accepted.  THese may be scalar values or sequences
+        of values to include in the certesian product.  "c" may have the
+        special value `range` (the built-in function), which generates "c"
+        values as `range(-n, n+1)` for every "n" value generated.
+        """
+        param_range_list = []
+        for field in cls.ParameterTuple._fields:
+            try:
+                v = kwds[field]
+            except KeyError:
+                assert base is not None
+                v = getattr(base, field)
+            if not isinstance(v, (list, tuple)):
+                v = (v,)
+            param_range_list.append(v)
+        for params in itertools.product(*param_range_list):
+            if params[-1] == range:
+                n = params[-2]
+                for c in range(-n, n + 1):
+                    yield cls.ParameterTuple._make(params[:-1] + (c,))
+            else:
+                yield cls.ParameterTuple._make(params)
+
+    def __init__(self, method, parameters=None):
+        super().__init__(method)
         self.parameters = parameters
 
-    def testCompiles(self):
+    def testContiguousConversions(self):
+        """Test that we can convert Arrays only when we do not increase
+        abs(C), and do not change the sign of C when C > 1.
+        """
+        valid = []
+        invalid = []
         with self.subTest(**self.parameters._asdict()):
-            self.assertCompiles(self.code, formatter=self.formatter)
-
-    def testDoesNotCompile(self):
-        with self.subTest(**self.parameters._asdict()):
-            self.assertDoesNotCompile(self.code, stderr_regex=self.stderr_regex, formatter=self.formatter)
+            for out_params in self.generate_parameters(self.parameters, c=range):
+                if out_params.n == 1:
+                    if self.parameters.c == 0 and out_params.c != 0:
+                        invalid.append(out_params)
+                    else:
+                        valid.append(out_params)
+                else:
+                    if out_params.c > 0 and out_params.c > self.parameters.c:
+                        invalid.append(out_params)
+                    elif out_params.c < 0 and out_params.c < self.parameters.c:
+                        invalid.append(out_params)
+                    else:
+                        valid.append(out_params)
+            # Try compiling expected failures separately, since otherwise they'd hide each other.
+            for out_params in invalid:
+                with self.subTest(**out_params._asdict()):
+                    self.assertDoesNotCompile(
+                        [self.default_construct_template.format(p=self.parameters, var="a"),
+                         self.accept_template.format(p=out_params, var="a")],
+                        stderr_regex="invalid contiguousness conversion",
+                        context=self.context
+                    )
+            # Compile expected successes together to save compile time.
+            lines = [self.default_construct_template.format(p=self.parameters, var="a")]
+            lines.extend(self.accept_template.format(p=out_params, var="a") for out_params in valid)
+            self.assertCompiles("\n".join(lines), context=self.context)
 
     @classmethod
-    def makeSuite1d(cls):
+    def makeSuite(cls):
         suite = unittest.TestSuite()
-        for p in cls.generate_combinations(n=1):
-            should_compile = True
-            stderr_regex = None
-            if p.c_in == 0 and p.c_out != 0:
-                should_compile = False
-                stderr_regex = "invalid contiguousness conversion"
-            if p.t_in == "const" and p.t_out != "const":
-                should_compile = False
-                stderr_regex = None
-            code = cls.tmpl.format(n=1, p=p)
-            suite.addTest(ArrayConversionTestCase(code, should_compile, stderr_regex, parameters=p))
-        return suite
-
-    @classmethod
-    def makeSuite2d(cls):
-        suite = unittest.TestSuite()
-        for p in cls.generate_combinations(n=2):
-            should_compile = True
-            stderr_regex = None
-            if (p.c_out > 0 and p.c_out > p.c_in) or (p.c_out < 0 and p.c_out < p.c_in):
-                should_compile = False
-                stderr_regex = "invalid contiguousness conversion"
-            if p.t_in == "const" and p.t_out != "const":
-                should_compile = False
-                stderr_regex = None
-            code = cls.tmpl.format(n=2, p=p)
-            suite.addTest(ArrayConversionTestCase(code, should_compile, stderr_regex, parameters=p))
+        for p in cls.generate_parameters(ref="", scalar="float", const=("const", ""), n=(1, 2), c=range):
+            suite.addTest(ArrayTestCase("testContiguousConversions", parameters=p))
         return suite
