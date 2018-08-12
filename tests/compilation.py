@@ -240,8 +240,9 @@ class CompilationTestMixin:
 
         Parameters
         ----------
-        lines : `str`
-            Code to be compiled.
+        code: `str`, `list`, or `tuple`
+            Code to be compiled.  If a list or tuple, elements will be joined
+            by newlines to form a string.
         name : `str`, optional
             Name of the snippet; used to generate filenames for source and
             output files.  If not provided, the calling method's
@@ -259,6 +260,8 @@ class CompilationTestMixin:
             name = make_snippet_name(inspect.stack()[1])
         if output_dir is None:
             output_dir = OUTPUT_DIR
+        if isinstance(code, (list, tuple)):
+            code = "\n".join(code)
         if context is not None:
             code = context(code)
         process, _ = compiler.compile(name, code, output_dir=output_dir, **kwds)
