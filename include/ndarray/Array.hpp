@@ -16,21 +16,15 @@
 
 namespace ndarray {
 
-    namespace detail {
+namespace detail {
 
-    constexpr bool contiguousness_convertible(Size n, Offset in, Offset out) {
-        return (in >= 0 && out >= 0 && in >= out) ||
-               (in <= 0 && out <= 0 && in <= out) ||
-               (n == 1 && (in == 1 || in == -1) && (out == 1 || out == -1));
-    }
+constexpr bool contiguousness_convertible(Size n, Offset in, Offset out) {
+    return (in >= 0 && out >= 0 && in >= out) ||
+           (in <= 0 && out <= 0 && in <= out) ||
+           (n == 1 && (in == 1 || in == -1) && (out == 1 || out == -1));
+}
 
-    template <typename T_in, typename T_out, Size N, Offset C_in, Offset C_out>
-    using EnableIfConvertible = std::enable_if_t<
-            std::is_convertible<T_in*, T_out*>::value &&
-            contiguousness_convertible(N, C_in, C_out)
-        >;
-
-    } // namespace detail
+} // namespace detail
 
 template <typename T, Size N, Offset C> class Array;
 
@@ -43,24 +37,28 @@ public:
     Array() = default;
 
     template <Offset D>
-    Array(Array<T, N, D> const & other);
+    Array(Array<T, N, D> const & other) {
+        static_assert(detail::contiguousness_convertible(N, D, C), "invalid contiguousness conversion");
+    }
 
     template <Offset D>
-    Array(Array<T, N, D> && other);
+    Array(Array<T, N, D> && other) {
+        static_assert(detail::contiguousness_convertible(N, D, C), "invalid contiguousness conversion");
+    }
 
     template <Offset D>
-    Array(Array<T const, N, D> const & other);
+    Array(Array<T const, N, D> const & other) {
+        static_assert(detail::contiguousness_convertible(N, D, C), "invalid contiguousness conversion");
+    }
 
     template <Offset D>
-    Array(Array<T const, N, D> && other);
+    Array(Array<T const, N, D> && other) {
+        static_assert(detail::contiguousness_convertible(N, D, C), "invalid contiguousness conversion");
+    }
 
     Array & operator=(Array const &) = default;
 
     Array & operator=(Array &&) = default;
-
-    ArrayRef<T const, N, C> const deep() const;
-
-    Array<T const, N, C> const shallow() const;
 
 };
 
@@ -71,136 +69,70 @@ public:
     Array() = default;
 
     template <Offset D>
-    Array(Array<T, N, D> const & other);
+    Array(Array<T, N, D> const & other) {
+        static_assert(detail::contiguousness_convertible(N, D, C), "invalid contiguousness conversion");
+    }
 
     template <Offset D>
-    Array(Array<T, N, D> && other);
+    Array(Array<T, N, D> && other) {
+        static_assert(detail::contiguousness_convertible(N, D, C), "invalid contiguousness conversion");
+    }
 
     Array & operator=(Array const &) = default;
 
     Array & operator=(Array &&) = default;
 
-    ArrayRef<T, N, C> const deep() const;
-
-    Array<T, N, C> const shallow() const;
-
 };
 
 template <typename T, Size N, Offset C>
 class ArrayRef<T const, N, C> : public Array<T const, N, C> {
+    using Base = Array<T const, N, C>;
 public:
 
     ArrayRef() = default;
 
     template <Offset D>
-    ArrayRef(Array<T, N, D> const & other);
+    ArrayRef(Array<T, N, D> const & other) : Base(other) {}
 
     template <Offset D>
-    ArrayRef(Array<T, N, D> && other);
+    ArrayRef(Array<T, N, D> && other) : Base(std::move(other)) {}
 
     template <Offset D>
-    ArrayRef(Array<T const, N, D> const & other);
+    ArrayRef(Array<T const, N, D> const & other) : Base(other) {}
 
     template <Offset D>
-    ArrayRef(Array<T const, N, D> && other);
+    ArrayRef(Array<T const, N, D> && other) : Base(std::move(other)) {}
+
+    ArrayRef & operator=(ArrayRef const &) = delete;
+
+    ArrayRef & operator=(ArrayRef &&) = delete;
+
+    template <typename U, Offset D>
+    ArrayRef const & operator=(Array<U, N, D> const & other) const = delete;
 
 };
 
 template <typename T, Size N, Offset C>
 class ArrayRef : public Array<T, N, C> {
+    using Base = Array<T, N, C>;
 public:
 
     ArrayRef() = default;
 
     template <Offset D>
-    ArrayRef(Array<T, N, D> const & other);
+    ArrayRef(Array<T, N, D> const & other) : Base(other) {}
 
     template <Offset D>
-    ArrayRef(Array<T, N, D> && other);
+    ArrayRef(Array<T, N, D> && other) : Base(std::move(other)) {}
+
+    ArrayRef const & operator=(ArrayRef const &) const;
+
+    ArrayRef const & operator=(ArrayRef &&) const;
+
+    template <typename U, Offset D>
+    ArrayRef const & operator=(Array<U, N, D> const & other) const;
 
 };
-
-// Array<T const> from Array --------------------------------------------------
-
-template <typename T, Size N, Offset C>
-template <Offset D>
-Array<T const, N, C>::Array(Array<T, N, D> const & other) {
-    static_assert(detail::contiguousness_convertible(N, D, C), "invalid contiguousness conversion");
-}
-
-template <typename T, Size N, Offset C>
-template <Offset D>
-Array<T const, N, C>::Array(Array<T, N, D> && other) {
-    static_assert(detail::contiguousness_convertible(N, D, C), "invalid contiguousness conversion");
-}
-
-template <typename T, Size N, Offset C>
-template <Offset D>
-Array<T const, N, C>::Array(Array<T const, N, D> const & other) {
-    static_assert(detail::contiguousness_convertible(N, D, C), "invalid contiguousness conversion");
-}
-
-template <typename T, Size N, Offset C>
-template <Offset D>
-Array<T const, N, C>::Array(Array<T const, N, D> && other) {
-    static_assert(detail::contiguousness_convertible(N, D, C), "invalid contiguousness conversion");
-}
-
-// Array<T> from Array --------------------------------------------------------
-
-template <typename T, Size N, Offset C>
-template <Offset D>
-Array<T, N, C>::Array(Array<T, N, D> const & other) {
-    static_assert(detail::contiguousness_convertible(N, D, C), "invalid contiguousness conversion");
-}
-
-template <typename T, Size N, Offset C>
-template <Offset D>
-Array<T, N, C>::Array(Array<T, N, D> && other) {
-    static_assert(detail::contiguousness_convertible(N, D, C), "invalid contiguousness conversion");
-}
-
-
-// ArrayRef<T const> from Array -----------------------------------------------
-
-template <typename T, Size N, Offset C>
-template <Offset D>
-ArrayRef<T const, N, C>::ArrayRef(Array<T, N, D> const & other) {
-    static_assert(detail::contiguousness_convertible(N, D, C), "invalid contiguousness conversion");
-}
-
-template <typename T, Size N, Offset C>
-template <Offset D>
-ArrayRef<T const, N, C>::ArrayRef(Array<T, N, D> && other) {
-    static_assert(detail::contiguousness_convertible(N, D, C), "invalid contiguousness conversion");
-}
-
-template <typename T, Size N, Offset C>
-template <Offset D>
-ArrayRef<T const, N, C>::ArrayRef(Array<T const, N, D> const & other) {
-    static_assert(detail::contiguousness_convertible(N, D, C), "invalid contiguousness conversion");
-}
-
-template <typename T, Size N, Offset C>
-template <Offset D>
-ArrayRef<T const, N, C>::ArrayRef(Array<T const, N, D> && other) {
-    static_assert(detail::contiguousness_convertible(N, D, C), "invalid contiguousness conversion");
-}
-
-
-// ArrayRef<T> from Array -----------------------------------------------------
-
-template <typename T, Size N, Offset C>
-template <Offset D>
-ArrayRef<T, N, C>::ArrayRef(Array<T, N, D> const & other) {
-    static_assert(detail::contiguousness_convertible(N, D, C), "invalid contiguousness conversion");
-}
-
-template <typename T, Size N, Offset C>
-template <Offset D>
-ArrayRef<T, N, C>::ArrayRef(Array<T, N, D> && other) {
-    static_assert(detail::contiguousness_convertible(N, D, C), "invalid contiguousness conversion");
-}
 
 } // namespace ndarray
 
