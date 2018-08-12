@@ -41,16 +41,10 @@ public:
     Array() = default;
 
     template <typename U, Offset D>
-    Array(Array<U, N, D> const & other) {
-        static_assert(std::is_convertible<U*, T const*>::value, "invalid pointer conversion");
-        static_assert(detail::contiguousness_convertible(N, D, C), "invalid contiguousness conversion");
-    }
+    Array(Array<U, N, D> const & other);
 
     template <typename U, Offset D>
-    Array(Array<U, N, D> && other) {
-        static_assert(std::is_convertible<U*, T const*>::value, "invalid pointer conversion");
-        static_assert(detail::contiguousness_convertible(N, D, C), "invalid contiguousness conversion");
-    }
+    Array(Array<U, N, D> && other);
 
 };
 
@@ -61,16 +55,38 @@ public:
     Array() = default;
 
     template <Offset D>
-    Array(Array<T, N, D> const & other) {
-        static_assert(detail::contiguousness_convertible(N, D, C), "invalid contiguousness conversion");
-    }
+    Array(Array<T, N, D> const & other);
 
     template <Offset D>
-    Array(Array<T, N, D> && other) {
-        static_assert(detail::contiguousness_convertible(N, D, C), "invalid contiguousness conversion");
-    }
+    Array(Array<T, N, D> && other);
 
 };
+
+template <typename T, Size N, Offset C>
+template <typename U, Offset D>
+Array<T const, N, C>::Array(Array<U, N, D> const & other) {
+    static_assert(std::is_convertible<U*, T const*>::value, "invalid pointer conversion");
+    static_assert(detail::contiguousness_convertible(N, D, C), "invalid contiguousness conversion");
+}
+
+template <typename T, Size N, Offset C>
+template <typename U, Offset D>
+Array<T const, N, C>::Array(Array<U, N, D> && other) {
+    static_assert(std::is_convertible<U*, T const*>::value, "invalid pointer conversion");
+    static_assert(detail::contiguousness_convertible(N, D, C), "invalid contiguousness conversion");
+}
+
+template <typename T, Size N, Offset C>
+template <Offset D>
+Array<T, N, C>::Array(Array<T, N, D> const & other) {
+    static_assert(detail::contiguousness_convertible(N, D, C), "invalid contiguousness conversion");
+}
+
+template <typename T, Size N, Offset C>
+template <Offset D>
+Array<T, N, C>::Array(Array<T, N, D> && other) {
+    static_assert(detail::contiguousness_convertible(N, D, C), "invalid contiguousness conversion");
+}
 
 } // namespace ndarray
 
