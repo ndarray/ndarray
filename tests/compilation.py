@@ -16,7 +16,7 @@ import subprocess
 import re
 import textwrap
 
-__all__ = ("Compiler", "SnippetFormatter", "CompilationTestMixin")
+__all__ = ("Compiler", "SnippetContext", "CompilationTestMixin")
 
 
 COMPILE_COMMAND_CMAKE_TARGET = "tests/main.cpp"
