@@ -20,6 +20,47 @@ def load_tests(loader, tests, pattern):
     return suite
 
 
+class ParameterTuple(namedtuple("ParameterTuple", ("scalar", "const", "n", "c"))):
+
+    template = "<{scalar} {const}, {n}, {c}>"
+
+    @classmethod
+    def generate(cls, base=None, **kwds):
+        """Generate ParameterTuples from cartesian products of possible values.
+
+        Parameters
+        ----------
+        base : `ParameterTuple`
+            A tuple of parameter values or ranges to use as defaults.
+
+        Keyword arguments with keys matching any of the fields in
+        ParameterTuple are accepted.  THese may be scalar values or sequences
+        of values to include in the certesian product.  "c" may have the
+        special value `range` (the built-in function), which generates "c"
+        values as `range(-n, n+1)` for every "n" value generated.
+        """
+        param_range_list = []
+        for field in cls._fields:
+            try:
+                v = kwds[field]
+            except KeyError:
+                assert base is not None
+                v = getattr(base, field)
+            if not isinstance(v, (list, tuple)):
+                v = (v,)
+            param_range_list.append(v)
+        for params in itertools.product(*param_range_list):
+            if params[-1] == range:
+                n = params[-2]
+                for c in range(-n, n + 1):
+                    yield cls._make(params[:-1] + (c,))
+            else:
+                yield cls._make(params)
+
+    def __str__(self):
+        return self.template.format(scalar=self.scalar, const=self.const, n=self.n, c=self.c)
+
+
 class ArrayTestCase(unittest.TestCase, CompilationTestMixin):
 
     context = SnippetContext(
@@ -39,47 +80,24 @@ class ArrayTestCase(unittest.TestCase, CompilationTestMixin):
         """
     )
 
-    default_construct_template = "Array{p.ref}<{p.scalar} {p.const}, {p.n}, {p.c}> {var};"
-    accept_template = "accept_Array{p.ref}<{p.scalar} {p.const}, {p.n}, {p.c}>({var});"
-
-    ParameterTuple = namedtuple("ParameterTuple", ("ref", "scalar", "const", "n", "c"))
-
-    @classmethod
-    def generate_parameters(cls, base=None, **kwds):
-        """Generate ParameterTuples from cartesian products of possible values.
-
-        Parameters
-        ----------
-        base : `ParameterTuple`
-            A tuple of parameter values or ranges to use as defaults.
-
-        Keyword arguments with keys matching any of the fields in
-        ParameterTuple are accepted.  THese may be scalar values or sequences
-        of values to include in the certesian product.  "c" may have the
-        special value `range` (the built-in function), which generates "c"
-        values as `range(-n, n+1)` for every "n" value generated.
-        """
-        param_range_list = []
-        for field in cls.ParameterTuple._fields:
-            try:
-                v = kwds[field]
-            except KeyError:
-                assert base is not None
-                v = getattr(base, field)
-            if not isinstance(v, (list, tuple)):
-                v = (v,)
-            param_range_list.append(v)
-        for params in itertools.product(*param_range_list):
-            if params[-1] == range:
-                n = params[-2]
-                for c in range(-n, n + 1):
-                    yield cls.ParameterTuple._make(params[:-1] + (c,))
-            else:
-                yield cls.ParameterTuple._make(params)
-
     def __init__(self, method, parameters=None):
         super().__init__(method)
         self.parameters = parameters
+
+    def runConversionTest(self, valid, invalid, stderr_regex=None):
+        # Try compiling expected failures separately, since otherwise they'd hide each other.
+        for out_params in invalid:
+            with self.subTest(**out_params._asdict()):
+                self.assertDoesNotCompile(
+                    ["Array{} a;".format(self.parameters),
+                     "accept_Array{}(a);".format(out_params)],
+                    stderr_regex=stderr_regex,
+                    context=self.context
+                )
+        # Compile expected successes together to save compile time.
+        lines = ["Array{} a;".format(self.parameters)]
+        lines.extend("accept_Array{}(a);".format(out_params) for out_params in valid)
+        self.assertCompiles(lines, context=self.context)
 
     def testContiguousConversions(self):
         """Test that we can convert Arrays only when we do not increase
@@ -88,7 +106,7 @@ class ArrayTestCase(unittest.TestCase, CompilationTestMixin):
         valid = []
         invalid = []
         with self.subTest(**self.parameters._asdict()):
-            for out_params in self.generate_parameters(self.parameters, c=range):
+            for out_params in ParameterTuple.generate(self.parameters, c=range):
                 if out_params.n == 1:
                     if self.parameters.c == 0 and out_params.c != 0:
                         invalid.append(out_params)
@@ -101,23 +119,36 @@ class ArrayTestCase(unittest.TestCase, CompilationTestMixin):
                         invalid.append(out_params)
                     else:
                         valid.append(out_params)
-            # Try compiling expected failures separately, since otherwise they'd hide each other.
-            for out_params in invalid:
-                with self.subTest(**out_params._asdict()):
-                    self.assertDoesNotCompile(
-                        [self.default_construct_template.format(p=self.parameters, var="a"),
-                         self.accept_template.format(p=out_params, var="a")],
-                        stderr_regex="invalid contiguousness conversion",
-                        context=self.context
-                    )
-            # Compile expected successes together to save compile time.
-            lines = [self.default_construct_template.format(p=self.parameters, var="a")]
-            lines.extend(self.accept_template.format(p=out_params, var="a") for out_params in valid)
-            self.assertCompiles("\n".join(lines), context=self.context)
+            self.runConversionTest(valid, invalid, stderr_regex="invalid contiguousness conversion")
+
+    def testConstConversions(self):
+        """Test that we can convert Arrays from T to T const, but not the
+        reverse.
+
+        Unlike contiguousness conversions, this should work even when trying
+        to match templated signatures, because Array<T, ...> inherits from
+        Array<T const, ...>.
+        """
+        valid = []
+        invalid = []
+        with self.subTest(**self.parameters._asdict()):
+            for out_params in ParameterTuple.generate(self.parameters, const=["const", ""]):
+                if self.parameters.const and not out_params.const:
+                    invalid.append(out_params)
+                else:
+                    valid.append(out_params)
+            # Tests with no template signature matching.
+            self.runConversionTest(valid, invalid)
+            # Test success with template signature matching.
+            lines = ["Array{} a;".format(self.parameters)]
+            lines.extend("accept_Array(a);".format(out_params) for out_params in valid)
+            self.assertCompiles(lines, context=self.context)
+
 
     @classmethod
     def makeSuite(cls):
         suite = unittest.TestSuite()
-        for p in cls.generate_parameters(ref="", scalar="float", const=("const", ""), n=(1, 2), c=range):
+        for p in ParameterTuple.generate(scalar="float", const=("const", ""), n=(1, 2), c=range):
             suite.addTest(ArrayTestCase("testContiguousConversions", parameters=p))
+            suite.addTest(ArrayTestCase("testConstConversions", parameters=p))
         return suite
