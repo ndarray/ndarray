@@ -22,8 +22,6 @@ def load_tests(loader, tests, pattern):
 
 class ParameterTuple(namedtuple("ParameterTuple", ("scalar", "const", "n", "c"))):
 
-    template = "<{scalar} {const}, {n}, {c}>"
-
     @classmethod
     def generate(cls, base=None, **kwds):
         """Generate ParameterTuples from cartesian products of possible values.
@@ -58,7 +56,7 @@ class ParameterTuple(namedtuple("ParameterTuple", ("scalar", "const", "n", "c"))
                 yield cls._make(params)
 
     def __str__(self):
-        return self.template.format(scalar=self.scalar, const=self.const, n=self.n, c=self.c)
+        return f"<{self.scalar} {self.const}, {self.n}, {self.c}>"
 
 
 class ArrayTestCase(unittest.TestCase, CompilationTestMixin):
@@ -95,8 +93,8 @@ class ArrayTestCase(unittest.TestCase, CompilationTestMixin):
                     context=self.context
                 )
         # Compile expected successes together to save compile time.
-        lines = ["Array{} a;".format(self.parameters)]
-        lines.extend("accept_Array{}(a);".format(out_params) for out_params in valid)
+        lines = [f"Array{self.parameters} a;"]
+        lines.extend(f"accept_Array{out_params}(a);" for out_params in valid)
         self.assertCompiles(lines, context=self.context)
 
     def testContiguousConversions(self):
@@ -140,10 +138,7 @@ class ArrayTestCase(unittest.TestCase, CompilationTestMixin):
             # Tests with no template signature matching.
             self.runConversionTest(valid, invalid)
             # Test success with template signature matching.
-            lines = ["Array{} a;".format(self.parameters)]
-            lines.extend("accept_Array(a);".format(out_params) for out_params in valid)
-            self.assertCompiles(lines, context=self.context)
-
+            self.assertCompiles([f"Array{self.parameters} a;", "accept_Array(a);"], context=self.context)
 
     @classmethod
     def makeSuite(cls):
