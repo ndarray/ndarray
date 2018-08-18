@@ -59,15 +59,6 @@ struct ArrayImpl {
         layout(Layout<N>::make(shape, strides))
     {}
 
-    template <typename Element>
-    ArrayImpl(
-        std::shared_ptr<Element> const & data,
-        std::shared_ptr<Layout<N> const> layout_
-    ) noexcept :
-        buffer(data, reinterpret_cast<Byte*>(data.get())),
-        layout(std::move(layout_))
-    {}
-
     ArrayImpl(
         std::shared_ptr<Byte> buffer_,
         std::shared_ptr<Layout<N> const> layout_

@@ -97,17 +97,6 @@ TEST_CASE("detail::ArrayImpl: external data, explicit strides", "[detail][ArrayI
     check_index_pair(rm, cm);
 }
 
-TEST_CASE("detail::ArrayImpl: external data, Layout", "[detail][ArrayImpl]") {
-    std::array<Size, 2> shape = {2, 3};
-    auto rm_layout = detail::Layout<2>::make(shape, sizeof(CountedElement), MemoryOrder::ROW_MAJOR);
-    auto cm_layout = detail::Layout<2>::make(shape, sizeof(CountedElement), MemoryOrder::COL_MAJOR);
-    CountedElement::reset();
-    std::shared_ptr<CountedElement> data(new CountedElement[6], std::default_delete<CountedElement[]>());
-    detail::ArrayImpl<2> rm(data, rm_layout);
-    detail::ArrayImpl<2> cm(data, cm_layout);
-    check_index_pair(rm, cm);
-}
-
 TEST_CASE("detail::ArrayImpl: external buffer, Layout", "[detail][ArrayImpl]") {
     std::array<Size, 2> shape = {2, 3};
     auto rm_layout = detail::Layout<2>::make(shape, sizeof(CountedElement), MemoryOrder::ROW_MAJOR);
