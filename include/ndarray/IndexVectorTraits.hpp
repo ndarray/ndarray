@@ -8,8 +8,8 @@
  * of the source distribution, or alternately available at:
  * https://github.com/ndarray/ndarray
  */
-#ifndef NDARRAY_detail_IndexVectorTraits_hpp_INCLUDED
-#define NDARRAY_detail_IndexVectorTraits_hpp_INCLUDED
+#ifndef NDARRAY_IndexVectorTraits_hpp_INCLUDED
+#define NDARRAY_IndexVectorTraits_hpp_INCLUDED
 
 #include <array>
 #include <vector>
@@ -17,7 +17,6 @@
 #include "ndarray/common.hpp"
 
 namespace ndarray {
-namespace detail {
 
 template <typename T>
 struct IndexVectorTraits {
@@ -89,8 +88,6 @@ struct IndexVectorTraits<std::vector<U>> {
 
 };
 
-
-} // namespace detail
 } // ndarray
 
-#endif // !NDARRAY_detail_IndexVectorTraits_hpp_INCLUDED
+#endif // !NDARRAY_IndexVectorTraits_hpp_INCLUDED
