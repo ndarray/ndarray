@@ -10,6 +10,9 @@
  */
 #include <numeric>
 #include "catch2/catch.hpp"
+
+#define NDARRAY_ASSERT_AUDIT_ENABLED true
+
 #include "ndarray/detail/Layout.hpp"
 
 using namespace ndarray;
@@ -73,6 +76,7 @@ void check_layout(
 } // <anonymous>
 
 TEST_CASE("detail::Layout: automatic row-major contiguous strides", "[detail][Layout]") {
+    Error::ScopedHandler errors(&Error::throw_handler<std::logic_error>);
     Size const element_size = 2;
     std::array<Size, 3> shape = {3, 4, 5};
     std::array<Offset, 3> strides = {40, 10, 2};
@@ -82,35 +86,37 @@ TEST_CASE("detail::Layout: automatic row-major contiguous strides", "[detail][La
     REQUIRE_NOTHROW(layout->check_contiguousness<2>(element_size));
     REQUIRE_NOTHROW(layout->check_contiguousness<1>(element_size));
     REQUIRE_NOTHROW(layout->check_contiguousness<0>(element_size));
-    REQUIRE_THROWS_AS(layout->check_contiguousness<-1>(element_size), NoncontiguousError);
-    REQUIRE_THROWS_AS(layout->check_contiguousness<-2>(element_size), NoncontiguousError);
-    REQUIRE_THROWS_AS(layout->check_contiguousness<-3>(element_size), NoncontiguousError);
+    REQUIRE_THROWS_AS(layout->check_contiguousness<-1>(element_size), std::logic_error);
+    REQUIRE_THROWS_AS(layout->check_contiguousness<-2>(element_size), std::logic_error);
+    REQUIRE_THROWS_AS(layout->check_contiguousness<-3>(element_size), std::logic_error);
 }
 
 TEST_CASE("detail::Layout: explicit partially row-major strides", "[detail][Layout]") {
+    Error::ScopedHandler errors(&Error::throw_handler<std::logic_error>);
     Size const element_size = 2;
     std::array<Size, 3> shape = {3, 4, 5};
     std::array<Offset, 3> strides = {80, 10, 2};
     auto layout = detail::Layout<3>::make(shape, strides);
     check_layout(*layout, shape, strides);
-    REQUIRE_THROWS_AS(layout->check_contiguousness<3>(element_size), NoncontiguousError);
+    REQUIRE_THROWS_AS(layout->check_contiguousness<3>(element_size), std::logic_error);
     REQUIRE_NOTHROW(layout->check_contiguousness<2>(element_size));
     REQUIRE_NOTHROW(layout->check_contiguousness<1>(element_size));
     REQUIRE_NOTHROW(layout->check_contiguousness<0>(element_size));
-    REQUIRE_THROWS_AS(layout->check_contiguousness<-1>(element_size), NoncontiguousError);
-    REQUIRE_THROWS_AS(layout->check_contiguousness<-2>(element_size), NoncontiguousError);
-    REQUIRE_THROWS_AS(layout->check_contiguousness<-3>(element_size), NoncontiguousError);
+    REQUIRE_THROWS_AS(layout->check_contiguousness<-1>(element_size), std::logic_error);
+    REQUIRE_THROWS_AS(layout->check_contiguousness<-2>(element_size), std::logic_error);
+    REQUIRE_THROWS_AS(layout->check_contiguousness<-3>(element_size), std::logic_error);
 }
 
 TEST_CASE("detail::Layout: automatic column-major contiguous strides", "[detail][Layout]") {
+    Error::ScopedHandler errors(&Error::throw_handler<std::logic_error>);
     Size const element_size = 2;
     std::array<Size, 3> shape = {3, 4, 5};
     std::array<Offset, 3> strides = {2, 6, 24};
     auto layout = detail::Layout<3>::make(shape, element_size, MemoryOrder::COL_MAJOR);
     check_layout(*layout, shape, strides);
-    REQUIRE_THROWS_AS(layout->check_contiguousness<3>(element_size), NoncontiguousError);
-    REQUIRE_THROWS_AS(layout->check_contiguousness<2>(element_size), NoncontiguousError);
-    REQUIRE_THROWS_AS(layout->check_contiguousness<1>(element_size), NoncontiguousError);
+    REQUIRE_THROWS_AS(layout->check_contiguousness<3>(element_size), std::logic_error);
+    REQUIRE_THROWS_AS(layout->check_contiguousness<2>(element_size), std::logic_error);
+    REQUIRE_THROWS_AS(layout->check_contiguousness<1>(element_size), std::logic_error);
     REQUIRE_NOTHROW(layout->check_contiguousness<0>(element_size));
     REQUIRE_NOTHROW(layout->check_contiguousness<-1>(element_size));
     REQUIRE_NOTHROW(layout->check_contiguousness<-2>(element_size));
@@ -118,31 +124,33 @@ TEST_CASE("detail::Layout: automatic column-major contiguous strides", "[detail]
 }
 
 TEST_CASE("detail::Layout: explicit partially column-major strides", "[detail][Layout]") {
+    Error::ScopedHandler errors(&Error::throw_handler<std::logic_error>);
     Size const element_size = 2;
     std::array<Size, 3> shape = {3, 4, 5};
     std::array<Offset, 3> strides = {2, 6, 48};
     auto layout = detail::Layout<3>::make(shape, strides);
     check_layout(*layout, shape, strides);
-    REQUIRE_THROWS_AS(layout->check_contiguousness<3>(element_size), NoncontiguousError);
-    REQUIRE_THROWS_AS(layout->check_contiguousness<2>(element_size), NoncontiguousError);
-    REQUIRE_THROWS_AS(layout->check_contiguousness<1>(element_size), NoncontiguousError);
+    REQUIRE_THROWS_AS(layout->check_contiguousness<3>(element_size), std::logic_error);
+    REQUIRE_THROWS_AS(layout->check_contiguousness<2>(element_size), std::logic_error);
+    REQUIRE_THROWS_AS(layout->check_contiguousness<1>(element_size), std::logic_error);
     REQUIRE_NOTHROW(layout->check_contiguousness<0>(element_size));
     REQUIRE_NOTHROW(layout->check_contiguousness<-1>(element_size));
     REQUIRE_NOTHROW(layout->check_contiguousness<-2>(element_size));
-    REQUIRE_THROWS_AS(layout->check_contiguousness<-3>(element_size), NoncontiguousError);
+    REQUIRE_THROWS_AS(layout->check_contiguousness<-3>(element_size), std::logic_error);
 }
 
 TEST_CASE("detail::Layout: explicit noncontiguous strides", "[detail][Layout]") {
+    Error::ScopedHandler errors(&Error::throw_handler<std::logic_error>);
     Size const element_size = 2;
     std::array<Size, 3> shape = {3, 4, 5};
     std::array<Offset, 3> strides = {4, 60, 12};
     auto layout = detail::Layout<3>::make(shape, strides);
     check_layout(*layout, shape, strides);
-    REQUIRE_THROWS_AS(layout->check_contiguousness<3>(element_size), NoncontiguousError);
-    REQUIRE_THROWS_AS(layout->check_contiguousness<2>(element_size), NoncontiguousError);
-    REQUIRE_THROWS_AS(layout->check_contiguousness<1>(element_size), NoncontiguousError);
+    REQUIRE_THROWS_AS(layout->check_contiguousness<3>(element_size), std::logic_error);
+    REQUIRE_THROWS_AS(layout->check_contiguousness<2>(element_size), std::logic_error);
+    REQUIRE_THROWS_AS(layout->check_contiguousness<1>(element_size), std::logic_error);
     REQUIRE_NOTHROW(layout->check_contiguousness<0>(element_size));
-    REQUIRE_THROWS_AS(layout->check_contiguousness<-1>(element_size), NoncontiguousError);
-    REQUIRE_THROWS_AS(layout->check_contiguousness<-2>(element_size), NoncontiguousError);
-    REQUIRE_THROWS_AS(layout->check_contiguousness<-3>(element_size), NoncontiguousError);
+    REQUIRE_THROWS_AS(layout->check_contiguousness<-1>(element_size), std::logic_error);
+    REQUIRE_THROWS_AS(layout->check_contiguousness<-2>(element_size), std::logic_error);
+    REQUIRE_THROWS_AS(layout->check_contiguousness<-3>(element_size), std::logic_error);
 }

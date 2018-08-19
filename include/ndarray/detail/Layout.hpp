@@ -14,7 +14,7 @@
 #include <memory>
 
 #include "ndarray/common.hpp"
-#include "ndarray/exceptions.hpp"
+#include "ndarray/errors.hpp"
 #include "ndarray/IndexVectorTraits.hpp"
 
 namespace ndarray {
@@ -140,7 +140,7 @@ public:
         return n_contiguous_dims;
     }
 
-    // Throw NoncontiguousError if this does not have at least C row-major
+    // Set Error::NONCONTIGUOUS if this does not have at least C row-major
     // contiguous dimensions (starting from the innermost) or, if C is negative
     // at least -C column-major contiguous dimensions (starting from the
     // outermost).
@@ -150,14 +150,20 @@ public:
             static_cast<Offset>(N) >= C && -static_cast<Offset>(N) <= C,
             "Cannot have more contiguous dimensions than total dimensions."
         );
+#if NDARRAY_ASSERT_AUDIT_ENABLED
         if (C == 0) return;
         Size n_contiguous_dims = count_contiguous_dims(
             element_size,
             C > 0 ? MemoryOrder::ROW_MAJOR : MemoryOrder::COL_MAJOR
         );
         if (std::abs(C) > n_contiguous_dims) {
-            throw NoncontiguousError(n_contiguous_dims, C);
+            NDARRAY_FAIL(
+                Error::NONCONTIGUOUS,
+                fmt::format("At least {:d} {:s} contiguous dimensions required; array has {:d}.",
+                            std::abs(C), C > 0 ? "row-major" : "column-major", n_contiguous_dims)
+            );
         }
+#endif
     }
 
 protected:
