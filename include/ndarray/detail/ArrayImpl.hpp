@@ -41,21 +41,21 @@ struct ArrayImpl {
 
     template <typename Element, typename ShapeVector>
     ArrayImpl(
-        std::shared_ptr<Element> const & data,
+        std::shared_ptr<Element> data,
         ShapeVector const & shape,
         MemoryOrder order
     ) :
-        buffer(data, reinterpret_cast<Byte*>(data.get())),
+        buffer(std::move(data), reinterpret_cast<Byte*>(data.get())),
         layout(Layout<N>::make(shape, sizeof(Element), order))
     {}
 
     template <typename Element, typename ShapeVector, typename StridesVector>
     ArrayImpl(
-        std::shared_ptr<Element> const & data,
+        std::shared_ptr<Element> data,
         ShapeVector const & shape,
         StridesVector const & strides
     ) :
-        buffer(data, reinterpret_cast<Byte*>(data.get())),
+        buffer(std::move(data), reinterpret_cast<Byte*>(data.get())),
         layout(Layout<N>::make(shape, strides))
     {}
 

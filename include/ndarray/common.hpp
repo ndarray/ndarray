@@ -24,6 +24,11 @@ enum class MemoryOrder {
     COL_MAJOR
 };
 
+template <typename T, Size N, Offset C> class Array;
+template <typename Derived, typename T, Size N, Offset C> class ArrayInterfaceN;
+
+template <typename Target> class Deref;
+
 namespace detail {
 
 template <Size N> class Layout;

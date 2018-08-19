@@ -13,6 +13,7 @@
 
 #include <array>
 #include <vector>
+#include <type_traits>
 
 #include "ndarray/common.hpp"
 
@@ -87,6 +88,23 @@ struct IndexVectorTraits<std::vector<U>> {
     }
 
 };
+
+
+template <typename V1, typename ...Vn>
+struct IsIndexVector {
+    static constexpr bool value = IndexVectorTraits<V1>::is_specialized && IsIndexVector<Vn...>::value;
+};
+
+
+template <typename V>
+struct IsIndexVector<V> {
+    static constexpr bool value = IndexVectorTraits<V>::is_specialized;
+};
+
+
+template <typename Arg, typename ...V>
+using EnableIfIndexVector = typename std::enable_if<IsIndexVector<V...>::value, Arg>::type;
+
 
 } // ndarray
 

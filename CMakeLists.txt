@@ -31,6 +31,7 @@ add_executable(tests_cpp
     tests/main.cpp
     tests/Layout.cpp
     tests/ArrayImpl.cpp
+    tests/Array.cpp
 )
 target_link_libraries(tests_cpp Catch2::Catch2 ndarray)
 include(Catch)
