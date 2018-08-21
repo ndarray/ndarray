@@ -9,6 +9,8 @@
  * https://github.com/ndarray/ndarray
  */
 #include "catch2/catch.hpp"
+
+#define NDARRAY_ASSERT_AUDIT_ENABLED true
 #include "ndarray/Array.hpp"
 
 using namespace ndarray;
@@ -60,7 +62,7 @@ public:
     }
 
     template <typename T, Offset C>
-    void runConstructionTest(MemoryOrder order) const {
+    void runContiguousConstructionTest(MemoryOrder order) const {
         SECTION("Automatic strides with allocation") {
             check(Array<T, N, C>(shape.initializer_list(), order));
             check(Array<T, N, C>(shape.vector(), order));
@@ -82,6 +84,25 @@ public:
         }
     }
 
+    template <typename T, Offset C>
+    void runBadStrideTest() const {
+        Error::ScopedHandler errors(&Error::throw_handler<std::logic_error>);
+        using U = typename std::remove_const<T>::type;
+        std::shared_ptr<T> data(new U[full_size], std::default_delete<U[]>());
+        auto construct1 = [data, this]() {
+            return Array<T, N, C>(data, shape.initializer_list(), strides.initializer_list());
+        };
+        auto construct2 = [data, this]() {
+            return Array<T, N, C>(data, shape.vector(), strides.vector());
+        };
+        auto construct3 = [data, this]() {
+            return Array<T, N, C>(data, shape.array(), strides.array());
+        };
+        REQUIRE_THROWS_AS(construct1(), std::logic_error);
+        REQUIRE_THROWS_AS(construct2(), std::logic_error);
+        REQUIRE_THROWS_AS(construct3(), std::logic_error);
+    }
+
     TestIndexVector<Size, N> shape;
     TestIndexVector<Offset, N> strides;
     Size full_size;
@@ -91,14 +112,31 @@ public:
 
 
 TEST_CASE("Array: construction", "[Array]") {
+    TestStructure<3> rmc = {{4, 3, 2}, {24, 8, 4}};
     SECTION("Row-major contiguous") {
-        TestStructure<3> s = {{4, 3, 2}, {24, 8, 4}};
-        s.runConstructionTest<float, 3>(MemoryOrder::ROW_MAJOR);
-        s.runConstructionTest<float const, 3>(MemoryOrder::ROW_MAJOR);
+        rmc.runContiguousConstructionTest<float, 3>(MemoryOrder::ROW_MAJOR);
+        rmc.runContiguousConstructionTest<float const, 3>(MemoryOrder::ROW_MAJOR);
     }
+    TestStructure<3> cmc = {{4, 3, 2}, {8, 32, 96}};
     SECTION("Column-major contiguous") {
-        TestStructure<3> s = {{4, 3, 2}, {8, 32, 96}};
-        s.runConstructionTest<double, -3>(MemoryOrder::COL_MAJOR);
-        s.runConstructionTest<double const, -3>(MemoryOrder::COL_MAJOR);
+        cmc.runContiguousConstructionTest<double, -3>(MemoryOrder::COL_MAJOR);
+        cmc.runContiguousConstructionTest<double const, -3>(MemoryOrder::COL_MAJOR);
+    }
+    SECTION("Non-contiguous") {
+        // Row-major contiguous strides are not at all column-major contiguous
+        rmc.runBadStrideTest<float, -3>();
+        rmc.runBadStrideTest<float, -2>();
+        rmc.runBadStrideTest<float, -1>();
+        // Colum-major contiguous strides are not at all row-major contiguous
+        cmc.runBadStrideTest<double, 3>();
+        cmc.runBadStrideTest<double, 2>();
+        cmc.runBadStrideTest<double, 1>();
+        // Contiguous strides for double are not at contiguous for float
+        cmc.runBadStrideTest<float, 3>();
+        cmc.runBadStrideTest<float, 2>();
+        cmc.runBadStrideTest<float, 1>();
+        cmc.runBadStrideTest<float, -3>();
+        cmc.runBadStrideTest<float, -2>();
+        cmc.runBadStrideTest<float, -1>();
     }
 }
