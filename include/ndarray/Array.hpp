@@ -101,11 +101,17 @@ public:
 
     Array & operator=(Array &&) noexcept = default;
 
-    Deref<Array<T const, N, C>> operator*() const noexcept;
+    template <typename T2, Offset C2>
+    bool operator==(Array<T2, N, C2> const & rhs) const { return _impl == rhs._impl; }
 
-    bool empty() const { return (!_impl.layout) || _impl.layout->size() == 0u; }
+    template <typename T2, Offset C2>
+    bool operator!=(Array<T2, N, C2> const & rhs) const { return !(*this == rhs); }
 
-    Size size() const { return _impl.layout ? _impl.layout->size() : 0u; }
+    Deref<Array<T const, N, C>> operator*() const;
+
+    bool empty() const noexcept { return (!_impl.layout) || _impl.layout->size() == 0u; }
+
+    Size size() const noexcept { return _impl.layout ? _impl.layout->size() : 0u; }
 
     Offset stride() const { return _impl.layout->stride(); }
 
@@ -115,12 +121,13 @@ public:
 
     Size full_size() const { return _impl.layout->full_size(); }
 
-    T const * data() const { return reinterpret_cast<T*>(_impl.buffer.get()); }
+    T const * data() const noexcept { return reinterpret_cast<T*>(_impl.buffer.get()); }
 
 protected:
 
     template <typename T2, Size N2, Offset C2> friend class Array;
     template <typename Derived, typename T2, Size N2, Offset C2> friend class ArrayInterfaceN;
+    template <typename T2, Size N2, Offset C2> friend class NestedIterator;
 
     detail::ArrayImpl<N> _impl;
 };
@@ -189,13 +196,23 @@ public:
 
     Array & operator=(Array &&) noexcept = default;
 
-    Deref<Array<T, N, C>> operator*() const noexcept;
+    void swap(Array & other) noexcept { this->_impl.swap(other._impl); }
 
-    T * data() const { return reinterpret_cast<T*>(this->_impl.buffer.get()); }
+    Deref<Array<T, N, C>> operator*() const;
+
+    T * data() const noexcept { return reinterpret_cast<T*>(this->_impl.buffer.get()); }
 
     using Interface::operator[];
-
+    using Interface::begin;
+    using Interface::end;
 };
+
+template <typename T1, typename T2, Size N, Offset C>
+void swap(Array<T1, N, C> & a, Array<T2, N, C> & b) {
+    static_assert(std::is_same<T1, T2>::value,
+                  "Cannot swap arrays with different types.");
+    a.swap(b);
+}
 
 } // namespace ndarray
 

@@ -27,6 +27,9 @@ enum class MemoryOrder {
 template <typename T, Size N, Offset C> class Array;
 template <typename Derived, typename T, Size N, Offset C> class ArrayInterfaceN;
 
+template <typename T> class StridedIterator;
+template <typename T, Size N, Offset C> class NestedIterator;
+
 template <typename Target> class Deref;
 
 namespace detail {

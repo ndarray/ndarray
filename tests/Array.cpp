@@ -164,3 +164,22 @@ TEST_CASE("Array: indexing", "[Array]") {
         }
     }
 }
+
+
+TEST_CASE("Array: iterators", "[Array]") {
+    Array<int, 3, 3> array({4, 3, 2});
+    std::iota(array.data(), array.data() + array.full_size(), 0);
+    int n = 0;
+    for (auto r1 : array) {
+        REQUIRE(Size(decltype(r1)::N) == 2u);  // extra Size(...) cast to avoid taking address of constexpr
+        REQUIRE(Size(decltype(r1)::C) == 2u);
+        for (auto r2 : r1) {
+            REQUIRE(Size(decltype(r2)::N) == 1u);  // extra Size(...) cast to avoid taking address of constexpr
+            REQUIRE(Size(decltype(r2)::C) == 1u);
+            for (int & v : r2) {
+                REQUIRE(v == n);
+                ++n;
+            }
+        }
+    }
+}
