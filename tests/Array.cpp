@@ -8,6 +8,8 @@
  * of the source distribution, or alternately available at:
  * https://github.com/ndarray/ndarray
  */
+#include <numeric>
+
 #include "catch2/catch.hpp"
 
 #define NDARRAY_ASSERT_AUDIT_ENABLED true
@@ -138,5 +140,27 @@ TEST_CASE("Array: construction", "[Array]") {
         cmc.runBadStrideTest<float, -3>();
         cmc.runBadStrideTest<float, -2>();
         cmc.runBadStrideTest<float, -1>();
+    }
+}
+
+
+TEST_CASE("Array: indexing", "[Array]") {
+    Array<int, 3, 3> array({4, 3, 2});
+    std::iota(array.data(), array.data() + array.full_size(), 0);
+    int n = 0;
+    for (Size i = 0; i != array.size(); ++i) {
+        auto r1 = array[i];
+        REQUIRE(Size(decltype(r1)::N) == 2u);  // extra Size(...) cast to avoid taking address of constexpr
+        REQUIRE(Size(decltype(r1)::C) == 2u);
+        for (Size j = 0; j != r1.size(); ++j) {
+            auto r2 = r1[j];
+            REQUIRE(Size(decltype(r2)::N) == 1u);  // extra Size(...) cast to avoid taking address of constexpr
+            REQUIRE(Size(decltype(r2)::C) == 1u);
+            for (Size k = 0; k != r2.size(); ++k) {
+                int & v = r2[k];
+                REQUIRE(v == n);
+                ++n;
+            }
+        }
     }
 }

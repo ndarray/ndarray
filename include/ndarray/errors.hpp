@@ -21,7 +21,7 @@ namespace ndarray {
 class Error {
 public:
 
-    enum Category { NONCONTIGUOUS };
+    enum Category { NONCONTIGUOUS, UNINITIALIZED, OUT_OF_BOUNDS };
 
     typedef void (*Handler)(Category, char const * file, int line, std::string const & message);
 

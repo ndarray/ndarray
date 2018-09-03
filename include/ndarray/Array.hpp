@@ -29,9 +29,13 @@ constexpr bool contiguousness_convertible(Size n, Offset in, Offset out) {
 } // namespace detail
 
 
-template <typename T, Size N, Offset C>
-class Array<T const, N, C> : public ArrayInterfaceN<Array<T const, N, C>, T const, N, C> {
+template <typename T, Size N_, Offset C_>
+class Array<T const, N_, C_> : public ArrayInterfaceN<Array<T const, N_, C_>, T const, N_, C_> {
 public:
+
+    using Element = T const;
+    static constexpr Size N = N_;
+    static constexpr Offset C = C_;
 
     Array() noexcept = default;
 
@@ -111,6 +115,8 @@ public:
 
     Size full_size() const { return _impl.layout->full_size(); }
 
+    T const * data() const { return reinterpret_cast<T*>(_impl.buffer.get()); }
+
 protected:
 
     template <typename T2, Size N2, Offset C2> friend class Array;
@@ -120,10 +126,15 @@ protected:
 };
 
 
-template <typename T, Size N, Offset C>
-class Array : public ArrayInterfaceN<Array<T, N, C>, T, N, C>, public Array<T const, N, C> {
-    using Base = Array<T const, N, C>;
+template <typename T, Size N_, Offset C_>
+class Array : public ArrayInterfaceN<Array<T, N_, C_>, T, N_, C_>, public Array<T const, N_, C_> {
+    using Base = Array<T const, N_, C_>;
+    using Interface = ArrayInterfaceN<Array<T, N_, C_>, T, N_, C_>;
 public:
+
+    using Element = T;
+    static constexpr Size N = N_;
+    static constexpr Offset C = C_;
 
     Array() noexcept = default;
 
@@ -179,6 +190,10 @@ public:
     Array & operator=(Array &&) noexcept = default;
 
     Deref<Array<T, N, C>> operator*() const noexcept;
+
+    T * data() const { return reinterpret_cast<T*>(this->_impl.buffer.get()); }
+
+    using Interface::operator[];
 
 };
 

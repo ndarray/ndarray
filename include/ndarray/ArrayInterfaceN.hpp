@@ -12,6 +12,7 @@
 #define NDARRAY_ArrayInterfaceN_hpp_INCLUDED
 
 #include "ndarray/common.hpp"
+#include "ndarray/errors.hpp"
 #include "ndarray/detail/ArrayImpl.hpp"
 
 namespace ndarray {
@@ -30,7 +31,12 @@ public:
 
     using Reference = Element &;
 
-    Reference operator[](Size n) const;
+    Reference operator[](Size n) const {
+        NDARRAY_ASSERT_AUDIT(impl().layout != nullptr, Error::UNINITIALIZED, "layout is null");
+        NDARRAY_ASSERT_AUDIT(impl().buffer != nullptr, Error::UNINITIALIZED, "buffer is null");
+        NDARRAY_ASSERT_AUDIT(n < impl().layout->size(), Error::OUT_OF_BOUNDS, "array index out of bounds");
+        return *reinterpret_cast<Element*>(impl().buffer.get() + n*impl().layout->stride());
+    }
 
 private:
 
@@ -47,7 +53,18 @@ public:
 
     using Reference = Array<Element, N-1, detail::nested_contiguousness(N, C)>;
 
-    Reference operator[](Size n) const;
+    Reference operator[](Size n) const {
+        NDARRAY_ASSERT_AUDIT(impl().layout != nullptr, Error::UNINITIALIZED, "layout is null");
+        NDARRAY_ASSERT_AUDIT(impl().buffer != nullptr, Error::UNINITIALIZED, "buffer is null");
+        NDARRAY_ASSERT_AUDIT(n < impl().layout->size(), Error::OUT_OF_BOUNDS, "array index out of bounds");
+        return Reference(
+            std::shared_ptr<Byte>(
+                impl().buffer,
+                impl().buffer.get() + n*impl().layout->stride()
+            ),
+            impl().layout
+        );
+    }
 
 private:
 
