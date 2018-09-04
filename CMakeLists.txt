@@ -26,6 +26,7 @@ add_executable(tests_cpp
     tests/Layout.cpp
     tests/ArrayImpl.cpp
     tests/Array.cpp
+    tests/views.cpp
 )
 target_link_libraries(tests_cpp Catch2::Catch2 ndarray)
 include(Catch)
