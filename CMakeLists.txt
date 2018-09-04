@@ -15,13 +15,7 @@ target_include_directories(ndarray
 )
 target_compile_features(ndarray
     INTERFACE
-        cxx_auto_type
-        cxx_constexpr
-        cxx_deleted_functions
-        cxx_generic_lambdas
-        cxx_noexcept
-        cxx_static_assert
-        cxx_strong_enums
+        cxx_std_17
 )
 target_link_libraries(ndarray INTERFACE fmt::fmt)
 
