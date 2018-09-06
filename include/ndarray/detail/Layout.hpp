@@ -159,8 +159,8 @@ public:
         if (std::abs(C) > n_contiguous_dims) {
             NDARRAY_FAIL(
                 Error::NONCONTIGUOUS,
-                fmt::format("At least {:d} {:s} contiguous dimensions required; array has {:d}.",
-                            std::abs(C), C > 0 ? "row-major" : "column-major", n_contiguous_dims)
+                "At least {:d} {:s} contiguous dimensions required; array has {:d}.",
+                std::abs(C), C > 0 ? "row-major" : "column-major", n_contiguous_dims
             );
         }
 #endif

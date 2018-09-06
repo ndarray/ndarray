@@ -49,7 +49,8 @@ public:
     Reference operator[](Size n) const {
         NDARRAY_ASSERT_AUDIT(impl().buffer != nullptr, Error::UNINITIALIZED, "buffer is null");
         NDARRAY_ASSERT_AUDIT(impl().layout != nullptr, Error::UNINITIALIZED, "layout is null");
-        NDARRAY_ASSERT_AUDIT(n < impl().layout->size(), Error::OUT_OF_BOUNDS, "array index out of bounds");
+        NDARRAY_ASSERT_AUDIT(n < impl().layout->size(), Error::OUT_OF_BOUNDS,
+                             "array index {:d} out of bounds {:d}", n, impl().layout->size());
         return *reinterpret_cast<Element*>(impl().buffer.get() + n*impl().layout->stride());
     }
 
@@ -84,7 +85,8 @@ public:
     Reference operator[](Size n) const {
         NDARRAY_ASSERT_AUDIT(impl().buffer != nullptr, Error::UNINITIALIZED, "buffer is null");
         NDARRAY_ASSERT_AUDIT(impl().layout != nullptr, Error::UNINITIALIZED, "layout is null");
-        NDARRAY_ASSERT_AUDIT(n < impl().layout->size(), Error::OUT_OF_BOUNDS, "array index out of bounds");
+        NDARRAY_ASSERT_AUDIT(n < impl().layout->size(), Error::OUT_OF_BOUNDS,
+                             "array index {:d} out of bounds {:d}", n, impl().layout->size());
         return *reinterpret_cast<Element*>(impl().buffer.get() + n*impl().layout->stride());
     }
 

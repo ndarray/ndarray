@@ -146,10 +146,12 @@ public:
     template <typename U>
     difference_type operator-(StridedIterator<U> const & rhs) const {
         NDARRAY_ASSERT_CHECK(_stride == rhs._stride, Error::INCOMPATIBLE_ARGUMENTS,
-                             "iterators have different strides");
+                             "iterators have different strides: {:d} != {:d}", _stride, rhs._stride);
         NDARRAY_ASSERT_CHECK(_stride != 0, Error::UNINITIALIZED, "iterator stride is zero");
-        NDARRAY_ASSERT_CHECK((_ptr - rhs._ptr) % _stride == 0, Error::INCOMPATIBLE_ARGUMENTS,
-                             "iterator pointer offset is not a multiple of stride");
+        NDARRAY_ASSERT_CHECK((_ptr - rhs._ptr) % _stride == 0,
+                             Error::INCOMPATIBLE_ARGUMENTS,
+                             "iterator pointer offset ({:d}) is not a multiple of stride ({:d})",
+                             (_ptr - rhs._ptr), _stride);
         return (_ptr - rhs._ptr)/_stride;
     }
 

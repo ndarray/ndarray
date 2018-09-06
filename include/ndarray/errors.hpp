@@ -16,6 +16,7 @@
 #include "fmt/format.h"
 #include "ndarray/common.hpp"
 
+
 namespace ndarray {
 
 class Error {
@@ -68,6 +69,17 @@ public:
         std::abort();
     }
 
+    template <typename ...Args>
+    [[ noreturn ]] static void invoke (
+        Category category,
+        char const * file,
+        int line,
+        char const * tmpl,
+        Args && ...args
+    ) {
+        invoke(category, file, line, fmt::format(tmpl, std::forward<Args>(args)...));
+    }
+
 private:
 
     static Handler & get_handler() {
@@ -77,8 +89,8 @@ private:
 };
 
 
-#define NDARRAY_FAIL(CATEGORY, MESSAGE) \
-    Error::invoke(CATEGORY, __FILE__, __LINE__, (MESSAGE))
+#define NDARRAY_FAIL(CATEGORY, ...) \
+    Error::invoke(CATEGORY, __FILE__, __LINE__, __VA_ARGS__)
 
 
 #ifndef NDARRAY_ASSERT_AUDIT_ENABLED
@@ -98,17 +110,17 @@ private:
 #endif
 
 #if NDARRAY_ASSERT_AUDIT_ENABLED
-    #define NDARRAY_ASSERT_AUDIT(CONDITION, CATEGORY, MESSAGE) \
-        if (!(CONDITION)) NDARRAY_FAIL(CATEGORY, MESSAGE)
+    #define NDARRAY_ASSERT_AUDIT(CONDITION, CATEGORY, ...) \
+        if (!(CONDITION)) NDARRAY_FAIL(CATEGORY, __VA_ARGS__)
 #else
-    #define NDARRAY_ASSERT_AUDIT(CONDITION, CATEGORY, MESSAGE) ((void)0)
+    #define NDARRAY_ASSERT_AUDIT(CONDITION, CATEGORY, ...) ((void)0)
 #endif
 
 #if NDARRAY_ASSERT_CHECK_ENABLED
-    #define NDARRAY_ASSERT_CHECK(CONDITION, CATEGORY, MESSAGE) \
-        if (!(CONDITION)) NDARRAY_FAIL(CATEGORY, MESSAGE)
+    #define NDARRAY_ASSERT_CHECK(CONDITION, CATEGORY, ...) \
+        if (!(CONDITION)) NDARRAY_FAIL(CATEGORY, __VA_ARGS__)
 #else
-    #define NDARRAY_ASSERT_CHECK(CONDITION, CATEGORY, MESSAGE) ((void)0)
+    #define NDARRAY_ASSERT_CHECK(CONDITION, CATEGORY, ...) ((void)0)
 #endif
 
 } // ndarray

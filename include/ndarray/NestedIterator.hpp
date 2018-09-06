@@ -125,11 +125,12 @@ public:
         NDARRAY_ASSERT_CHECK(_array.data() != nullptr, Error::UNINITIALIZED, "null iterator comparison");
         NDARRAY_ASSERT_CHECK(rhs._array.data() != nullptr, Error::UNINITIALIZED, "null iterator comparison");
         NDARRAY_ASSERT_CHECK(_stride() == rhs._stride(), Error::INCOMPATIBLE_ARGUMENTS,
-                             "iterators have different strides");
+                             "iterators have different strides: {:d} != {:d}", _stride(), rhs._stride());
         NDARRAY_ASSERT_CHECK(_stride() != 0, Error::UNINITIALIZED, "iterator stride is zero");
         NDARRAY_ASSERT_CHECK((_array._impl.data() - rhs._array._impl.data()) % _stride() == 0,
                              Error::INCOMPATIBLE_ARGUMENTS,
-                             "iterator pointer offset is not a multiple of stride");
+                             "iterator pointer offset ({:d}) is not a multiple of stride ({:d})",
+                             (_array._impl.data() - rhs._array._impl.data()), _stride());
         return (_array._impl.data() - rhs._array._impl.data())/_stride();
     }
 

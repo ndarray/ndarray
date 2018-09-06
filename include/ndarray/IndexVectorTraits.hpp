@@ -16,6 +16,7 @@
 #include <type_traits>
 
 #include "ndarray/common.hpp"
+#include "ndarray/errors.hpp"
 
 namespace ndarray {
 
@@ -56,7 +57,9 @@ struct IndexVectorTraits<std::initializer_list<U>> {
 
     template <Size M>
     static void check_dims(std::initializer_list<U> const & v) {
-        assert(M == v.size());
+        NDARRAY_ASSERT_CHECK(M == v.size(),
+                             "Shape vector size ({:d}) does not match number of dimensions ({:d}).",
+                             v.size(), M);
     }
 
     static Size get_size(std::initializer_list<U> const & v, Size n) {
@@ -76,7 +79,9 @@ struct IndexVectorTraits<std::vector<U>> {
 
     template <Size M>
     static void check_dims(std::vector<U> const & v) {
-        assert(M == v.size());
+        NDARRAY_ASSERT_CHECK(M == v.size(),
+                             "Shape vector size ({:d}) does not match number of dimensions ({:d}).",
+                             v.size(), M);
     }
 
     static Size get_size(std::vector<U> const & v, Size n) {
