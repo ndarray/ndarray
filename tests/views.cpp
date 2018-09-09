@@ -19,5 +19,9 @@ using namespace ndarray::views;
 
 
 TEST_CASE("views", "[views]") {
+#if __cplusplus >= 201703L
     auto v = view(all)(1, 2)(begin, 5)(3, end)(1, 2, -unit)(newaxis)(3, 4, 2);
+#else
+    auto v = view(All{})(1, 2)(Begin{}, 5)(3, End{})(1, 2, NegUnit{})(NewAxis{})(3, 4, 2);
+#endif
 }
