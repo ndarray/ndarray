@@ -3,9 +3,26 @@ project(ndarray VERSION 2.0.0 LANGUAGES CXX)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)  # used to obtain build commands for expected compile failure tests
 
+option(BUILD_DOC "Build documentation" ON)
+
 find_package(fmt 4.1 REQUIRED)
 find_package(Catch2 2.2.3 REQUIRED)
 find_package(pybind11 2.2)
+find_package(Doxygen 1.8)
+
+if(DOXYGEN_FOUND)
+    set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/doc/doxygen.conf.in)
+    set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/doxygen.conf)
+    configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
+    add_custom_target(doc ALL
+        COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        COMMENT "Generating API documentation with Doxygen"
+        VERBATIM
+    )
+else(DOXYGEN_FOUND)
+    message("Documentation cannot be built without Doxygen")
+endif(DOXYGEN_FOUND)
 
 add_library(ndarray INTERFACE)
 target_include_directories(ndarray
