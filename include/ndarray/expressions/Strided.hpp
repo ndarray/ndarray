@@ -21,10 +21,79 @@ namespace expressions {
 
 
 template <typename T, Size N>
+class StridedTraversal;
+
+
+/**
+ * Sentinal 1-d specialization of StridedTraversal.
+ */
+template <typename T>
+class StridedTraversal<T, 1> {
+public:
+
+    static constexpr Size ndim = 1;
+
+    using Result = T &;
+
+    StridedTraversal(T * pointer, Offset const * strides) : _pointer(pointer), _strides(strides) {}
+
+    StridedTraversal & operator++() {
+        _pointer += *_strides;
+        return *this;
+    }
+
+    StridedTraversal & operator+=(Offset n) {
+        _pointer += (*_strides)*n;
+        return *this;
+    }
+
+    Result evaluate() const { return *_pointer; }
+
+private:
+    T * _pointer;
+    Offset const * _strides;
+};
+
+
+/**
+ * A Traversal for strided arrays.
+ */
+template <typename T, Size N>
+class StridedTraversal {
+public:
+
+    static constexpr Size ndim = N;
+
+    using Result = StridedTraversal<T, N - 1>;
+
+    StridedTraversal(T * pointer, Offset const * strides) : _pointer(pointer), _strides(strides) {}
+
+    StridedTraversal & operator++() {
+        _pointer += *_strides;
+        return *this;
+    }
+
+    StridedTraversal & operator+=(Offset n) {
+        _pointer += (*_strides)*n;
+        return *this;
+    }
+
+    Result evaluate() const { return Result(_pointer, _strides + 1); }
+
+private:
+    T * _pointer;
+    Offset const * _strides;
+};
+
+
+/**
+ * An Expression for strided arrays.
+ */
+template <typename T, Size N>
 class StridedExpression : public Expression<N, StridedExpression<T, N>> {
 public:
 
-    template <Size J, typename K=void> class Traversal;
+    using Traversal = StridedTraversal<T, N>;
 
     StridedExpression(
         T * pointer,
@@ -53,59 +122,17 @@ public:
                 }
             }
         }
-        return StridedExpression(_pointer, shape, new_strides);
+        return StridedExpression<T, M>(_pointer, shape, new_strides);
     }
 
     decltype(auto) traverse() const {
-        return Traversal<0>(_pointer, _strides.data());
+        return Traversal(_pointer, _strides.data());
     }
 
 private:
     T * _pointer;
     std::array<Size, N> _shape;
     std::array<Offset, N> _strides;
-};
-
-
-template <typename T, Size N>
-template <typename K>
-class StridedExpression<T, N>::Traversal<N - 1, K> {
-public:
-
-    static constexpr bool is_leaf = true;
-
-    using Result = T &;
-
-    Traversal(T * pointer, Offset const * stride) : _pointer(pointer), _stride(stride) {}
-
-    void increment() { _pointer += *_stride; }
-
-    Result evaluate() const { return *_pointer; }
-
-private:
-    T * _pointer;
-    Offset const * _stride;
-};
-
-
-template <typename T, Size N>
-template <Size J, typename K>
-class StridedExpression<T, N>::Traversal {
-public:
-
-    static constexpr bool is_leaf = false;
-
-    using Result = Traversal<J + 1>;
-
-    Traversal(T * pointer, Offset const * stride) : _pointer(pointer), _stride(stride) {}
-
-    void increment() { _pointer += *_stride; }
-
-    Result evaluate() const { return Result(_pointer, _stride + 1); }
-
-private:
-    T * _pointer;
-    Offset const * _stride;
 };
 
 
