@@ -80,7 +80,13 @@ using pybind11_np_size_t = ssize_t;
 #endif
 
 template <typename T, int N, int C>
-struct Pybind11Helper {
+struct
+#ifdef __GNUG__
+// pybind11 hides all symbols in its namespace only when this is set,
+// and in that case we should hide these classes too.
+__attribute__((visibility("hidden")))
+#endif
+Pybind11Helper {
     using Element = typename ndarray::Array<T,N,C>::Element;
     using Wrapper = pybind11::array_t<typename std::remove_const<Element>::type, 0>;  // 0: no ensurecopy
     static constexpr bool isConst = std::is_const<Element>::value;
@@ -193,8 +199,6 @@ struct Pybind11Helper {
     bool isNone;
     Wrapper wrapper;
 };
-
-
 
 } // namespace ndarray
 
