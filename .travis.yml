@@ -30,6 +30,8 @@ install:
   - export EIGEN_DIR=$CONDA_PREFIX
   - export FFTW_DIR=$CONDA_PREFIX
   - export CMAKE_PREFIX_PATH=$CONDA_PREFIX
+  # For conda-forge's old glibc
+  - export LDFLAGS="-lrt ${LDFLAGS}"
 
 script:
   - mkdir build
