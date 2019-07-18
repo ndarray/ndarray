@@ -12,9 +12,8 @@
 #include "ndarray/buildOptions.h"
 #include "Eigen/SVD"
 
-#define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE ndarray-eigen
-#include "boost/test/unit_test.hpp"
+#include "boost/test/included/unit_test.hpp"
 
 template <typename T, typename U>
 void testElements2(T const & a, U const & b) {
