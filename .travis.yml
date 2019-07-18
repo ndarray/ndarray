@@ -22,8 +22,11 @@ install:
   - conda update -q conda
   # Useful for debugging any issues with conda
   - conda info -a
-  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION boost fftw numpy pybind11 swig cmake gxx_linux-64
+  - conda create -q -n test-environment 
+  - conda config --env --add channels conda-forge
   - source activate test-environment
+  - conda config --env --add channels conda-forge
+  - conda install python=$TRAVIS_PYTHON_VERSION boost fftw numpy pybind11 swig cmake compilers
   - echo "eigen 3.2.*" > $CONDA_PREFIX/conda-meta/pinned
   - conda install eigen
   - export BOOST_DIR=$CONDA_PREFIX
