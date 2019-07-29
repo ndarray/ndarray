@@ -37,22 +37,6 @@ ndarray's build system does not produce the correct suffixes for pybind11 output
 
 However, the cmake build does not support Boost.NumPy library
 and Boost.Python wrappers, which are deprecated in favor of pybind11.
-If you are keen to use Boost.Python you can try the older
-scons build files, as follows
-
-ndarray includes the Boost.NumPy library using git's "submodules"
-feature.  When you clone the ndarray repository with git, you'll get
-an empty Boost.NumPy directory.  Even if you don't plan to use
-Boost.NumPy (which is required only if you want to build the
-Boost.Python bindings for ndarray), it *is* necessary to checkout the
-Boost.NumPy source (as parts of the build system is shared).  So,
-immediately after cloning ndarray, you'll need to run:
-
-git submodule update --init --recursive
-
-From there, you'll be able to build ndarray and (optionally)
-Boost.NumPy together just by running "scons" from the root of the
-ndarray clone.
 
 Version 1.4.2 of ndarray is the last version to support SWIG.
 
