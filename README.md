@@ -10,12 +10,10 @@ More information can be found in the [documentation at
 ndarray.github.io/ndarray](http://ndarray.github.io/ndarray/).
 
 
-Building from Git
------------------
+Installation
+------------
 
-CMake is the supported way to build ndarray.
-
-To build with cmake, do:
+ndarray can be built and tested with CMake:
 
     mkdir build
     cd build
@@ -33,17 +31,11 @@ ndarray::EigenView is not compatible with Eigen >= 3.3,
 nor is it compatible with pybind11's default Eigen wrappers.
 To build without ndarray::EigenView use cmake option `-DNDARRAY_EIGENVIEW=OFF`
 
-ndarray's build system does not produce the correct suffixes for pybind11 outputs under pybind11 2.1.x (due to a bug in pybind11 itself).  To avoid this problem, please upgrade to pybind11 2.2.x, or try the (now reverted) patch from ndarray commit f46c0f0ff876ceab5aaa3286e5f6e86902e72feb.
-
-However, the cmake build does not support Boost.NumPy library
-and Boost.Python wrappers, which are deprecated in favor of pybind11.
+ndarray's build system does not produce the correct suffixes for pybind11
+outputs under pybind11 2.1.x (due to a bug in pybind11 itself).  To avoid this
+problem, please upgrade to pybind11 2.2.x, or try the (now reverted) patch from
+ndarray commit f46c0f0ff876ceab5aaa3286e5f6e86902e72feb.
 
 Version 1.4.2 of ndarray is the last version to support SWIG.
 
-
-Building from Compressed Source
--------------------------------
-
-GitHub's automatically generated tarballs and zip files don't include
-the Boost.NumPy submodule or the git metadata needed to run "git
-submodule", so these features can't be used from release tarball.  Please download from git if you want to use the Boost.NumPy interface.
+Version 1.5.3 of ndarray is the last verison to support Boost.Python.
