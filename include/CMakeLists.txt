@@ -23,7 +23,7 @@ endforeach(FILENAME)
 foreach(FILENAME ${PREPROCESS_FILES1})
     add_custom_command (
         OUTPUT ${FILENAME}
-        DEPENDS ${FILENAME}.m4 "ndarray/buildOptions.h.in"
+        DEPENDS ${FILENAME}.m4
         COMMAND m4 ${FILENAME}.m4 > ${FILENAME}
         )
 endforeach(FILENAME)

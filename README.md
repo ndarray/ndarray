@@ -27,10 +27,6 @@ EIGEN_DIR, and FFTW_DIR environment variables. For example, to build with an
 alternate Eigen3 install location and disable FFTW testing replace `cmake ..`
 with `EIGEN_DIR=/opt/local cmake -DNDARRY_FFTW=OFF ..`.
 
-ndarray::EigenView is not compatible with Eigen >= 3.3,
-nor is it compatible with pybind11's default Eigen wrappers.
-To build without ndarray::EigenView use cmake option `-DNDARRAY_EIGENVIEW=OFF`
-
 ndarray's build system does not produce the correct suffixes for pybind11
 outputs under pybind11 2.1.x (due to a bug in pybind11 itself).  To avoid this
 problem, please upgrade to pybind11 2.2.x, or try the (now reverted) patch from

@@ -40,7 +40,7 @@ script:
   - make test ARGS="-V"
 
   - rm CMakeCache.txt
-  - cmake -DNDARRAY_PYBIND11=ON -DNDARRAY_EIGENVIEW=ON ..
+  - cmake -DNDARRAY_PYBIND11=ON ..
   - make
   - make test ARGS="-V"
 
