@@ -11,8 +11,6 @@
 #ifndef NDARRAY_eigen_fwd_h_INCLUDED
 #define NDARRAY_eigen_fwd_h_INCLUDED
 
-#include "ndarray/buildOptions.h"
-
 /**
  *  @file ndarray/eigen_fwd.h
  *  @brief Forward declarations for ndarray/eigen interface.

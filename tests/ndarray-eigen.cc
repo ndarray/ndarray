@@ -9,7 +9,6 @@
  * https://github.com/ndarray/ndarray
  */
 #include "ndarray/eigen.h"
-#include "ndarray/buildOptions.h"
 #include "Eigen/SVD"
 
 #define BOOST_TEST_DYN_LINK

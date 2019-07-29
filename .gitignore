@@ -19,7 +19,6 @@ tests/ndarray
 tests/ndarray-eigen
 tests/ndarray-fft
 tests/swig_test_mod.py
-include/ndarray/buildOptions.h
 include/ndarray/Array.h
 include/ndarray/ArrayBaseN.h
 include/ndarray/ArrayRef.h

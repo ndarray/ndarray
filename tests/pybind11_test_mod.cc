@@ -1,7 +1,6 @@
 #include "pybind11/pybind11.h"
 
 #include "ndarray/pybind11.h"
-#include "ndarray/buildOptions.h"
 
 namespace py = pybind11;
 using namespace py::literals;

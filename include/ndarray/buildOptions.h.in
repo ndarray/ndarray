@@ -1,4 +1,0 @@
-// Build options that need to be remembered
-// so they can be used when other packages build against ndarray
-
-#cmakedefine NDARRAY_STDPYBIND11EIGEN

@@ -44,14 +44,8 @@
 #include "pybind11.h"
 #include "pybind11/numpy.h"
 
-#include "ndarray/buildOptions.h"
-#ifdef NDARRAY_STDPYBIND11EIGEN
-#include "pybind11/eigen.h"
-#endif  // NDARRAY_STDPYBIND11EIGEN
-
 #include "ndarray.h"
 #include "ndarray/eigen.h"
-#include "ndarray/buildOptions.h"
 
 namespace ndarray {
 

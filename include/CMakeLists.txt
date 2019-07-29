@@ -36,9 +36,6 @@ foreach(FILENAME ${PREPROCESS_FILES2})
         )
 endforeach(FILENAME)
 
-# record certain build options
-configure_file(ndarray/buildOptions.h.in "${CMAKE_CURRENT_SOURCE_DIR}/ndarray/buildOptions.h")
-
 add_custom_target(preprocess_includes1 ALL DEPENDS ${PREPROCESS_FILES1})
 add_custom_target(preprocess_includes2 ALL DEPENDS ${PREPROCESS_FILES2})
 add_dependencies(preprocess_includes2 preprocess_includes1)
