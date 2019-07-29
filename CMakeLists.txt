@@ -16,7 +16,6 @@ project(ndarray)
 # only executed if NDARRAY_TEST is enabled.
 option(NDARRAY_TEST "Enable tests?" ON)
 option(NDARRAY_EIGEN "Enable Eigen tests?" ON)
-option(NDARRAY_STDPYBIND11EIGEN "Enable standard pybind11 Eigen wrappers (requires Eigen > 3.2.5)?" OFF)
 option(NDARRAY_FFTW "Enable FFTW tests?" ON)
 option(NDARRAY_PYBIND11 "Enable Pybind11 tests?" OFF)
 
