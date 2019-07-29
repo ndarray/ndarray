@@ -26,7 +26,5 @@ include/ndarray/ArrayRef.h
 include/ndarray/Vector.h
 include/ndarray/fft/FFTWTraits.h
 include/ndarray/operators.h
-include/ndarray/bp/auto/*.h
-include/ndarray/eigen/bp/auto/*.h
 tests/.*.succeeded
 build/
