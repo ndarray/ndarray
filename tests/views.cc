@@ -10,9 +10,8 @@
  */
 #include "ndarray.h"
 
-#define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE views
-#include "boost/test/unit_test.hpp"
+#include "boost/test/included/unit_test.hpp"
 
 template <typename T, int N, int C>
 int templateC(ndarray::ArrayRef<T,N,C> const &) { return C; }

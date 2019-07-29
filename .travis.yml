@@ -22,12 +22,16 @@ install:
   - conda update -q conda
   # Useful for debugging any issues with conda
   - conda info -a
-  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION boost fftw numpy pybind11 cmake gxx_linux-64 eigen
+  - conda create -q -n test-environment
   - source activate test-environment
+  - conda config --env --add channels conda-forge
+  - conda install python=$TRAVIS_PYTHON_VERSION boost fftw numpy pybind11=2.2.* cmake compilers eigen
   - export BOOST_DIR=$CONDA_PREFIX
   - export EIGEN_DIR=$CONDA_PREFIX
   - export FFTW_DIR=$CONDA_PREFIX
   - export CMAKE_PREFIX_PATH=$CONDA_PREFIX
+  # For conda-forge's old glibc
+  - export LDFLAGS="-lrt ${LDFLAGS}"
 
 script:
   - mkdir build
