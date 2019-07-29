@@ -18,7 +18,7 @@
  *  @brief Forward declarations for ndarray/eigen interface.
  */
 
-/** 
+/**
  * \defgroup ndarrayEigenGroup Eigen
  * Interoperability with the Eigen 3 linear algebra library.
  */
@@ -35,19 +35,6 @@ namespace detail {
 template <int N, int C, int Rows, int Cols> struct EigenStrideTraits;
 
 } // namespace detail
-
-#ifdef NDARRAY_EIGENVIEW
-
-template <
-    typename T, int N, int C, 
-    typename XprKind_=Eigen::MatrixXpr,
-    int Rows_=-1,
-    int Cols_=((N == 1) ? 1 : -1)
-    >
-class EigenView;
-
-#endif  // NDARRAY_EIGENVIEW
-
 } // namespace ndarray
 
 #endif // !NDARRAY_eigen_fwd_h_INCLUDED

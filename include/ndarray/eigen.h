@@ -26,7 +26,6 @@
 #include "Eigen/Core"
 #include "ndarray.h"
 #include "ndarray/eigen_fwd.h"
-#include "ndarray/EigenView.h"
 
 namespace ndarray {
 namespace detail {
