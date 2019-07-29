@@ -26,6 +26,7 @@ install:
   - source activate test-environment
   - conda config --env --add channels conda-forge
   - conda install python=$TRAVIS_PYTHON_VERSION boost=1.69.* fftw numpy pybind11=2.2.* swig cmake compilers eigen=3.2.*
+  - conda list
   - export BOOST_DIR=$CONDA_PREFIX
   - export EIGEN_DIR=$CONDA_PREFIX
   - export FFTW_DIR=$CONDA_PREFIX
