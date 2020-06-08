@@ -666,3 +666,19 @@ BOOST_AUTO_TEST_CASE(arangeInt) {
     }
 }
 
+BOOST_AUTO_TEST_CASE(arangeFloat) {
+    std::size_t const size = 10;
+    std::vector<float> startList = {0.0, 123.45};
+    std::vector<float> stepList = {1.0, 0.1, 1.23};
+    for (float step : stepList) {
+        for (float start : startList) {
+            float stop = start + size*step;
+            ndarray::Array<float, 1, 1> values = ndarray::copy(ndarray::arange(start, stop, step));
+            BOOST_CHECK_EQUAL(values.getNumElements(), size);
+            for (std::size_t ii = 0; ii < size; ++ii) {
+                float expect = start + ii*step;
+                BOOST_CHECK_EQUAL(values[ii], expect);
+            }
+        }
+    }
+}

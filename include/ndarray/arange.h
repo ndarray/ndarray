@@ -102,15 +102,15 @@ inline detail::CountingExpression arange(std::size_t stop) {
 }
 
 /// @brief Create 1D Expression that contains integer values in the range [start,stop) with increment step.
-inline detail::UnaryOpExpression< detail::CountingExpression, detail::RangeTransformer<int> >
-arange(int start, int stop, int step = 1) {
+template <typename T>
+detail::UnaryOpExpression< detail::CountingExpression, detail::RangeTransformer<T> >
+arange(T start, T stop, T step = 1) {
     NDARRAY_ASSERT(step != 0);
-    int size = stop - start;
-    if (step < -1) ++size;
-    if (step > 1) --size;
-    size /= step;
+    T const diff = stop - start;
+    NDARRAY_ASSERT((diff > 0 && step > 0) || (diff < 0 && step < 0));
+    std::size_t const size = diff/step;
     return vectorize(
-        detail::RangeTransformer<int>(start,step),
+        detail::RangeTransformer<T>(start,step),
         detail::CountingExpression(size)
     );
 }
