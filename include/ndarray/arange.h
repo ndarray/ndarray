@@ -30,11 +30,11 @@ namespace ndarray {
  */
 template <>
 struct ExpressionTraits<detail::CountingExpression> {
-    typedef int Element;
+    typedef std::size_t Element;
     typedef boost::mpl::int_<1> ND;
-    typedef boost::counting_iterator<int> Iterator;
-    typedef int Value;
-    typedef int Reference;
+    typedef boost::counting_iterator<std::size_t> Iterator;
+    typedef std::size_t Value;
+    typedef std::size_t Reference;
 };
 
 namespace detail {
@@ -52,11 +52,11 @@ public:
     typedef ExpressionTraits<CountingExpression>::Iterator Iterator;
     typedef ExpressionTraits<CountingExpression>::Value Value;
     typedef ExpressionTraits<CountingExpression>::Reference Reference;
-    typedef Vector<int,1> Index;
+    typedef Vector<std::size_t,1> Index;
     
-    CountingExpression(int stop=0) : _stop(stop) { NDARRAY_ASSERT(stop >= 0); }
+    CountingExpression(std::size_t stop=0) : _stop(stop) { NDARRAY_ASSERT(stop >= 0); }
 
-    Reference operator[](int n) const {
+    Reference operator[](std::size_t n) const {
         return n;
     }
 
@@ -68,7 +68,7 @@ public:
         return Iterator(_stop);
     }
 
-    template <int P> int getSize() const {
+    template <std::size_t P> std::size_t getSize() const {
         BOOST_STATIC_ASSERT(P==0);
         return _stop;
     }
@@ -78,7 +78,7 @@ public:
     }
 
 private:
-    int _stop;
+    std::size_t _stop;
 };
 
 template <typename T>
@@ -86,18 +86,18 @@ class RangeTransformer {
     T _offset;
     T _scale;
 public:
-    typedef int argument_type;
+    typedef std::size_t argument_type;
     typedef T result_type;
 
     explicit RangeTransformer(T const & offset, T const & scale) : _offset(offset), _scale(scale) {}
 
-    T operator()(int n) const { return static_cast<T>(n) * _scale + _offset; }
+    T operator()(std::size_t n) const { return static_cast<T>(n) * _scale + _offset; }
 };
 
 } // namespace detail
 
 /// @brief Create 1D Expression that contains integer values in the range [0,stop).
-inline detail::CountingExpression arange(int stop) {
+inline detail::CountingExpression arange(std::size_t stop) {
     return detail::CountingExpression(stop);
 }
 
