@@ -218,7 +218,7 @@ public:
         return Helper::toPython(src);
     }
 
-    static constexpr auto name = type_descr(_<ndarray::Array<T,N,C>>());
+    static constexpr auto name = _("numpy.ndarray");
 
     static handle cast(const ndarray::Array<T,N,C> *src, return_value_policy policy, handle parent) {
         return cast(*src, policy, parent);
