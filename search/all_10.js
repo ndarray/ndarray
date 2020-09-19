@@ -1,0 +1,12 @@
+var searchData=
+[
+  ['tutorial',['Tutorial',['../ndarrayTutorial.html',1,'']]],
+  ['transformcore',['transformCore',['../structndarray_1_1detail_1_1IndexTraits_3_01ndarray_1_1index_1_1Slice_01_4.html#ada2290e61312067485a93fe7a10e8a0f',1,'ndarray::detail::IndexTraits&lt; ndarray::index::Slice &gt;::transformCore()'],['../structndarray_1_1detail_1_1IndexTraits_3_01ndarray_1_1index_1_1Range_01_4.html#aa3c075e1a943dae75ec4b17c97af73eb',1,'ndarray::detail::IndexTraits&lt; ndarray::index::Range &gt;::transformCore()'],['../structndarray_1_1detail_1_1IndexTraits_3_01ndarray_1_1index_1_1Full_01_4.html#a241b7b70b669b366066df3f6a10075de',1,'ndarray::detail::IndexTraits&lt; ndarray::index::Full &gt;::transformCore()'],['../structndarray_1_1detail_1_1IndexTraits_3_01ndarray_1_1index_1_1Scalar_01_4.html#a86e720a64d0706678e8e79e7b3da1edb',1,'ndarray::detail::IndexTraits&lt; ndarray::index::Scalar &gt;::transformCore()']]],
+  ['transformcoreresult',['TransformCoreResult',['../structndarray_1_1detail_1_1IndexTraits_3_01ndarray_1_1index_1_1Slice_01_4_1_1TransformCoreResult.html',1,'ndarray::detail::IndexTraits&lt; ndarray::index::Slice &gt;']]],
+  ['transformcoreresult',['TransformCoreResult',['../structndarray_1_1detail_1_1IndexTraits_3_01ndarray_1_1index_1_1Full_01_4_1_1TransformCoreResult.html',1,'ndarray::detail::IndexTraits&lt; ndarray::index::Full &gt;']]],
+  ['transformcoreresult',['TransformCoreResult',['../structndarray_1_1detail_1_1IndexTraits_3_01ndarray_1_1index_1_1Scalar_01_4_1_1TransformCoreResult.html',1,'ndarray::detail::IndexTraits&lt; ndarray::index::Scalar &gt;']]],
+  ['transformcoreresult',['TransformCoreResult',['../structndarray_1_1detail_1_1IndexTraits_3_01ndarray_1_1index_1_1Range_01_4_1_1TransformCoreResult.html',1,'ndarray::detail::IndexTraits&lt; ndarray::index::Range &gt;']]],
+  ['transpose',['transpose',['../classndarray_1_1ArrayBase.html#a8eb371bd057f55262748a6b926b15737',1,'ndarray::ArrayBase::transpose() const '],['../classndarray_1_1ArrayBase.html#ac229474ebd366c02caf6f4416006b2bb',1,'ndarray::ArrayBase::transpose(Index const &amp;order) const '],['../classndarray_1_1ArrayBase.html#a508428ff9e64c6a337a51bb0cd95a911',1,'ndarray::ArrayBase::Transpose()']]],
+  ['type_5fcaster_3c_20ndarray_3a_3aarray_3c_20t_2c_20n_2c_20c_20_3e_20_3e',['type_caster&lt; ndarray::Array&lt; T, N, C &gt; &gt;',['../classtype__caster_3_01ndarray_1_1Array_3_01T_00_01N_00_01C_01_4_01_4.html',1,'']]],
+  ['types_2eh',['types.h',['../types_8h.html',1,'']]]
+];
