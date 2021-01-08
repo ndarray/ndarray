@@ -7,7 +7,7 @@ objects in C++, with an interface and features designed to mimic the
 Python 'numpy' package as much as possible.
 
 More information can be found in the [documentation at
-ndarray.github.io/ndarray](http://ndarray.github.io/ndarray/).
+ndarray.github.io/ndarray](https://ndarray.github.io/ndarray/).
 
 
 Installation
