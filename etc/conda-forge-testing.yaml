@@ -1,0 +1,11 @@
+name: ndarray
+channels:
+ - conda-forge
+dependencies:
+ - doxygen
+ - boost
+ - fftw
+ - numpy
+ - pybind11
+ - gxx_linux-64
+ - eigen
