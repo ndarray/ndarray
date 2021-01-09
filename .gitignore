@@ -18,10 +18,4 @@ version.py
 tests/ndarray
 tests/ndarray-eigen
 tests/ndarray-fft
-include/ndarray/Array.h
-include/ndarray/ArrayBaseN.h
-include/ndarray/ArrayRef.h
-include/ndarray/Vector.h
-include/ndarray/fft/FFTWTraits.h
-include/ndarray/operators.h
 build/

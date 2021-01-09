@@ -26,7 +26,6 @@ add_definitions(-std=c++11)
 # module search path
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
 
-add_subdirectory(include)
 
 # add a target to generate API documentation with Doxygen
 find_package(Doxygen)
