@@ -16,12 +16,12 @@ include_directories(
 )
 
 add_executable(ndarray ndarray.cc)
-add_dependencies(ndarray preprocess_includes2)
+
 target_link_libraries(ndarray ${Boost_LIBRARIES})
 add_test(test_ndarray ndarray)
 
 add_executable(views views.cc)
-add_dependencies(views preprocess_includes2)
+
 target_link_libraries(views ${Boost_LIBRARIES})
 add_test(test_views views)
 
@@ -33,7 +33,7 @@ if(NDARRAY_EIGEN)
     include_directories( ${EIGEN3_INCLUDE_DIR} )
 
     add_executable(ndarray-eigen ndarray-eigen.cc)
-    add_dependencies(ndarray-eigen preprocess_includes2)
+
     target_link_libraries(ndarray-eigen ${Boost_LIBRARIES})
     add_test(test_ndarray_eigen ndarray-eigen)
 endif(NDARRAY_EIGEN)
@@ -44,7 +44,7 @@ if(NDARRAY_FFTW)
     include_directories( ${FFTW_INCLUDES} )
 
     add_executable(ndarray-fft ndarray-fft.cc)
-    add_dependencies(ndarray-fft preprocess_includes2)
+
     target_link_libraries(ndarray-fft ${Boost_LIBRARIES} ${FFTW_LIBRARIES})
     add_test(test_ndarray-fft ndarray-fft)
 endif(NDARRAY_FFTW)
@@ -69,7 +69,7 @@ if(NDARRAY_PYBIND11)
         include_directories(${PYBIND11_INCLUDE_DIR})
 
         pybind11_add_module(pybind11_test_mod pybind11_test_mod.cc)
-        add_dependencies(pybind11_test_mod preprocess_includes2)
+
 
         configure_file(pybind11_test.py pybind11_test.py COPYONLY)
         add_test(NAME pybind11_test
