@@ -63,9 +63,7 @@ int acceptNoneArray(ndarray::Array<double, 1, 1> const * array = nullptr) {
     }
 }
 
-PYBIND11_PLUGIN(pybind11_test_mod) {
-    pybind11::module mod("pybind11_test_mod", "Tests for the ndarray library");
-
+PYBIND11_MODULE(pybind11_test_mod, mod) {
     mod.def("returnArray1", returnArray1);
     mod.def("returnConstArray1", returnConstArray1);
     mod.def("returnArray3", returnArray3);
@@ -74,6 +72,4 @@ PYBIND11_PLUGIN(pybind11_test_mod) {
     mod.def("acceptArray10", acceptArray10);
     mod.def("acceptArray3", acceptArray3);
     mod.def("acceptNoneArray", acceptNoneArray, "array"_a = nullptr);
-
-    return mod.ptr();
 }
