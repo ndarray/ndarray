@@ -76,6 +76,16 @@ std::ostream & operator<<(std::ostream & os, ExpressionBase<Derived> const & exp
 
 namespace detail {
 
+/// @brief Stream char as integer rather than as a nonprintable character
+inline std::ostream &operator<<(std::ostream &os, std::int8_t value) {
+    return os << static_cast<int>(value);
+}
+
+/// @brief Stream uchar as integer rather than as a nonprintable character
+inline std::ostream &operator<<(std::ostream &os, std::uint8_t value) {
+    return os << static_cast<int>(value);
+}
+
 /**
  *  @internal @ingroup ndarrayInternalGroup
  *  @brief Recursive metafunction used in stream output.
