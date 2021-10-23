@@ -46,8 +46,7 @@ endif(NDARRAY_FFTW)
 
 ### Python resolution
 if(NDARRAY_PYBIND11)
-    find_package(PythonInterp COMPONENTS Interpreter NumPy REQUIRED)
-    find_package(PythonLibs REQUIRED)
+    find_package(Python ${PYTHON_VERSION} COMPONENTS Interpreter Development NumPy REQUIRED)
 ENDIF()
 
 ###Pybind11 dependency tests (also depend on Eigen)
@@ -59,7 +58,7 @@ if(NDARRAY_PYBIND11)
         target_link_libraries(pybind11_test_mod PRIVATE Eigen3::Eigen)
         configure_file(pybind11_test.py pybind11_test.py COPYONLY)
         add_test(NAME pybind11_test
-            COMMAND ${PYTHON_EXECUTABLE}
+            COMMAND ${Python_EXECUTABLE}
             ${CMAKE_CURRENT_BINARY_DIR}/pybind11_test.py)
     else(NDARRAY_EIGEN)
         message(STATUS "Skipping pybind11 tests as they depend on Eigen")
