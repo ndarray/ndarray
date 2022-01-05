@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['last_144',['last',['../structndarray_1_1Vector.html#a1de5360eb466fa1d78fa67aa38e63116',1,'ndarray::Vector::last()'],['../structndarray_1_1Vector_3_01T_00_010_01_4.html#ae577a95af0721efdc285a3e9d8057e90',1,'ndarray::Vector&lt; T, 0 &gt;::last()']]]
+  ['last_0',['last',['../structndarray_1_1Vector.html#a8e7a1430e46971395331f7e50ef48ecd',1,'ndarray::Vector::last()'],['../structndarray_1_1Vector_3_01T_00_010_01_4.html#ac167fd4ca7dd437741541cf420cdaee3',1,'ndarray::Vector&lt; T, 0 &gt;::last()']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['operators_556',['Operators',['../group__ndarrayOpGroup.html',1,'']]]
+  ['operators_0',['Operators',['../group__ndarrayOpGroup.html',1,'']]]
 ];

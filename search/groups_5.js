@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['vectors_558',['Vectors',['../group__ndarrayVectorGroup.html',1,'']]]
+  ['vectors_0',['Vectors',['../group__ndarrayVectorGroup.html',1,'']]]
 ];
