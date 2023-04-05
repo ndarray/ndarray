@@ -120,6 +120,13 @@ Pybind11Helper {
         pybind11_np_size_t const * strides = wrapper.strides();
         pybind11_np_size_t const itemsize = wrapper.itemsize();
         if (C > 0) {
+            // If the shape is zero in any dimension, we don't
+            // worry about the strides.
+            for (int i = 0; i < C; ++i) {
+                if (shape[N-i-1] == 0) {
+                    return true;
+                }
+            }
             pybind11_np_size_t requiredStride = itemsize;
             for (int i = 0; i < C; ++i) {
                 if (strides[N-i-1] != requiredStride) {
@@ -128,6 +135,13 @@ Pybind11Helper {
                 requiredStride *= shape[N-i-1];
             }
         } else if (C < 0) {
+            // If the shape is zero in any dimension, we don't
+            // worry about the strides.
+            for (int i = 0; i < -C; ++i) {
+                if (shape[i] == 0) {
+                    return true;
+                }
+            }
             pybind11_np_size_t requiredStride = itemsize;
             for (int i = 0; i < -C; ++i) {
                 if (strides[i] != requiredStride) {
