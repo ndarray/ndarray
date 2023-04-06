@@ -7,5 +7,7 @@ dependencies:
  - fftw
  - numpy
  - pybind11
- - gxx_linux-64
+ - c-compiler
  - eigen
+ - cmake
+ - pkg-config
