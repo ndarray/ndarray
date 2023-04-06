@@ -13,7 +13,8 @@ var searchData=
   ['core_10',['Core',['../classndarray_1_1detail_1_1Core.html',1,'ndarray::detail']]],
   ['core_2eh_11',['Core.h',['../Core_8h.html',1,'']]],
   ['core_3c_200_20_3e_12',['Core&lt; 0 &gt;',['../classndarray_1_1detail_1_1Core_3_010_01_4.html',1,'ndarray::detail']]],
-  ['coretransformer_13',['CoreTransformer',['../structndarray_1_1detail_1_1CoreTransformer.html',1,'ndarray::detail']]],
-  ['countingexpression_14',['CountingExpression',['../classndarray_1_1detail_1_1CountingExpression.html',1,'ndarray::detail']]],
-  ['create_15',['create',['../classndarray_1_1detail_1_1Core.html#a06ccf29cb20ede726e36b3616e8e73cf',1,'ndarray::detail::Core::create(Vector&lt; Size, M &gt; const &amp;shape, Vector&lt; Offset, M &gt; const &amp;strides, Manager::Ptr const &amp;manager=Manager::Ptr())'],['../classndarray_1_1detail_1_1Core.html#a2e82bbdf7ab3a438bda428fc282e690e',1,'ndarray::detail::Core::create(Vector&lt; Size, M &gt; const &amp;shape, DataOrderEnum order, Manager::Ptr const &amp;manager=Manager::Ptr())'],['../classndarray_1_1detail_1_1Core.html#aa1828e4e1d58925e6a3cd5bc5fe749e9',1,'ndarray::detail::Core::create(Manager::Ptr const &amp;manager=Manager::Ptr())']]]
+  ['core_3c_20m_20_3e_13',['Core&lt; M &gt;',['../classndarray_1_1detail_1_1Core.html',1,'ndarray::detail']]],
+  ['coretransformer_14',['CoreTransformer',['../structndarray_1_1detail_1_1CoreTransformer.html',1,'ndarray::detail']]],
+  ['countingexpression_15',['CountingExpression',['../classndarray_1_1detail_1_1CountingExpression.html',1,'ndarray::detail']]],
+  ['create_16',['create',['../classndarray_1_1detail_1_1Core.html#a06ccf29cb20ede726e36b3616e8e73cf',1,'ndarray::detail::Core::create(Vector&lt; Size, M &gt; const &amp;shape, Vector&lt; Offset, M &gt; const &amp;strides, Manager::Ptr const &amp;manager=Manager::Ptr())'],['../classndarray_1_1detail_1_1Core.html#a2e82bbdf7ab3a438bda428fc282e690e',1,'ndarray::detail::Core::create(Vector&lt; Size, M &gt; const &amp;shape, DataOrderEnum order, Manager::Ptr const &amp;manager=Manager::Ptr())'],['../classndarray_1_1detail_1_1Core.html#aa1828e4e1d58925e6a3cd5bc5fe749e9',1,'ndarray::detail::Core::create(Manager::Ptr const &amp;manager=Manager::Ptr())']]]
 ];

@@ -7,8 +7,9 @@ var searchData=
   ['product_4',['product',['../structndarray_1_1Vector.html#a28e1661b1c0cbca2019df78230107238',1,'ndarray::Vector::product()'],['../structndarray_1_1Vector_3_01T_00_010_01_4.html#a764c1eab2faacb10f830ebaf451f860e',1,'ndarray::Vector&lt; T, 0 &gt;::product()']]],
   ['promote_5',['Promote',['../structndarray_1_1Promote.html',1,'ndarray']]],
   ['promote_3c_20t1_2c_20t1_20_3e_6',['Promote&lt; T1, T1 &gt;',['../structndarray_1_1Promote.html',1,'ndarray']]],
-  ['ptr_7',['Ptr',['../classndarray_1_1detail_1_1Core.html#a73a3926a959169cac29dc92d978c439c',1,'ndarray::detail::Core']]],
-  ['pybind11_2eh_8',['pybind11.h',['../pybind11_8h.html',1,'']]],
-  ['pybind11helper_9',['Pybind11Helper',['../structndarray_1_1Pybind11Helper.html',1,'ndarray']]],
-  ['python_20support_10',['Python Support',['../group__ndarrayPythonGroup.html',1,'']]]
+  ['promote_3c_20u1_2c_20u2_20_3e_7',['Promote&lt; U1, U2 &gt;',['../structndarray_1_1Promote.html',1,'ndarray']]],
+  ['ptr_8',['Ptr',['../classndarray_1_1detail_1_1Core.html#a73a3926a959169cac29dc92d978c439c',1,'ndarray::detail::Core']]],
+  ['pybind11_2eh_9',['pybind11.h',['../pybind11_8h.html',1,'']]],
+  ['pybind11helper_10',['Pybind11Helper',['../structndarray_1_1Pybind11Helper.html',1,'ndarray']]],
+  ['python_20support_11',['Python Support',['../group__ndarrayPythonGroup.html',1,'']]]
 ];
