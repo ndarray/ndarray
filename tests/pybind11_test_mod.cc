@@ -41,6 +41,8 @@ bool acceptArray1(ndarray::Array<double,1,1> const & a1) {
 
 void acceptArray10(ndarray::Array<double,1,0> const & a1) {}
 
+void acceptArray11(ndarray::Array<double,1,1> const & a1) {}
+
 bool acceptArray3(ndarray::Array<double,3> const & a1) {
     ndarray::Array<double,3> a2 = returnArray3();
 #ifndef GCC_45
@@ -70,6 +72,7 @@ PYBIND11_MODULE(pybind11_test_mod, mod) {
     mod.def("returnConstArray3", returnConstArray3);
     mod.def("acceptArray1", acceptArray1);
     mod.def("acceptArray10", acceptArray10);
+    mod.def("acceptArray11", acceptArray11);
     mod.def("acceptArray3", acceptArray3);
     mod.def("acceptNoneArray", acceptNoneArray, "array"_a = nullptr);
 }
