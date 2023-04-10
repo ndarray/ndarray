@@ -38,12 +38,14 @@ class TestNumpyPybind11(unittest.TestCase):
         # in NumPy 1.8+ 1- and 0-sized arrays can have arbitrary strides; we should
         # be able to handle those
         array = numpy.zeros(1, dtype=float)
-        # just test that these don't throw
-        pybind11_test_mod.acceptArray10(array)
-        pybind11_test_mod.acceptArray11(array)
+        # the zero shape array tests are simply checking that pybind11 can handle
+        # arbitrary strides (non-zero for length 1 array, zero for length 0 array
+        # for numpy >= 1.23).
+        pybind11_test_mod.acceptZeroShapeArray10(array)
+        pybind11_test_mod.acceptZeroShapeArray11(array)
         array = numpy.zeros(0, dtype=float)
-        pybind11_test_mod.acceptArray10(array)
-        pybind11_test_mod.acceptArray11(array)
+        pybind11_test_mod.acceptZeroShapeArray10(array)
+        pybind11_test_mod.acceptZeroShapeArray11(array)
         # test that we gracefully fail when the strides are no multiples of the itemsize
         dtype = numpy.dtype([("f1", numpy.float64), ("f2", numpy.int16)])
         table = numpy.zeros(3, dtype=dtype)
