@@ -32,3 +32,6 @@ if(NDARRAY_TEST)
     add_subdirectory(tests)
 endif(NDARRAY_TEST)
 
+# installation
+install(DIRECTORY include/ DESTINATION include/
+        FILES_MATCHING PATTERN "*.h")
