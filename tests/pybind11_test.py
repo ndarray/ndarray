@@ -40,10 +40,10 @@ class TestNumpyPybind11(unittest.TestCase):
         array = numpy.zeros(1, dtype=float)
         # just test that these don't throw
         pybind11_test_mod.acceptArray10(array)
-        pybind11_test_mod.acceptArray1(array)
+        pybind11_test_mod.acceptArray11(array)
         array = numpy.zeros(0, dtype=float)
         pybind11_test_mod.acceptArray10(array)
-        pybind11_test_mod.acceptArray1(array)
+        pybind11_test_mod.acceptArray11(array)
         # test that we gracefully fail when the strides are no multiples of the itemsize
         dtype = numpy.dtype([("f1", numpy.float64), ("f2", numpy.int16)])
         table = numpy.zeros(3, dtype=dtype)
