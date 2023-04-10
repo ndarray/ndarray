@@ -41,15 +41,16 @@ class TestNumpyPybind11(unittest.TestCase):
         # the zero shape array tests are simply checking that pybind11 can handle
         # arbitrary strides (non-zero for length 1 array, zero for length 0 array
         # for numpy >= 1.23).
-        pybind11_test_mod.acceptZeroShapeArray10(array)
-        pybind11_test_mod.acceptZeroShapeArray11(array)
+        pybind11_test_mod.acceptAnyArray10(array)
+        pybind11_test_mod.acceptAnyArray11(array)
         array = numpy.zeros(0, dtype=float)
-        pybind11_test_mod.acceptZeroShapeArray10(array)
-        pybind11_test_mod.acceptZeroShapeArray11(array)
+        pybind11_test_mod.acceptAnyArray10(array)
+        pybind11_test_mod.acceptAnyArray11(array)
         # test that we gracefully fail when the strides are no multiples of the itemsize
         dtype = numpy.dtype([("f1", numpy.float64), ("f2", numpy.int16)])
         table = numpy.zeros(3, dtype=dtype)
-        self.assertRaises(TypeError, pybind11_test_mod.acceptArray10, table['f1'])
+        self.assertRaises(TypeError, pybind11_test_mod.acceptAnyArray10, table['f1'])
+        self.assertRaises(TypeError, pybind11_test_mod.acceptAnyArray11, table['f1'])
 
     def testNone(self):
         array = numpy.zeros(10, dtype=float)
@@ -62,7 +63,8 @@ class TestNumpyPybind11(unittest.TestCase):
         d2 = numpy.dtype(">f8")
         nonnative = d2 if d1 == numpy.dtype(float) else d1
         a = numpy.zeros(5, dtype=nonnative)
-        self.assertRaises(TypeError, pybind11_test_mod.acceptArray10, a)
+        self.assertRaises(TypeError, pybind11_test_mod.acceptAnyArray10, a)
+        self.assertRaises(TypeError, pybind11_test_mod.acceptAnyArray11, a)
 
 
 if __name__ == "__main__":
