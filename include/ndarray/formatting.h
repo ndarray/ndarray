@@ -19,6 +19,7 @@
 
 #include "ndarray/ExpressionBase.h"
 
+#include <cstdint>
 #include <iostream>
 
 namespace ndarray {
