@@ -64,6 +64,56 @@ struct BinaryPredicate {
     typedef bool result_type;
 };
 
+// Local helper classes to avoid using the Boost ones,
+// which inherit from boost::unary_function and boost::binary_function
+// Boost might use the std implementations underneath,
+// which are removed in the C++17 standard, but are still supported by some compilers
+// in C++20
+
+template<class Operation>
+class _binder1st {
+public:
+    using second_argument_type = typename boost::binary_traits<Operation>::second_argument_type;
+    using result_type = typename boost::binary_traits<Operation>::result_type;
+
+    _binder1st(typename boost::binary_traits<Operation>::param_type x,
+               typename boost::call_traits<typename boost::binary_traits<Operation>::first_argument_type>::param_type y)
+            :
+            op(x), value(y) {}
+
+    typename boost::binary_traits<Operation>::result_type
+    operator()(
+            typename boost::call_traits<typename boost::binary_traits<Operation>::second_argument_type>::param_type x) const {
+        return op(value, x);
+    }
+
+protected:
+    typename boost::binary_traits<Operation>::function_type op;
+    typename boost::binary_traits<Operation>::first_argument_type value;
+};
+
+template<class Operation>
+class _binder2nd {
+public:
+    using first_argument_type = typename boost::binary_traits<Operation>;
+    using result_type = typename boost::binary_traits<Operation>::result_type;
+
+    _binder2nd(typename boost::binary_traits<Operation>::param_type x,
+               typename boost::call_traits<typename boost::binary_traits<Operation>::second_argument_type>::param_type y)
+            :
+            op(x), value(y) {}
+
+    typename boost::binary_traits<Operation>::result_type
+    operator()(
+            typename boost::call_traits<typename boost::binary_traits<Operation>::first_argument_type>::param_type x) const {
+        return op(x, value);
+    }
+
+protected:
+    typename boost::binary_traits<Operation>::function_type op;
+    typename boost::binary_traits<Operation>::second_argument_type value;
+};
+
 /** 
  *  \internal @class AdaptableFunctionTag
  *  \brief A CRTP base class for non-template classes that contain a templated functor.
@@ -78,7 +128,7 @@ struct AdaptableFunctionTag {
         typedef typename Derived::template ScalarFunction<
             A, typename ExpressionTraits<OperandB>::Element
             > BinaryFunction;
-        typedef boost::binder1st<BinaryFunction> Bound;
+        typedef _binder1st<BinaryFunction> Bound;
         static Bound bind(A const & scalar) {
             return Bound(BinaryFunction(),scalar);
         }
@@ -89,7 +139,7 @@ struct AdaptableFunctionTag {
         typedef typename Derived::template ScalarFunction<
             typename ExpressionTraits<OperandA>::Element, B
             > BinaryFunction;
-        typedef boost::binder2nd<BinaryFunction> Bound;
+        typedef _binder2nd<BinaryFunction> Bound;
         static Bound bind(B const & scalar) {
             return Bound(BinaryFunction(),scalar);
         }
