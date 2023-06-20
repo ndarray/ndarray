@@ -70,6 +70,52 @@ struct BinaryPredicate {
  *
  *  \ingroup InternalGroup
  */
+
+    template <class Operation>
+    class binder1st
+    {
+    public:
+        using second_argument_type = typename boost::binary_traits<Operation>::second_argument_type;
+        using result_type = typename boost::binary_traits<Operation>::result_type;
+        binder1st(typename boost::binary_traits<Operation>::param_type x,
+                  typename boost::call_traits<typename boost::binary_traits<Operation>::first_argument_type>::param_type y)
+                :
+                op(x), value(y)
+        {}
+
+        typename boost::binary_traits<Operation>::result_type
+        operator()(typename boost::call_traits<typename boost::binary_traits<Operation>::second_argument_type>::param_type x) const
+        {
+            return op(value, x);
+        }
+
+    protected:
+        typename boost::binary_traits<Operation>::function_type op;
+        typename boost::binary_traits<Operation>::first_argument_type value;
+    };
+      template <class Operation>
+    class binder2nd
+    {
+      public:
+        using first_argument_type =  typename boost::binary_traits<Operation>;
+        using result_type = typename boost::binary_traits<Operation>::result_type;
+        binder2nd(typename boost::binary_traits<Operation>::param_type x,
+                  typename boost::call_traits<typename boost::binary_traits<Operation>::second_argument_type>::param_type y)
+            :
+            op(x), value(y)
+        {}
+
+        typename boost::binary_traits<Operation>::result_type
+        operator()(typename boost::call_traits<typename boost::binary_traits<Operation>::first_argument_type>::param_type x) const
+        {
+            return op(x, value);
+        }
+
+      protected:
+        typename boost::binary_traits<Operation>::function_type op;
+        typename boost::binary_traits<Operation>::second_argument_type value;
+    };
+
 template <typename Derived>
 struct AdaptableFunctionTag {
 
@@ -78,7 +124,7 @@ struct AdaptableFunctionTag {
         typedef typename Derived::template ScalarFunction<
             A, typename ExpressionTraits<OperandB>::Element
             > BinaryFunction;
-        typedef boost::binder1st<BinaryFunction> Bound;
+        typedef binder1st<BinaryFunction> Bound;
         static Bound bind(A const & scalar) {
             return Bound(BinaryFunction(),scalar);
         }
@@ -89,11 +135,12 @@ struct AdaptableFunctionTag {
         typedef typename Derived::template ScalarFunction<
             typename ExpressionTraits<OperandA>::Element, B
             > BinaryFunction;
-        typedef boost::binder2nd<BinaryFunction> Bound;
+        typedef binder2nd<BinaryFunction> Bound;
         static Bound bind(B const & scalar) {
             return Bound(BinaryFunction(),scalar);
         }
     };
+
 
     template <typename OperandA, typename OperandB>
     struct ExprExpr {
