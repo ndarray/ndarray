@@ -18,7 +18,6 @@
 
 #include "ndarray/Array.h"
 #include <boost/call_traits.hpp>
-#include <boost/functional.hpp>
 #include <boost/utility/enable_if.hpp>
 
 #include "ndarray/detail/UnaryOp.h"
@@ -70,48 +69,56 @@ struct BinaryPredicate {
 // which are removed in the C++17 standard, but are still supported by some compilers
 // in C++20
 
+template <class Operation>
+struct binary_traits
+{
+    typedef Operation                                function_type;
+    typedef const function_type &                    param_type;
+    typedef typename Operation::result_type          result_type;
+    typedef typename Operation::first_argument_type  first_argument_type;
+    typedef typename Operation::second_argument_type second_argument_type;
+};
+
 template<class Operation>
 class _binder1st {
 public:
-    using second_argument_type = typename boost::binary_traits<Operation>::second_argument_type;
-    using result_type = typename boost::binary_traits<Operation>::result_type;
+    using result_type = typename binary_traits<Operation>::result_type;
 
-    _binder1st(typename boost::binary_traits<Operation>::param_type x,
-               typename boost::call_traits<typename boost::binary_traits<Operation>::first_argument_type>::param_type y)
+    _binder1st(typename binary_traits<Operation>::param_type x,
+               typename boost::call_traits<typename binary_traits<Operation>::first_argument_type>::param_type y)
             :
             op(x), value(y) {}
 
-    typename boost::binary_traits<Operation>::result_type
+    typename binary_traits<Operation>::result_type
     operator()(
-            typename boost::call_traits<typename boost::binary_traits<Operation>::second_argument_type>::param_type x) const {
+            typename boost::call_traits<typename binary_traits<Operation>::second_argument_type>::param_type x) const {
         return op(value, x);
     }
 
 protected:
-    typename boost::binary_traits<Operation>::function_type op;
-    typename boost::binary_traits<Operation>::first_argument_type value;
+    typename binary_traits<Operation>::function_type op;
+    typename binary_traits<Operation>::first_argument_type value;
 };
 
 template<class Operation>
 class _binder2nd {
 public:
-    using first_argument_type = typename boost::binary_traits<Operation>;
-    using result_type = typename boost::binary_traits<Operation>::result_type;
+    using result_type = typename binary_traits<Operation>::result_type;
 
-    _binder2nd(typename boost::binary_traits<Operation>::param_type x,
-               typename boost::call_traits<typename boost::binary_traits<Operation>::second_argument_type>::param_type y)
+    _binder2nd(typename binary_traits<Operation>::param_type x,
+               typename boost::call_traits<typename binary_traits<Operation>::second_argument_type>::param_type y)
             :
             op(x), value(y) {}
 
-    typename boost::binary_traits<Operation>::result_type
+    typename binary_traits<Operation>::result_type
     operator()(
-            typename boost::call_traits<typename boost::binary_traits<Operation>::first_argument_type>::param_type x) const {
+            typename boost::call_traits<typename binary_traits<Operation>::first_argument_type>::param_type x) const {
         return op(x, value);
     }
 
 protected:
-    typename boost::binary_traits<Operation>::function_type op;
-    typename boost::binary_traits<Operation>::second_argument_type value;
+    typename binary_traits<Operation>::function_type op;
+    typename binary_traits<Operation>::second_argument_type value;
 };
 
 /** 
