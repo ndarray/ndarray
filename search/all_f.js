@@ -1,7 +1,7 @@
 var searchData=
 [
   ['safefloatingpointops_0',['SafeFloatingPointOps',['../structndarray_1_1detail_1_1SafeFloatingPointOps.html',1,'ndarray::detail']]],
-  ['scalar_1',['Scalar',['../structndarray_1_1index_1_1Scalar.html',1,'ndarray::index::Scalar'],['../structndarray_1_1View.html#a95c4290723863547cf5bb6bc86faa019',1,'ndarray::View::Scalar()']]],
+  ['scalar_1',['Scalar',['../structndarray_1_1index_1_1Scalar.html',1,'ndarray::index::Scalar'],['../structndarray_1_1View.html#a95c4290723863547cf5bb6bc86faa019',1,'ndarray::View::Scalar']]],
   ['selecteigenmap_2',['SelectEigenMap',['../structndarray_1_1detail_1_1SelectEigenMap.html',1,'ndarray::detail']]],
   ['selecteigenmap_3c_20t_2c_201_2c_20_2d1_2c_20xprkind_20_3e_3',['SelectEigenMap&lt; T, 1, -1, XprKind &gt;',['../structndarray_1_1detail_1_1SelectEigenMap_3_01T_00_011_00_01-1_00_01XprKind_01_4.html',1,'ndarray::detail']]],
   ['selecteigenmap_3c_20t_2c_201_2c_200_2c_20xprkind_20_3e_4',['SelectEigenMap&lt; T, 1, 0, XprKind &gt;',['../structndarray_1_1detail_1_1SelectEigenMap_3_01T_00_011_00_010_00_01XprKind_01_4.html',1,'ndarray::detail']]],
@@ -28,7 +28,7 @@ var searchData=
   ['simpleinitializer_25',['SimpleInitializer',['../classndarray_1_1detail_1_1SimpleInitializer.html',1,'ndarray::detail']]],
   ['simplemanager_26',['SimpleManager',['../classndarray_1_1SimpleManager.html',1,'ndarray']]],
   ['size_27',['size',['../classndarray_1_1ExpressionBase.html#a0db099ffc929bdc98463aef5843b0f6c',1,'ndarray::ExpressionBase::size()'],['../structndarray_1_1Vector.html#aa80093abcf5df0bc1a1cbbb355c52746',1,'ndarray::Vector::size()'],['../structndarray_1_1Vector_3_01T_00_010_01_4.html#a6776599127c7c6fa476aa2b5edd6d739',1,'ndarray::Vector&lt; T, 0 &gt;::size()']]],
-  ['slice_28',['Slice',['../structndarray_1_1index_1_1Slice.html',1,'ndarray::index::Slice'],['../structndarray_1_1View.html#ab4e15d1f643fbfb5077f471338cfafc1',1,'ndarray::View::Slice()']]],
+  ['slice_28',['Slice',['../structndarray_1_1index_1_1Slice.html',1,'ndarray::index::Slice'],['../structndarray_1_1View.html#ab4e15d1f643fbfb5077f471338cfafc1',1,'ndarray::View::Slice']]],
   ['static_5fdimension_5fcast_29',['static_dimension_cast',['../group__MainGroup.html#ga7e6fb72ad4e704913e8345cc0b770fcf',1,'ndarray']]],
   ['stridediterator_30',['StridedIterator',['../classndarray_1_1detail_1_1StridedIterator.html',1,'ndarray::detail']]],
   ['stridediterator_2eh_31',['StridedIterator.h',['../StridedIterator_8h.html',1,'']]],

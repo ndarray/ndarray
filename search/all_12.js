@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['value_0',['Value',['../classndarray_1_1ExpressionBase.html#a0274d21a5b59dddf645773c1adfc17e4',1,'ndarray::ExpressionBase::Value()'],['../classndarray_1_1ArrayBase.html#a8ce78d5712a644faee9dc77ebdd6a896',1,'ndarray::ArrayBase::Value()']]],
+  ['value_0',['Value',['../classndarray_1_1ExpressionBase.html#a0274d21a5b59dddf645773c1adfc17e4',1,'ndarray::ExpressionBase::Value'],['../classndarray_1_1ArrayBase.html#a8ce78d5712a644faee9dc77ebdd6a896',1,'ndarray::ArrayBase::Value']]],
   ['vector_1',['Vector',['../structndarray_1_1Vector.html',1,'ndarray::Vector&lt; T, N &gt;'],['../structndarray_1_1Vector_3_01T_00_010_01_4.html#ac155d14b9c2738e88b6c65ee945b0485',1,'ndarray::Vector&lt; T, 0 &gt;::Vector(Vector&lt; U, 0 &gt; const &amp;other)'],['../structndarray_1_1Vector_3_01T_00_010_01_4.html#abe5e749e3d9cdccbed64f08f1a9c4a35',1,'ndarray::Vector&lt; T, 0 &gt;::Vector(T scalar)'],['../structndarray_1_1Vector_3_01T_00_010_01_4.html#a621eef9f2bd55ee5cb53871308c5f1eb',1,'ndarray::Vector&lt; T, 0 &gt;::Vector()'],['../structndarray_1_1Vector.html#a67008ec1dc08ef447db1d334c229e70b',1,'ndarray::Vector::Vector(Vector&lt; U, N &gt; const &amp;other)'],['../structndarray_1_1Vector.html#a0b883bee8759ef5a673960a0a8f7e2e9',1,'ndarray::Vector::Vector(T scalar)'],['../structndarray_1_1Vector.html#a27c6ab81469af3415b89ce34ffcfbf01',1,'ndarray::Vector::Vector()']]],
   ['vector_2eh_2',['Vector.h',['../Vector_8h.html',1,'']]],
   ['vector_3c_20offset_2c_20n_20_3e_3',['Vector&lt; Offset, N &gt;',['../structndarray_1_1Vector.html',1,'ndarray']]],
