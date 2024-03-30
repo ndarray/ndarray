@@ -8,13 +8,13 @@
 # (4) Addition of the test executable via add_test.
 
 ### Core tests, which rely only on boost-test and ndarray.
-find_package(Boost COMPONENTS unit_test_framework REQUIRED)
+find_package(Boost COMPONENTS headers unit_test_framework REQUIRED)
 
 include_directories( ${PROJECT_SOURCE_DIR}/include)
 
 add_executable(ndarray_test ndarray.cc)
 
-target_link_libraries(ndarray_test ndarray Boost::unit_test_framework)
+target_link_libraries(ndarray_test ndarray Boost::headers Boost::unit_test_framework)
 add_test(test_ndarray ndarray_test)
 
 add_executable(views views.cc)
@@ -64,3 +64,30 @@ if(NDARRAY_PYBIND11)
         message(STATUS "Skipping pybind11 tests as they depend on Eigen")
     endif(NDARRAY_EIGEN)
 endif(NDARRAY_PYBIND11)
+
+###Nanobind dependency tests (also depend on Eigen)
+if(NDARRAY_NANOBIND)
+    if(NDARRAY_EIGEN)
+        find_package(Python
+        REQUIRED COMPONENTS Interpreter Development.Module
+        OPTIONAL_COMPONENTS Development.SABIModule)
+        execute_process(
+        COMMAND "${Python_EXECUTABLE}" -m nanobind --cmake_dir
+        OUTPUT_STRIP_TRAILING_WHITESPACE OUTPUT_VARIABLE NB_DIR)
+        list(APPEND CMAKE_PREFIX_PATH "${NB_DIR}")
+        find_package(nanobind CONFIG REQUIRED)
+
+        nanobind_add_module(nanobind_test_mod 
+                            nanobind_test_mod.cc
+                            STABLE_ABI
+                            NB_SHARED)
+        target_link_libraries(nanobind_test_mod PRIVATE Eigen3::Eigen)
+        configure_file(nanobind_test.py nanobind_test.py COPYONLY)
+        add_test(NAME nanobind_test
+            COMMAND ${Python_EXECUTABLE}
+            ${CMAKE_CURRENT_BINARY_DIR}/nanobind_test.py)
+    else(NDARRAY_EIGEN)
+        message(STATUS "Skipping nanobind tests as they depend on Eigen")
+    endif(NDARRAY_EIGEN)
+endif(NDARRAY_NANOBIND)
+
