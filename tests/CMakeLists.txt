@@ -14,7 +14,7 @@ include_directories( ${PROJECT_SOURCE_DIR}/include)
 
 add_executable(ndarray_test ndarray.cc)
 
-target_link_libraries(ndarray_test ndarray Boost::headers Boost::unit_test_framework)
+target_link_libraries(ndarray_test ndarray Boost::unit_test_framework)
 add_test(test_ndarray ndarray_test)
 
 add_executable(views views.cc)
@@ -81,7 +81,7 @@ if(NDARRAY_NANOBIND)
                             nanobind_test_mod.cc
                             STABLE_ABI
                             NB_SHARED)
-        target_link_libraries(nanobind_test_mod PRIVATE Eigen3::Eigen)
+        target_link_libraries(nanobind_test_mod PRIVATE Boost::headers Eigen3::Eigen)
         configure_file(nanobind_test.py nanobind_test.py COPYONLY)
         add_test(NAME nanobind_test
             COMMAND ${Python_EXECUTABLE}
