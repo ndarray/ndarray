@@ -17,8 +17,9 @@ set (CMAKE_CXX_STANDARD 11)
 
 option(NDARRAY_TEST "Enable tests?" ON)
 option(NDARRAY_EIGEN "Enable Eigen tests?" ON)
-option(NDARRAY_FFTW "Enable FFTW tests?" ON)
-option(NDARRAY_PYBIND11 "Enable Pybind11 tests?" OFF)
+option(NDARRAY_FFTW "Enable FFTW tests?" Off)
+option(NDARRAY_PYBIND11 "Enable Pybind11 tests?" On)
+option(NDARRAY_NANOBIND "Enable Nanobind tests?" On)
 
 add_subdirectory(include)
 
