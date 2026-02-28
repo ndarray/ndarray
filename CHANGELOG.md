@@ -1,5 +1,11 @@
 # ndarray change log
 
+## 1.5.2
+
+### Bug fixes
+
+Fix compilation issues with newer compiler versions.
+
 ## 1.5.1
 
 ### Bug fixes

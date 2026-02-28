@@ -85,11 +85,7 @@ public:
 
     /// @brief Return a single element from the array.
     Element & operator[](Index const & i) const {
-        return *(this->_data + this->_core->
-			#ifndef _MSC_VER
-			template
-			#endif
-			computeOffset(i));
+        return *(this->_data + this->_core->computeOffset(i));
     }
 
     /// @brief Return an Iterator to the beginning of the array.
