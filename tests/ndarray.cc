@@ -628,3 +628,57 @@ BOOST_AUTO_TEST_CASE(issue3) {
     BOOST_CHECK_EQUAL(s5.getSize<3>(), 2);
     BOOST_CHECK_EQUAL(s5.getSize<4>(), 1);
 }
+
+BOOST_AUTO_TEST_CASE(arangeInt) {
+    std::size_t const size = 10;
+    // Basic use
+    {
+        ndarray::Array<std::size_t, 1, 1> values = ndarray::copy(ndarray::arange(size));
+        BOOST_CHECK_EQUAL(values.getNumElements(), size);
+        for (std::size_t ii = 0; ii < size; ++ii) {
+            BOOST_CHECK_EQUAL(values[ii], ii);
+        }
+    }
+    {
+        ndarray::Array<std::size_t, 1, 1> values = ndarray::copy(ndarray::arange(0UL, size));
+        BOOST_CHECK_EQUAL(values.getNumElements(), size);
+        for (std::size_t ii = 0; ii < size; ++ii) {
+            BOOST_CHECK_EQUAL(values[ii], ii);
+        }
+
+    }
+
+    // Expanded use
+    std::vector<int> startList = {0, 3, 7, 123};
+    std::vector<int> stepList = {1, 2, 3, 10, -1, -2, -3, -10};
+    {
+        for (int step : stepList) {
+            for (int start : startList) {
+                int stop = start + size*step;
+                ndarray::Array<int, 1, 1> values = ndarray::copy(ndarray::arange(start, stop, step));
+                BOOST_CHECK_EQUAL(values.getNumElements(), size);
+                for (std::size_t ii = 0; ii < size; ++ii) {
+                    int expect = start + ii*step;
+                    BOOST_CHECK_EQUAL(values[ii], expect);
+                }
+            }
+        }
+    }
+}
+
+BOOST_AUTO_TEST_CASE(arangeFloat) {
+    std::size_t const size = 10;
+    std::vector<float> startList = {0.0, 123.45};
+    std::vector<float> stepList = {1.0, 0.1, 1.23};
+    for (float step : stepList) {
+        for (float start : startList) {
+            float stop = start + size*step;
+            ndarray::Array<float, 1, 1> values = ndarray::copy(ndarray::arange(start, stop, step));
+            BOOST_CHECK_EQUAL(values.getNumElements(), size);
+            for (std::size_t ii = 0; ii < size; ++ii) {
+                float expect = start + ii*step;
+                BOOST_CHECK_EQUAL(values[ii], expect);
+            }
+        }
+    }
+}
